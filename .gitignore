@@ -1,0 +1,19 @@
+node_modules/
+**/node_modules/
+.env
+.env.*
+!.env.example
+dist/
+build/
+coverage/
+*.log
+.vscode/
+.idea/
+# AI coding tool reference files
+backend/.agents/
+backend/.claude/
+backend/.windsurf/
+
+backend/.agents/
+backend/.claude/
+backend/.windsurf/

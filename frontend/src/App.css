@@ -1,0 +1,4957 @@
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
+
+:root {
+  font-family: "DM Sans", sans-serif;
+  color: #19352b;
+  background: #fbfaf6;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app {
+  width: 100%;
+  overflow: hidden;
+}
+
+.navbar {
+  width: min(1180px, calc(100% - 64px));
+  height: 86px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e9e8df;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "Manrope", sans-serif;
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.brand-icon {
+  width: 35px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: #276b4b;
+  border-radius: 11px;
+  font-size: 22px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 38px;
+  color: #65736b;
+  font-size: 14px;
+}
+
+.nav-links a,
+.login-button,
+.secondary-button {
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: #276b4b;
+}
+
+.login-button {
+  border: 1px solid #276b4b;
+  border-radius: 7px;
+  padding: 11px 23px;
+  color: #276b4b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.login-button:hover {
+  background: #276b4b;
+  color: white;
+}
+
+.hero {
+  width: min(1180px, calc(100% - 64px));
+  min-height: 560px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  gap: 55px;
+  padding: 62px 0 74px;
+}
+
+.hero-content {
+  padding: 10px 0;
+}
+
+.eyebrow {
+  display: inline-block;
+  color: #548263;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  line-height: 1.8;
+}
+
+.hero h1,
+.section-heading h2,
+.about-section h2 {
+  font-family: "Manrope", sans-serif;
+  letter-spacing: -2px;
+}
+
+.hero h1 {
+  margin: 23px 0 20px;
+  font-size: clamp(38px, 4.2vw, 59px);
+  line-height: 1.17;
+  font-weight: 800;
+}
+
+.hero h1 span {
+  color: #548263;
+}
+
+.hero-content > p {
+  max-width: 510px;
+  color: #738078;
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 13px;
+  margin-top: 31px;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 49px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 0 19px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.primary-button {
+  color: white;
+  background: #276b4b;
+}
+
+.primary-button:hover {
+  background: #1b5037;
+}
+
+.primary-button span {
+  font-size: 18px;
+}
+
+.secondary-button {
+  border: 1px solid #dcded4;
+  color: #425d4c;
+  background: #fff;
+}
+
+.secondary-button:hover {
+  background: #f0f3ec;
+}
+
+.hero-note {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 32px;
+  color: #758078;
+  font-size: 12px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #74a77c;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px #e8f0e6;
+}
+
+.hero-art {
+  position: relative;
+  min-height: 405px;
+  overflow: hidden;
+  border-radius: 48% 48% 15px 15px;
+  background: linear-gradient(155deg, #e5eee1 0%, #f0ead7 54%, #c8dbc4 100%);
+}
+
+.sun {
+  position: absolute;
+  top: 48px;
+  right: 64px;
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  background: #e4bc73;
+  opacity: 0.9;
+}
+
+.mountain {
+  position: absolute;
+  bottom: 105px;
+  width: 0;
+  height: 0;
+  border-left: 190px solid transparent;
+  border-right: 190px solid transparent;
+  border-bottom: 255px solid #94b29a;
+}
+
+.mountain-back {
+  right: -80px;
+  bottom: 111px;
+  border-left-width: 220px;
+  border-right-width: 220px;
+  border-bottom-width: 230px;
+  border-bottom-color: #aec5a8;
+}
+
+.mountain-front {
+  left: -120px;
+  bottom: 100px;
+  border-left-width: 230px;
+  border-right-width: 230px;
+  border-bottom-width: 285px;
+  border-bottom-color: #6e997c;
+}
+
+.river {
+  position: absolute;
+  left: 34%;
+  bottom: -70px;
+  width: 110px;
+  height: 255px;
+  background: #a4c7bd;
+  transform: rotate(25deg);
+  border-radius: 50% 30% 0 0;
+}
+
+.art-label {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 185px;
+  padding: 17px 20px;
+  border: 1px solid #ffffffa8;
+  border-radius: 9px;
+  background: #ffffffdc;
+  backdrop-filter: blur(10px);
+}
+
+.art-label span {
+  color: #6d8574;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.art-label strong {
+  font-family: "Manrope", sans-serif;
+  font-size: 17px;
+}
+
+.explore-section {
+  padding: 75px max(32px, calc((100% - 1180px) / 2)) 82px;
+  background: #f1f2eb;
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.section-heading h2,
+.about-section h2 {
+  margin: 12px 0 10px;
+  font-size: clamp(27px, 3vw, 38px);
+  line-height: 1.25;
+}
+
+.section-heading p,
+.about-section > p {
+  color: #748078;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.section-mark {
+  color: #8a9a8c;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.search-panel {
+  margin-top: 30px;
+  padding: 25px;
+  border: 1px solid #e5e7df;
+  border-radius: 11px;
+  background: white;
+}
+
+.search-panel label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.search-row {
+  display: flex;
+  gap: 12px;
+}
+
+.search-row input {
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 0 15px;
+  border: 1px solid #e0e4dc;
+  border-radius: 6px;
+  outline: none;
+  background: #fcfcfa;
+  font-size: 13px;
+}
+
+.search-row input:focus {
+  border-color: #548263;
+  box-shadow: 0 0 0 3px #54826318;
+}
+
+.search-row button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-width: 115px;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  background: #276b4b;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.search-row button:hover {
+  background: #1b5037;
+}
+
+.empty-state {
+  margin-top: 24px;
+  padding: 36px 20px;
+  border: 1px dashed #d8dfd4;
+  border-radius: 10px;
+  text-align: center;
+  background: #f8f9f4;
+}
+
+.empty-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  color: #276b4b;
+  background: #e5eee1;
+  font-size: 25px;
+}
+
+.empty-state h3 {
+  margin: 16px 0 8px;
+  font-family: "Manrope", sans-serif;
+  font-size: 18px;
+}
+
+.empty-state p {
+  max-width: 480px;
+  margin: 0 auto;
+  color: #748078;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.about-section {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: 77px 0;
+  display: grid;
+  grid-template-columns: 1fr 0.8fr;
+  align-items: center;
+  gap: 60px;
+}
+
+.about-section h2 {
+  max-width: 500px;
+}
+
+.about-section > p {
+  max-width: 440px;
+  margin: 0;
+}
+
+.footer {
+  width: min(1180px, calc(100% - 64px));
+  min-height: 95px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-top: 1px solid #e9e8df;
+}
+
+.footer .brand {
+  font-size: 19px;
+}
+
+.footer .brand-icon {
+  width: 30px;
+  height: 30px;
+  font-size: 19px;
+}
+
+.footer p,
+.footer > span {
+  color: #7b867e;
+  font-size: 12px;
+}
+
+@media (max-width: 800px) {
+  .navbar,
+  .hero,
+  .about-section,
+  .footer {
+    width: calc(100% - 40px);
+  }
+
+  .navbar {
+    height: 74px;
+  }
+
+  .nav-links {
+    gap: 17px;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 35px;
+    padding: 55px 0;
+  }
+
+  .hero-art {
+    min-height: 350px;
+  }
+
+  .explore-section {
+    padding: 58px 20px;
+  }
+
+  .about-section {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 58px 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .navbar {
+    width: calc(100% - 32px);
+  }
+
+  .brand {
+    font-size: 20px;
+  }
+
+  .nav-links {
+    gap: 12px;
+    font-size: 11px;
+  }
+
+  .nav-links a:last-child {
+    display: none;
+  }
+
+  .login-button {
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+
+  .hero,
+  .about-section,
+  .footer {
+    width: calc(100% - 32px);
+  }
+
+  .hero h1 {
+    font-size: 39px;
+    letter-spacing: -1.5px;
+  }
+
+  .hero-content > p {
+    font-size: 14px;
+  }
+
+  .hero-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .hero-actions a {
+    width: 100%;
+  }
+
+  .hero-art {
+    min-height: 300px;
+  }
+
+  .mountain {
+    transform: scale(0.8);
+    transform-origin: bottom left;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+  }
+
+  .section-mark {
+    display: none;
+  }
+
+  .search-panel {
+    padding: 17px;
+  }
+
+  .search-row {
+    flex-direction: column;
+  }
+
+  .search-row button {
+    min-height: 46px;
+  }
+
+  .footer {
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px 0;
+  }
+
+  .footer p {
+    margin: 0;
+  }
+}
+
+
+/* Place card image */
+.place-card-art {
+  position: relative;
+  min-height: 220px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #dcece1, #b4d1bf);
+}
+
+.place-card-image {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.place-image-placeholder {
+  display: flex;
+  width: 100%;
+  height: 220px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #315c46;
+  font-size: 14px;
+  background: linear-gradient(135deg, #e7f1e8, #c6dfcc);
+}
+
+.placeholder-icon {
+  font-size: 38px;
+}
+
+.place-category,
+.place-number {
+  position: absolute;
+  z-index: 1;
+  top: 14px;
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #254b38;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.place-category {
+  left: 14px;
+}
+
+.place-number {
+  right: 14px;
+}
+
+/* SabaTrail: alternating destination layout */
+
+
+
+.place-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 24px;
+  padding: 16px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 4px 18px rgba(31, 74, 52, 0.08);
+}
+
+/* Odd-numbered destinations: photo left, details right */
+
+
+/* =====================================
+   SABATRAIL LOGIN PAGE
+===================================== */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #f5f8f2, #e5efe5);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 36px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(31, 74, 52, 0.12);
+}
+
+.auth-card h1 {
+  margin: 0 0 10px;
+  color: #234b35;
+  font-size: 32px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.auth-card > p {
+  margin: 0 0 28px;
+  color: #647568;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-card label {
+  margin-top: 8px;
+  color: #294936;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.auth-card input {
+  width: 100%;
+  min-height: 46px;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid #d5dfd6;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #202820;
+  font: inherit;
+}
+
+.auth-card input:focus {
+  outline: 2px solid #82ad8c;
+  border-color: #467c55;
+}
+
+.auth-card form button,
+.auth-back-button {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 12px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 9px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-card form button {
+  background: #285b3c;
+  color: #ffffff;
+}
+
+.auth-card form button:hover {
+  background: #1d452d;
+}
+
+.auth-card form button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.auth-back-button {
+  background: #edf3ed;
+  color: #285b3c;
+}
+
+.auth-back-button:hover {
+  background: #dfeade;
+}
+
+.auth-message {
+  margin: 8px 0;
+  color: #b42318;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .auth-page {
+    padding: 16px;
+  }
+
+  .auth-card {
+    padding: 26px 20px;
+  }
+
+  .auth-card h1 {
+    font-size: 27px;
+  }
+}
+
+/* ==========================================
+   SABATRAIL VISIT PLANS PAGE
+========================================== */
+
+.visit-plans-page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 48px 6%;
+  background: #f8faf6;
+  color: #17251c;
+}
+
+.visit-plans-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin: 0 auto 36px;
+  max-width: 1100px;
+}
+
+.visit-plans-header h1 {
+  margin: 10px 0;
+  color: #173e2a;
+  font-size: clamp(32px, 4vw, 46px);
+}
+
+.visit-plans-header p,
+.visit-plan-form-card > p {
+  color: #647568;
+  line-height: 1.7;
+}
+
+.visit-plans-back,
+.visit-plans-refresh {
+  padding: 11px 17px;
+  border: 1px solid #cbd8cc;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #285b3c;
+  font: inherit;
+  cursor: pointer;
+}
+
+.visit-plan-form-card,
+.saved-plans-section {
+  max-width: 1100px;
+  margin: 0 auto 28px;
+  padding: 28px;
+  border: 1px solid #e2e9e0;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 5px 20px rgba(31, 74, 52, 0.05);
+}
+
+.visit-plan-form-card h2,
+.saved-plans-section h2 {
+  margin: 0 0 8px;
+  color: #234b35;
+  font-size: 24px;
+}
+
+.visit-plan-form-card form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 20px;
+  margin-top: 24px;
+}
+
+.visit-plan-form-card label {
+  align-self: end;
+  color: #294936;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.visit-plan-form-card input {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid #d5dfd6;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #202820;
+  font: inherit;
+}
+
+.visit-plan-form-card input:focus {
+  outline: 2px solid #82ad8c;
+  border-color: #467c55;
+}
+
+.visit-plan-form-card form button {
+  grid-column: 1 / -1;
+  justify-self: start;
+  min-height: 46px;
+  margin-top: 8px;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 8px;
+  background: #285b3c;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.visit-plan-form-card form button:hover {
+  background: #1d452d;
+}
+
+.visit-plan-form-card form button:disabled,
+.visit-plans-refresh:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.visit-plan-success {
+  margin: 18px 0 0;
+  color: #247044;
+}
+
+.visit-plan-error {
+  margin: 18px 0 0;
+  color: #b42318;
+  line-height: 1.6;
+}
+
+.saved-plans-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.visit-plans-empty {
+  padding: 30px 18px;
+  border: 1px dashed #d5dfd6;
+  border-radius: 12px;
+  text-align: center;
+  background: #f8faf6;
+}
+
+.visit-plans-empty h3 {
+  margin: 0 0 8px;
+  color: #234b35;
+}
+
+.visit-plans-empty p {
+  margin: 0;
+  color: #647568;
+}
+
+.saved-plans-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.saved-plan-card {
+  padding: 22px;
+  border: 1px solid #e0e9df;
+  border-radius: 12px;
+  background: #f9fbf8;
+}
+
+.saved-plan-label {
+  color: #4c795a;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.saved-plan-card h3 {
+  margin: 12px 0 8px;
+  color: #234b35;
+  font-size: 20px;
+}
+
+.saved-plan-card p {
+  margin: 0;
+  color: #647568;
+  line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+  .visit-plans-page {
+    padding: 28px 16px;
+  }
+
+  .visit-plans-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .visit-plan-form-card,
+  .saved-plans-section {
+    padding: 20px;
+  }
+
+  .visit-plan-form-card form {
+    grid-template-columns: 1fr;
+  }
+
+  .visit-plan-form-card form button {
+    grid-column: 1;
+    width: 100%;
+  }
+
+  .saved-plans-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Visit plan destination selection */
+
+.add-place-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+  margin: 24px 0;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f7faf6;
+}
+
+.add-place-form label {
+  align-self: end;
+  color: #294936;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.add-place-form input,
+.add-place-form select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #d5dfd6;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+}
+
+.add-place-form button,
+.remove-place-button {
+  justify-self: start;
+  padding: 11px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #285b3c;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.saved-plan-clickable {
+  display: block;
+  width: 100%;
+  border: 1px solid #e0e9df;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.saved-plan-clickable:hover {
+  border-color: #7ba68a;
+  box-shadow: 0 4px 14px rgba(31, 74, 52, 0.08);
+}
+
+.open-plan-hint {
+  display: block;
+  margin-top: 14px;
+  color: #285b3c;
+  font-size: 14px;
+}
+
+.remove-place-button {
+  margin-top: 14px;
+  background: #8f3636;
+}
+
+@media (max-width: 700px) {
+  .add-place-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Visit plan destination card */
+.planned-destination-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 18px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid #e0e9df;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(31, 74, 52, 0.08);
+}
+
+/* Keep destination images inside the card */
+.planned-destination-image {
+  display: block;
+  flex: 0 0 180px;
+  width: 180px;
+  height: 140px;
+  max-width: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Destination details */
+.planned-destination-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.planned-destination-info h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #234d35;
+  font-size: 20px;
+}
+
+.planned-destination-info p {
+  margin: 7px 0;
+  line-height: 1.5;
+}
+
+/* Destination order number */
+.destination-order {
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #285b3c;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Mobile layout */
+@media (max-width: 600px) {
+  .planned-destination-card {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .planned-destination-image {
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+    height: 200px;
+  }
+}
+
+/* SabaTrail itinerary summary */
+.itinerary-summary {
+  width: 100%;
+  max-width: 900px;
+  box-sizing: border-box;
+  margin: 24px auto;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #dce8dd;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(31, 74, 52, 0.06);
+}
+
+.itinerary-summary h3 {
+  margin: 0 0 18px;
+  color: #234d35;
+  font-size: 22px;
+}
+
+.itinerary-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.itinerary-summary-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 16px;
+  background: #f3f7f2;
+  border-radius: 10px;
+}
+
+.itinerary-summary-number {
+  color: #285b3c;
+  font-size: 22px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.itinerary-summary-label {
+  color: #526458;
+  font-size: 14px;
+}
+
+.itinerary-warning {
+  margin-top: 16px;
+  color: #8a4b13;
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .itinerary-summary {
+    padding: 16px;
+  }
+
+  .itinerary-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.itinerary-summary {
+  width: 100%;
+  max-width: 900px;
+  box-sizing: border-box;
+  margin: 24px auto;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #dce8dd;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(31, 74, 52, 0.06);
+}
+
+.itinerary-summary h3 {
+  margin: 0 0 18px;
+  color: #234d35;
+  font-size: 22px;
+}
+
+.itinerary-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.itinerary-summary-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 16px;
+  background: #f3f7f2;
+  border-radius: 10px;
+}
+
+.itinerary-summary-number {
+  color: #285b3c;
+  font-size: 22px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.itinerary-summary-label {
+  color: #526458;
+  font-size: 14px;
+}
+
+.itinerary-warning {
+  margin-top: 16px;
+  color: #8a4b13;
+  font-size: 14px;
+}
+
+.itinerary-distance-note {
+  margin-top: 16px;
+  color: #65736a;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+  .itinerary-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .itinerary-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.itinerary-map-section {
+  width: 100%;
+  max-width: 900px;
+  box-sizing: border-box;
+  margin: 24px auto;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #dce8dd;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(31, 74, 52, 0.06);
+}
+
+.itinerary-map-section h3 {
+  margin-top: 0;
+  color: #234d35;
+}
+
+.itinerary-map {
+  width: 100%;
+  margin-top: 16px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.itinerary-map-note {
+  color: #8a4b13;
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .itinerary-map-section {
+    padding: 14px;
+  }
+
+  .itinerary-map .leaflet-container {
+    height: 320px !important;
+  }
+}
+
+.itinerary-map-section {
+  width: 100%;
+  max-width: 900px;
+  box-sizing: border-box;
+  margin: 24px auto;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #dce8dd;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(31, 74, 52, 0.06);
+}
+
+.itinerary-map-section h3 {
+  margin-top: 0;
+  color: #234d35;
+}
+
+.itinerary-map {
+  width: 100%;
+  margin-top: 16px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.itinerary-map .leaflet-container {
+  z-index: 0;
+}
+
+.itinerary-map-note {
+  color: #8a4b13;
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .itinerary-map-section {
+    padding: 14px;
+  }
+
+  .itinerary-map .leaflet-container {
+    height: 320px !important;
+  }
+}
+
+/* SabaTrail numbered Leaflet markers */
+.sabatrail-numbered-marker-wrapper {
+  background: transparent;
+  border: none;
+}
+
+.sabatrail-numbered-marker {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: #285b3c;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.35);
+}
+
+.itinerary-map-section {
+  width: 100%;
+  max-width: 900px;
+  box-sizing: border-box;
+  margin: 24px auto;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #dce8dd;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(31, 74, 52, 0.06);
+}
+
+.itinerary-map-section h3 {
+  margin-top: 0;
+  color: #234d35;
+}
+
+.itinerary-map {
+  width: 100%;
+  margin-top: 16px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.itinerary-map .leaflet-container {
+  z-index: 0;
+}
+
+.itinerary-map-note {
+  color: #8a4b13;
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .itinerary-map-section {
+    padding: 14px;
+  }
+
+  .itinerary-map .leaflet-container {
+    height: 320px !important;
+  }
+}
+
+.sabatrail-numbered-marker-wrapper {
+  background: transparent;
+  border: none;
+}
+
+.sabatrail-numbered-marker {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: #285b3c;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.35);
+}
+
+.itinerary-map-section {
+  width: 100%;
+  max-width: 900px;
+  box-sizing: border-box;
+  margin: 24px auto;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #dce8dd;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(31, 74, 52, 0.06);
+}
+
+.itinerary-map-section h3 {
+  margin-top: 0;
+  color: #234d35;
+}
+
+.itinerary-map {
+  width: 100%;
+  margin-top: 16px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.itinerary-map .leaflet-container {
+  z-index: 0;
+}
+
+.itinerary-map-note {
+  color: #65736a;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .itinerary-map-section {
+    padding: 14px;
+  }
+
+  .itinerary-map .leaflet-container {
+    height: 320px !important;
+  }
+}
+
+/* Visit Plans page layout improvements */
+.visit-plans-page {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.visit-plans-page h2,
+.visit-plans-page h3 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.visit-plan-create-section,
+.visit-plan-select-section,
+.add-place-section {
+  margin: 24px 0;
+}
+
+.create-plan-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: center;
+  gap: 16px;
+}
+
+.create-plan-form label,
+.add-place-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.create-plan-form input,
+.add-place-form input,
+.add-place-form select,
+.visit-plan-select-section select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  border: 1px solid #d0ded2;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.create-plan-form button,
+.add-place-form button {
+  min-height: 44px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #285b3c;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.add-place-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: end;
+}
+
+.add-place-form button {
+  justify-self: start;
+}
+
+.itinerary-summary {
+  width: 100%;
+  max-width: 900px;
+  margin: 28px auto;
+  padding: 24px;
+  box-sizing: border-box;
+  border: 1px solid #dce8dd;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(31, 74, 52, 0.06);
+}
+
+.itinerary-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.itinerary-summary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  min-width: 0;
+  text-align: center;
+}
+
+.itinerary-summary-card span {
+  color: #526458;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.itinerary-summary-card strong {
+  color: #234d35;
+  font-size: 21px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.itinerary-summary .itinerary-map-note {
+  margin-top: 18px;
+  text-align: center;
+  color: #65736a;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+  .visit-plans-page {
+    padding: 14px;
+  }
+
+  .add-place-form {
+    grid-template-columns: 1fr;
+  }
+
+  .itinerary-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 12px;
+  }
+
+  .create-plan-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .create-plan-form label {
+    width: 100%;
+  }
+}
+
+/* SabaTrail destination card layout fix */
+.planned-destinations-section {
+  width: 100%;
+  max-width: 1000px;
+  margin: 30px auto;
+}
+
+.planned-destinations-section > h3 {
+  margin-bottom: 22px;
+  color: #234d35;
+  text-align: center;
+}
+
+.planned-destinations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.planned-destination-card {
+  display: grid;
+  grid-template-columns: 36px 180px minmax(0, 1fr);
+  align-items: start;
+  gap: 20px;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid #dce8dd;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(31, 74, 52, 0.06);
+}
+
+.planned-destination-order {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: #285b3c;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.planned-destination-image {
+  display: block;
+  width: 180px;
+  height: 150px;
+  max-width: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.planned-destination-details {
+  min-width: 0;
+  text-align: left;
+}
+
+.planned-destination-details h4 {
+  margin: 0 0 12px;
+  color: #234d35;
+  font-size: 20px;
+  line-height: 1.4;
+}
+
+.planned-destination-details p {
+  margin: 8px 0;
+  color: #526458;
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.planned-destination-details label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  color: #234d35;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.planned-destination-details input[type="time"] {
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid #d0ded2;
+  border-radius: 7px;
+  background: #ffffff;
+  font: inherit;
+}
+
+.remove-destination-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  margin-top: 14px;
+  padding: 10px 16px;
+  border: 1px solid #d8b8b3;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #a13f35;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.remove-destination-button:hover {
+  background: #fff2f0;
+}
+
+.remove-destination-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (max-width: 700px) {
+  .planned-destination-card {
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .planned-destination-image {
+    grid-column: 2;
+    width: 100%;
+    height: 210px;
+  }
+
+  .planned-destination-details {
+    grid-column: 1 / -1;
+  }
+
+  .planned-destination-details h4 {
+    font-size: 18px;
+  }
+
+  .planned-destination-details label {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* Compact destination cards */
+.planned-destination-card {
+  display: grid;
+  grid-template-columns: 32px 150px minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+  width: 100%;
+  max-width: 900px;
+  margin: 16px auto;
+  padding: 16px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #dce8dd;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(31, 74, 52, 0.05);
+}
+
+.planned-destination-order {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #285b3c;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.planned-destination-image {
+  width: 150px;
+  height: 115px;
+  max-width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.planned-destination-details {
+  min-width: 0;
+  text-align: left;
+}
+
+.planned-destination-details h4 {
+  margin: 0 0 8px;
+  color: #234d35;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.planned-destination-details p {
+  margin: 5px 0;
+  color: #526458;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Keep long descriptions from making cards excessively tall */
+.planned-destination-details p:has(+ p) {
+  overflow-wrap: anywhere;
+}
+
+.planned-destination-details label {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.planned-destination-details input[type="time"] {
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 1px solid #d0ded2;
+  border-radius: 7px;
+  background: #fff;
+  font: inherit;
+}
+
+.remove-destination-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  margin: 10px 0 0 10px;
+  padding: 8px 12px;
+  border: 1px solid #e2b8b3;
+  border-radius: 7px;
+  background: #fff;
+  color: #a13f35;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+@media (max-width: 650px) {
+  .planned-destination-card {
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .planned-destination-image {
+    grid-column: 2;
+    width: 100%;
+    height: 160px;
+  }
+
+  .planned-destination-details {
+    grid-column: 1 / -1;
+  }
+
+  .remove-destination-button {
+    margin-left: 0;
+  }
+}
+
+/* Restore the preferred SabaTrail destination card design */
+.planned-destinations-section {
+  max-width: 1000px;
+  margin: 28px auto;
+}
+
+.planned-destinations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.planned-destination-card {
+  display: grid;
+  grid-template-columns: 32px 162px minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #dce8dd;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(31, 74, 52, 0.05);
+}
+
+.planned-destination-order {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin-top: 2px;
+  border-radius: 50%;
+  background: #285b3c;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.planned-destination-image {
+  display: block;
+  width: 162px;
+  height: 125px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.planned-destination-details {
+  min-width: 0;
+  text-align: left;
+}
+
+.planned-destination-details h4 {
+  margin: 0 0 8px;
+  color: #234d35;
+  font-size: 18px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.planned-destination-details p {
+  margin: 5px 0;
+  color: #526458;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* Keep the time and remove controls compact */
+.planned-destination-details label {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  color: #234d35;
+  font-size: 13px;
+}
+
+.planned-destination-details input[type="time"] {
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 1px solid #d0ded2;
+  border-radius: 7px;
+  background: #fff;
+  font: inherit;
+}
+
+.remove-destination-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  margin: 10px 0 0 10px;
+  padding: 8px 12px;
+  border: 1px solid #e2b8b3;
+  border-radius: 7px;
+  background: #fff;
+  color: #a13f35;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.remove-destination-button:hover {
+  background: #fff2f0;
+}
+
+.remove-destination-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (max-width: 650px) {
+  .planned-destination-card {
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .planned-destination-image {
+    grid-column: 2;
+    width: 100%;
+    height: 160px;
+  }
+
+  .planned-destination-details {
+    grid-column: 1 / -1;
+  }
+
+  .planned-destination-details h4 {
+    font-size: 17px;
+  }
+
+  .remove-destination-button {
+    margin-left: 0;
+  }
+}
+
+/* SabaTrail - refined compact destination cards */
+
+.planned-destinations-section {
+  max-width: 920px;
+  margin: 28px auto;
+}
+
+.planned-destinations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.planned-destination-card {
+  display: grid;
+  grid-template-columns: 30px 140px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 14px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #dce8dd;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(31, 74, 52, 0.05);
+}
+
+.planned-destination-order {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #285b3c;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.planned-destination-image {
+  display: block;
+  width: 140px;
+  height: 105px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.planned-destination-details {
+  min-width: 0;
+  text-align: left;
+}
+
+.planned-destination-details h4 {
+  margin: 0 0 6px;
+  color: #234d35;
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.planned-destination-details p {
+  margin: 4px 0;
+  color: #526458;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* Shorten only the long description visually */
+.planned-destination-details p:nth-of-type(3) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  
+line-clamp: 3;
+-webkit-line-clamp: 3;
+
+  overflow: hidden;
+}
+
+/* Keep planned time and remove button on one tidy row */
+.planned-destination-details label {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  color: #234d35;
+  font-size: 12px;
+}
+
+.planned-destination-details input[type="time"] {
+  min-height: 34px;
+  padding: 5px 8px;
+  border: 1px solid #d0ded2;
+  border-radius: 7px;
+  background: #fff;
+  font: inherit;
+}
+
+.remove-destination-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  margin: 8px 0 0 8px;
+  padding: 7px 11px;
+  border: 1px solid #e2b8b3;
+  border-radius: 7px;
+  background: #fff;
+  color: #a13f35;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.remove-destination-button:hover {
+  background: #fff2f0;
+}
+
+@media (max-width: 650px) {
+  .planned-destination-card {
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .planned-destination-image {
+    grid-column: 2;
+    width: 100%;
+    height: 150px;
+  }
+
+  .planned-destination-details {
+    grid-column: 1 / -1;
+  }
+
+  .planned-destination-details p:nth-of-type(3) {
+    
+line-clamp: 4;
+-webkit-line-clamp: 4;
+
+  }
+
+  .remove-destination-button {
+    margin-left: 0;
+  }
+}
+
+/* Destination category filter */
+.category-filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.category-filter label {
+  color: #234d35;
+  font-weight: 600;
+}
+
+.category-filter select {
+  min-width: 220px;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid #d0ded2;
+  border-radius: 8px;
+  background: #fff;
+  color: #234d35;
+}
+
+.category-filter button {
+  min-height: 42px;
+  padding: 9px 14px;
+  border: 1px solid #d0ded2;
+  border-radius: 8px;
+  background: #fff;
+  color: #285b3c;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.category-filter button:hover {
+  background: #eef5ef;
+}
+
+@media (max-width: 600px) {
+  .category-filter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .category-filter select,
+  .category-filter button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* Category filter layout */
+.category-filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+  margin: 24px 0;
+  box-sizing: border-box;
+}
+
+.category-filter label {
+  flex: 0 0 auto;
+  color: #234d35;
+  font-weight: 600;
+}
+
+.category-filter select {
+  width: 240px;
+  max-width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  border: 1px solid #d0ded2;
+  border-radius: 8px;
+  background: #fff;
+  color: #234d35;
+}
+
+.category-filter button {
+  min-height: 42px;
+  padding: 9px 14px;
+  border: 1px solid #d0ded2;
+  border-radius: 8px;
+  background: #fff;
+  color: #285b3c;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.category-filter button:hover {
+  background: #eef5ef;
+}
+
+/* Keep the destination count on its own line */
+.places-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  margin: 20px 0 16px;
+  box-sizing: border-box;
+}
+
+/* Prevent destination cards from overlapping */
+.places-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+  align-items: start;
+}
+
+.place-card {
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.place-card-content {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+  .category-filter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .category-filter select,
+  .category-filter button {
+    width: 100%;
+  }
+
+  .places-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .places-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* SabaTrail destination cards - balanced layout */
+.places-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Horizontal SabaTrail destination cards */
+.places-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.places-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+
+.place-card {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #dce8dd;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(31, 74, 52, 0.06);
+}
+
+.place-card-art {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  min-height: 220px;
+  overflow: hidden;
+  background: #e8eee8;
+}
+
+.place-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  background: #edf3ed;
+  color: #526458;
+}
+
+.place-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+  padding: 20px 24px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.place-card-content h3 {
+  margin: 0 0 4px;
+  color: #234d35;
+  font-size: 21px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.place-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 4;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  width: 100%;
+  margin: 0;
+  color: #526458;
+  font-size: 14px;
+  line-height: 1.65;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.place-detail {
+  width: 100%;
+  margin: 0;
+  color: #526458;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.place-category {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+  padding: 7px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #285b3c;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.place-number {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: #285b3c;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Mobile layout */
+@media (max-width: 650px) {
+  .place-card {
+    grid-template-columns: 1fr;
+  }
+
+  .place-card-art {
+    height: 200px;
+    min-height: 200px;
+  }
+
+  .place-card-content {
+    padding: 16px;
+  }
+
+  .place-card-content h3 {
+    font-size: 19px;
+  }
+}
+
+/* SabaTrail - consistent horizontal destination cards */
+
+.places-section {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.places-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+
+.place-card {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  align-items: start;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 16px;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #dce8dd;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(31, 74, 52, 0.05);
+}
+
+/* Keep every image in the first column */
+.place-card-art {
+  position: relative;
+  grid-column: 1;
+  grid-row: 1;
+  width: 100%;
+  height: 150px;
+  min-height: 150px;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #edf3ed;
+}
+
+.place-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.place-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  color: #526458;
+  background: #edf3ed;
+}
+
+/* Keep every destination's information in the second column */
+.place-card-content {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+  padding: 0 4px 0 8px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.place-card-content h3 {
+  margin: 0 0 4px;
+  color: #234d35;
+  font-size: 20px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.place-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  width: 100%;
+  margin: 0 0 4px;
+  color: #526458;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.place-detail {
+  width: 100%;
+  margin: 0;
+  color: #526458;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+/* Category and number labels stay on top of the image */
+.place-category {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  padding: 6px 10px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #285b3c;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.place-number {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: #285b3c;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Stack the image and details on small screens */
+@media (max-width: 600px) {
+  .place-card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    padding: 12px;
+  }
+
+  .place-card-art {
+    grid-column: 1;
+    grid-row: 1;
+    height: 190px;
+  }
+
+  .place-card-content {
+    grid-column: 1;
+    grid-row: 2;
+    padding: 0;
+  }
+
+  .place-card-content h3 {
+    font-size: 18px;
+  }
+}
+
+/* Alternate destination card layout */
+.places-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.place-card {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  grid-template-areas: "image content";
+  align-items: start;
+  gap: 22px;
+  width: 100%;
+  margin: 0;
+  padding: 16px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #dce8dd;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(31, 74, 52, 0.05);
+}
+
+/* Default: image left, content right */
+.place-card-art {
+  grid-area: image;
+  position: relative;
+  width: 100%;
+  height: 160px;
+  min-height: 160px;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #edf3ed;
+}
+
+.place-card-content {
+  grid-area: content;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+}
+
+/* Even-numbered cards: content left, image right */
+.place-card:nth-child(even) {
+  grid-template-columns: minmax(0, 1fr) 220px;
+  grid-template-areas: "content image";
+}
+
+/* Keep every image properly sized */
+.place-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.place-card-content h3 {
+  margin: 0 0 4px;
+  color: #234d35;
+  font-size: 19px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.place-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  width: 100%;
+  margin: 0 0 4px;
+  color: #526458;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.place-detail {
+  width: 100%;
+  margin: 0;
+  color: #526458;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+/* Mobile: keep image above content for readability */
+@media (max-width: 650px) {
+  .place-card,
+  .place-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "image"
+      "content";
+    gap: 14px;
+    padding: 12px;
+  }
+
+  .place-card-art {
+    height: 190px;
+    min-height: 190px;
+  }
+}
+
+/* SabaTrail - alternating horizontal destination layout */
+
+.places-section {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.places-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+}
+
+.place-card,
+.place-card:nth-child(even) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 40%;
+  grid-template-areas: "content image";
+  align-items: center;
+  gap: 28px;
+  width: 100%;
+  margin: 0;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #dce8dd;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(31, 74, 52, 0.05);
+}
+
+/* Odd cards: image left, content right */
+.place-card:nth-child(odd) {
+  grid-template-columns: 40% minmax(0, 1fr);
+  grid-template-areas: "image content";
+}
+
+/* Image area */
+.place-card-art {
+  grid-area: image;
+  position: relative;
+  width: 100%;
+  height: 210px;
+  min-height: 210px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #edf3ed;
+}
+
+.place-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.place-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  color: #526458;
+  background: #edf3ed;
+}
+
+/* Destination information */
+.place-card-content {
+  grid-area: content;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.place-card-content h3 {
+  margin: 0 0 4px;
+  color: #234d35;
+  font-size: 20px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.place-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 4;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  width: 100%;
+  margin: 0 0 4px;
+  color: #526458;
+  font-size: 13px;
+  line-height: 1.65;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.place-detail {
+  width: 100%;
+  margin: 0;
+  color: #526458;
+  font-size: 12px;
+  line-height: 1.55;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+/* Labels on the image */
+.place-category {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #285b3c;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.place-number {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: #285b3c;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Mobile: image above information */
+@media (max-width: 650px) {
+  .place-card,
+  .place-card:nth-child(odd),
+  .place-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "image"
+      "content";
+    gap: 16px;
+    padding: 14px;
+  }
+
+  .place-card-art {
+    height: 210px;
+    min-height: 210px;
+  }
+
+  .place-card-content h3 {
+    font-size: 18px;
+  }
+}
+
+/* Remove unnecessary space inside destination cards */
+.place-card,
+.place-card:nth-child(odd),
+.place-card:nth-child(even) {
+  align-items: start;
+  padding: 12px;
+  gap: 20px;
+}
+
+/* Make the image container compact */
+.place-card-art {
+  width: 100%;
+  height: 190px;
+  min-height: 0;
+  align-self: start;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  line-height: 0;
+}
+
+/* Fill the image container without stretching */
+.place-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Remove unnecessary space around the text */
+.place-card-content {
+  align-self: start;
+  margin: 0;
+  padding: 0;
+  gap: 6px;
+}
+
+/* Keep the card compact */
+.place-card {
+  height: auto;
+  min-height: 0;
+}
+
+/* Mobile image size */
+@media (max-width: 650px) {
+  .place-card-art {
+    height: 200px;
+    min-height: 0;
+  }
+}
+
+/* Fix excessive blank space in destination cards */
+.places-grid .place-card {
+  display: grid;
+  grid-template-columns: 40% minmax(0, 1fr);
+  grid-template-areas: "image content";
+  align-items: start;
+  align-content: start;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 12px;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+/* Alternate image position for even cards */
+.places-grid .place-card:nth-child(even) {
+  grid-template-columns: minmax(0, 1fr) 40%;
+  grid-template-areas: "content image";
+}
+
+/* Image should fill its column without extra space */
+.places-grid .place-card .place-card-art {
+  grid-area: image;
+  width: 100%;
+  height: 190px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  align-self: start;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.places-grid .place-card .place-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Content starts at the top and determines card height */
+.places-grid .place-card .place-card-content {
+  grid-area: content;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  align-self: start;
+}
+
+/* Mobile layout */
+@media (max-width: 650px) {
+  .places-grid .place-card,
+  .places-grid .place-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "image"
+      "content";
+    gap: 14px;
+  }
+
+  .places-grid .place-card .place-card-art {
+    height: 210px;
+  }
+}
+
+/* SabaTrail alternating horizontal destination cards */
+
+.places-section {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.places-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.place-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  grid-template-areas: "image content";
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  margin: 0;
+  padding: 16px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #dce8dd;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(31, 74, 52, 0.06);
+}
+
+/* Even-numbered destinations: information left, image right */
+.place-card:nth-child(even) {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-areas: "content image";
+}
+
+/* Image */
+.place-card-art {
+  grid-area: image;
+  position: relative;
+  width: 100%;
+  height: 250px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #edf3ed;
+}
+
+.place-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  object-position: center;
+}
+
+.place-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  gap: 8px;
+  color: #526458;
+  background: #edf3ed;
+}
+
+/* Destination information */
+.place-card-content {
+  grid-area: content;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 8px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.place-card-content h3 {
+  margin: 0 0 6px;
+  color: #234d35;
+  font-size: 21px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.place-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 5;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+  width: 100%;
+  margin: 0 0 4px;
+  color: #526458;
+  font-size: 14px;
+  line-height: 1.65;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.place-detail {
+  width: 100%;
+  margin: 0;
+  color: #526458;
+  font-size: 13px;
+  line-height: 1.55;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+/* Labels displayed over the image */
+.place-category {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+  padding: 7px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #285b3c;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.place-number {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: #285b3c;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Mobile: stack image above information */
+@media (max-width: 650px) {
+  .place-card,
+  .place-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "image"
+      "content";
+    gap: 14px;
+    padding: 12px;
+  }
+
+  .place-card-art {
+    height: 210px;
+  }
+
+  .place-card-content {
+    padding: 4px;
+  }
+
+  .place-card-content h3 {
+    font-size: 19px;
+  }
+}
+
+/* Final override: SabaTrail destination image sizing */
+
+.places-grid .place-card .place-card-art {
+  width: 100% !important;
+  height: 200px !important;
+  min-height: 200px !important;
+  max-height: 200px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  align-self: center !important;
+}
+
+.places-grid .place-card .place-card-image {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 200px !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Keep alternating image and information positions */
+.places-grid .place-card {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) !important;
+  grid-template-areas: "image content" !important;
+  align-items: center !important;
+}
+
+.places-grid .place-card:nth-child(even) {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) !important;
+  grid-template-areas: "content image" !important;
+}
+
+/* Mobile image size */
+@media (max-width: 650px) {
+  .places-grid .place-card,
+  .places-grid .place-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      "image"
+      "content" !important;
+  }
+
+  .places-grid .place-card .place-card-art {
+    height: 190px !important;
+    min-height: 190px !important;
+    max-height: 190px !important;
+  }
+}
+
+/* SabaTrail: balanced alternating destination cards */
+.places-grid .place-card,
+.places-grid .place-card:nth-child(odd) {
+  display: grid;
+  grid-template-columns: 42% minmax(0, 1fr);
+  grid-template-areas: "image content";
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.places-grid .place-card:nth-child(even) {
+  grid-template-columns: minmax(0, 1fr) 42%;
+  grid-template-areas: "content image";
+}
+
+/* Photo size */
+.places-grid .place-card .place-card-art {
+  grid-area: image;
+  width: 100%;
+  height: 230px !important;
+  min-height: 0 !important;
+  max-height: 230px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 9px;
+  align-self: center;
+}
+
+.places-grid .place-card .place-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Information layout */
+.places-grid .place-card .place-card-content {
+  grid-area: content;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+  margin: 0;
+  padding: 8px;
+  text-align: left;
+}
+
+.places-grid .place-card-content h3 {
+  margin: 0 0 5px;
+  font-size: 21px;
+  line-height: 1.4;
+  color: #234d35;
+  text-align: left;
+}
+
+.places-grid .place-card-content .place-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 4;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  width: 100%;
+  margin: 0 0 5px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #526458;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.places-grid .place-card-content .place-detail {
+  width: 100%;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #526458;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+/* Mobile layout */
+@media (max-width: 650px) {
+  .places-grid .place-card,
+  .places-grid .place-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "image"
+      "content";
+    gap: 14px;
+    padding: 12px;
+  }
+
+  .places-grid .place-card .place-card-art {
+    height: 210px !important;
+    max-height: 210px;
+  }
+
+  .places-grid .place-card .place-card-content {
+    padding: 4px;
+  }
+}
+
+/* SabaTrail destination card layout correction */
+.places-grid .place-card,
+.places-grid .place-card:nth-child(odd),
+.places-grid .place-card:nth-child(even) {
+  display: grid !important;
+  grid-template-columns: minmax(0, 42%) minmax(0, 1fr) !important;
+  grid-template-areas: "image content" !important;
+  align-items: start !important;
+  align-content: start !important;
+  gap: 22px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 14px !important;
+  box-sizing: border-box !important;
+}
+
+/* Alternate every second destination */
+.places-grid .place-card:nth-child(even) {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 42%) !important;
+  grid-template-areas: "content image" !important;
+}
+
+/* Image column */
+.places-grid .place-card .place-card-art {
+  grid-area: image !important;
+  width: 100% !important;
+  height: 220px !important;
+  min-height: 0 !important;
+  max-height: 220px !important;
+  align-self: start !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border-radius: 9px !important;
+  line-height: 0 !important;
+}
+
+/* Image fills only its column */
+.places-grid .place-card .place-card-image {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Information column */
+.places-grid .place-card .place-card-content {
+  grid-area: content !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  min-width: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 4px 8px !important;
+  text-align: left !important;
+}
+
+/* Prevent centered or excessively narrow text */
+.places-grid .place-card .place-card-content h3,
+.places-grid .place-card .place-card-content p {
+  width: 100% !important;
+  text-align: left !important;
+  overflow-wrap: anywhere;
+}
+
+.places-grid .place-card .place-description {
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical;
+  line-clamp: 4;
+  -webkit-line-clamp: 4;
+  overflow: hidden !important;
+}
+
+/* Mobile layout */
+@media (max-width: 650px) {
+  .places-grid .place-card,
+  .places-grid .place-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      "image"
+      "content" !important;
+    gap: 14px !important;
+  }
+
+  .places-grid .place-card .place-card-art {
+    height: 210px !important;
+    max-height: 210px !important;
+  }
+}
+
+/* Display the full destination photo */
+.places-grid .place-card .place-card-art {
+  grid-area: image;
+  width: 100%;
+  height: 300px !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #f4f6f3;
+}
+
+/* Show the complete image without cropping */
+.places-grid .place-card .place-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important;
+  object-position: center;
+  margin: 0;
+  padding: 0;
+}
+
+/* Mobile photo size */
+@media (max-width: 650px) {
+  .places-grid .place-card .place-card-art {
+    height: 240px !important;
+  }
+}
+
+/* Image box: no empty space */
+.places-grid .place-card .place-card-art {
+  grid-area: image;
+  position: relative;
+  width: 100%;
+  height: 300px !important;
+  min-height: 300px !important;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #edf3ed;
+  line-height: 0;
+}
+
+/* Image fills the complete box */
+.places-grid .place-card .place-card-image {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  margin: 0;
+  padding: 0;
+  object-fit: cover !important;
+  object-position: center center;
+}
+
+/* Mobile image height */
+@media (max-width: 650px) {
+  .places-grid .place-card .place-card-art {
+    height: 240px !important;
+    min-height: 240px !important;
+  }
+}
+
+/* SabaTrail destination cards: alternating horizontal layout */
+
+.places-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.places-grid .place-card,
+.places-grid .place-card:nth-child(odd) {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: "image content";
+  align-items: stretch;
+  gap: 24px;
+  width: 100%;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0;
+  padding: 16px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #dce8dd;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(31, 74, 52, 0.06);
+}
+
+/* Even destinations: information left, image right */
+.places-grid .place-card:nth-child(even) {
+  grid-template-areas: "content image";
+}
+
+/* Image fills its entire box */
+.places-grid .place-card .place-card-art {
+  grid-area: image;
+  position: relative;
+  width: 100%;
+  height: 300px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #edf3ed;
+  line-height: 0;
+}
+
+.places-grid .place-card .place-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  margin: 0;
+  padding: 0;
+}
+
+/* Destination details */
+.places-grid .place-card .place-card-content {
+  grid-area: content;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 12px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.places-grid .place-card-content h3 {
+  margin: 0 0 6px;
+  color: #234d35;
+  font-size: 22px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.places-grid .place-card-content .place-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 5;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+  width: 100%;
+  margin: 0 0 6px;
+  color: #526458;
+  font-size: 14px;
+  line-height: 1.65;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.places-grid .place-card-content .place-detail {
+  width: 100%;
+  margin: 0;
+  color: #526458;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+/* Category and number labels */
+.places-grid .place-category {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+}
+
+.places-grid .place-number {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+}
+
+/* Mobile layout */
+@media (max-width: 650px) {
+  .places-grid .place-card,
+  .places-grid .place-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "image"
+      "content";
+    gap: 14px;
+    padding: 12px;
+  }
+
+  .places-grid .place-card .place-card-art {
+    height: 230px;
+  }
+
+  .places-grid .place-card .place-card-content {
+    padding: 4px;
+  }
+
+  .places-grid .place-card-content h3 {
+    font-size: 19px;
+  }
+}
+/* ==========================================
+   SABATRAIL DESTINATION CARDS
+========================================== */
+
+.places-section {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.places-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  margin: 20px 0 16px;
+}
+
+.places-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* Main card */
+.place-card {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  grid-template-areas: "image content";
+  align-items: stretch;
+  gap: 26px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 20px;
+  box-sizing: border-box;
+  border: 1px solid #e5e9e1;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 4px 18px rgba(31, 74, 52, 0.08);
+}
+
+/* Odd cards: image left, information right */
+.place-card:nth-child(odd) {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  grid-template-areas: "image content";
+}
+
+/* Even cards: information left, image right */
+.place-card:nth-child(even) {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  grid-template-areas: "content image";
+}
+
+/* Image container */
+.place-card-art {
+  grid-area: image;
+  position: relative;
+  width: 100%;
+  height: 300px;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #e7f1e8, #c6dfcc);
+}
+
+.place-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Fallback when a destination has no image */
+.place-image-placeholder {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  color: #315c46;
+  background: linear-gradient(135deg, #e7f1e8, #c6dfcc);
+  line-height: 1.5;
+}
+
+.placeholder-icon {
+  font-size: 38px;
+}
+
+/* Category and destination number */
+.place-category,
+.place-number {
+  position: absolute;
+  z-index: 2;
+  top: 14px;
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #254b38;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.place-category {
+  left: 14px;
+}
+
+.place-number {
+  right: 14px;
+}
+
+/* Destination details */
+.place-card-content {
+  grid-area: content;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 8px 4px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.place-card-content h3 {
+  width: 100%;
+  margin: 0 0 4px;
+  color: #234b35;
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(20px, 2vw, 27px);
+  line-height: 1.35;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.place-card-content p {
+  width: 100%;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+.place-description {
+  margin: 0 0 8px;
+  color: #65736a;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.place-card-content .place-detail {
+  margin: 2px 0;
+  color: #526458;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.place-detail strong {
+  color: #294936;
+}
+
+/* Category filter */
+.category-filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+  margin: 24px 0;
+  box-sizing: border-box;
+}
+
+.category-filter label {
+  flex: 0 0 auto;
+  color: #234d35;
+  font-weight: 600;
+}
+
+.category-filter select {
+  width: 240px;
+  max-width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  border: 1px solid #d0ded2;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #234d35;
+}
+
+.category-filter button {
+  min-height: 42px;
+  padding: 9px 14px;
+  border: 1px solid #d0ded2;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #285b3c;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.category-filter button:hover {
+  background: #eef5ef;
+}
+
+/* Tablet and mobile layout */
+@media (max-width: 700px) {
+  .places-grid {
+    gap: 20px;
+  }
+
+  .places-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .place-card,
+  .place-card:nth-child(odd),
+  .place-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "image"
+      "content";
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .place-card .place-card-art {
+    grid-area: image;
+    height: 240px;
+  }
+
+  .place-card .place-card-content {
+    grid-area: content;
+    padding: 8px 2px 4px;
+  }
+
+  .place-card-content h3 {
+    font-size: 22px;
+  }
+
+  .category-filter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .category-filter select,
+  .category-filter button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .place-card,
+  .place-card:nth-child(odd),
+  .place-card:nth-child(even) {
+    padding: 10px;
+  }
+
+  .place-card .place-card-art {
+    height: 210px;
+  }
+}
+/* ==========================================
+   SABATRAIL DESTINATION CARDS
+   Balanced alternating layout
+========================================== */
+
+.places-section {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.places-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  margin: 20px 0 16px;
+  box-sizing: border-box;
+}
+
+.places-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* Destination card */
+.place-card {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  grid-template-areas: "image content";
+  align-items: stretch;
+  gap: 26px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 20px;
+  box-sizing: border-box;
+  border: 1px solid #e5e9e1;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 4px 18px rgba(31, 74, 52, 0.08);
+}
+
+/* Odd cards: image left, information right */
+.place-card:nth-child(odd) {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  grid-template-areas: "image content";
+}
+
+/* Even cards: information left, image right */
+.place-card:nth-child(even) {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  grid-template-areas: "content image";
+}
+
+/* Image container fills the card height */
+.place-card-art {
+  grid-area: image;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 320px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #e7f1e8, #c6dfcc);
+}
+
+/* Image fills its container */
+.place-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  margin: 0;
+  padding: 0;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Fallback for missing images */
+.place-image-placeholder {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  color: #315c46;
+  background: linear-gradient(135deg, #e7f1e8, #c6dfcc);
+  line-height: 1.5;
+}
+
+.placeholder-icon {
+  font-size: 38px;
+}
+
+/* Category and number labels */
+.place-category,
+.place-number {
+  position: absolute;
+  z-index: 2;
+  top: 14px;
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #254b38;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.place-category {
+  left: 14px;
+}
+
+.place-number {
+  right: 14px;
+}
+
+/* Destination information */
+.place-card-content {
+  grid-area: content;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 8px 4px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.place-card-content h3 {
+  width: 100%;
+  margin: 0 0 4px;
+  color: #234b35;
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(20px, 2vw, 27px);
+  line-height: 1.35;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.place-card-content p {
+  width: 100%;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+.place-description {
+  margin: 0 0 8px;
+  color: #65736a;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.place-card-content .place-detail {
+  margin: 2px 0;
+  color: #526458;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.place-detail strong {
+  color: #294936;
+}
+
+/* Category filter */
+.category-filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+  margin: 24px 0;
+  box-sizing: border-box;
+}
+
+.category-filter label {
+  flex: 0 0 auto;
+  color: #234d35;
+  font-weight: 600;
+}
+
+.category-filter select {
+  width: 240px;
+  max-width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  border: 1px solid #d0ded2;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #234d35;
+}
+
+.category-filter button {
+  min-height: 42px;
+  padding: 9px 14px;
+  border: 1px solid #d0ded2;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #285b3c;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.category-filter button:hover {
+  background: #eef5ef;
+}
+
+/* Tablet and mobile */
+@media (max-width: 700px) {
+  .places-grid {
+    gap: 20px;
+  }
+
+  .places-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .place-card,
+  .place-card:nth-child(odd),
+  .place-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "image"
+      "content";
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .place-card .place-card-art {
+    grid-area: image;
+    width: 100%;
+    height: 240px;
+    min-height: 240px;
+  }
+
+  .place-card .place-card-image {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .place-card .place-image-placeholder {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .place-card .place-card-content {
+    grid-area: content;
+    padding: 8px 2px 4px;
+  }
+
+  .place-card-content h3 {
+    font-size: 22px;
+  }
+
+  .category-filter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .category-filter select,
+  .category-filter button {
+    width: 100%;
+  }
+}
+
+/* Small mobile screens */
+@media (max-width: 420px) {
+  .place-card,
+  .place-card:nth-child(odd),
+  .place-card:nth-child(even) {
+    padding: 10px;
+  }
+
+  .place-card .place-card-art {
+    height: 210px;
+    min-height: 210px;
+  }
+
+  .place-card .place-card-image {
+    height: 100%;
+    min-height: 0;
+  }
+}
+/* Destination card: both columns share the same row height */
+.place-card {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  grid-template-areas: "image content";
+  align-items: stretch;
+  gap: 26px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #e5e9e1;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 4px 18px rgba(31, 74, 52, 0.08);
+}
+
+/* Image stretches to the full height of the card row */
+.place-card-art {
+  grid-area: image;
+  position: relative;
+  align-self: stretch;
+  width: 100%;
+  height: auto;
+  min-height: 320px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #e7f1e8, #c6dfcc);
+}
+
+/* Image fills the available container */
+.place-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  object-fit: cover;
+  object-position: center;
+}
+.place-card:nth-child(even) {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  grid-template-areas: "content image";
+}
+/* ==========================================
+   SABATRAIL DESTINATIONS — REFERENCE DESIGN
+========================================== */
+
+.places-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.place-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: "image content";
+  align-items: stretch;
+  gap: 28px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 14px;
+  box-sizing: border-box;
+  border: 1px solid #e5e9e1;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 6px 22px rgba(31, 74, 52, 0.08);
+}
+
+/* Image column */
+.place-card-art {
+  grid-area: image;
+  position: relative;
+  align-self: stretch;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 360px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #e7f1e8;
+}
+
+.place-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Image fallback */
+.place-image-placeholder {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  color: #315c46;
+  background: linear-gradient(135deg, #e7f1e8, #c6dfcc);
+}
+
+.placeholder-icon {
+  font-size: 38px;
+}
+
+/* Category and destination number */
+.place-category,
+.place-number {
+  position: absolute;
+  z-index: 2;
+  top: 14px;
+  padding: 9px 12px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #254b38;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.place-category {
+  left: 14px;
+}
+
+.place-number {
+  right: 14px;
+}
+
+/* Information column */
+.place-card-content {
+  grid-area: content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 22px 18px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.place-card-content h3 {
+  width: 100%;
+  margin: 0 0 10px;
+  color: #173e2a;
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(21px, 2vw, 28px);
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.place-card-content p {
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.place-description {
+  margin-bottom: 8px !important;
+  color: #526458;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.place-card-content .place-detail {
+  color: #526458;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.place-detail strong {
+  color: #234b35;
+  font-weight: 700;
+}
+
+/* Mobile layout */
+@media (max-width: 700px) {
+  .place-card,
+  .place-card:nth-child(odd),
+  .place-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "image"
+      "content";
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .place-card .place-card-art {
+    grid-area: image;
+    height: 260px;
+    min-height: 260px;
+  }
+
+  .place-card .place-card-image {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .place-card .place-image-placeholder {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .place-card .place-card-content {
+    grid-area: content;
+    padding: 18px 10px;
+  }
+
+  .place-card-content h3 {
+    font-size: 23px;
+  }
+}
+
+@media (max-width: 420px) {
+  .place-card .place-card-art {
+    height: 220px;
+    min-height: 220px;
+  }
+
+  .place-card-content {
+    padding: 14px 6px;
+  }
+
+  .place-card-content .place-detail {
+    font-size: 13px;
+  }
+}
+.place-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: "image content";
+  align-items: stretch;
+  gap: 28px;
+  padding: 14px;
+}
+
+.place-card-art {
+  grid-area: image;
+  align-self: stretch;
+  height: 100%;
+  min-height: 360px;
+}
+
+.place-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.place-card-content {
+  grid-area: content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+/* SabaTrail reference-style destination cards */
+
+.places-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.place-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: "image content";
+  align-items: stretch;
+  gap: 28px;
+  width: 100%;
+  padding: 14px;
+  box-sizing: border-box;
+  border: 1px solid #e5e9e1;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 6px 22px rgba(31, 74, 52, 0.08);
+  overflow: hidden;
+}
+
+/* Large image on the left */
+.place-card-art {
+  grid-area: image;
+  position: relative;
+  align-self: stretch;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 360px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #e7f1e8;
+}
+
+.place-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.place-image-placeholder {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  color: #315c46;
+  background: linear-gradient(135deg, #e7f1e8, #c6dfcc);
+}
+
+.place-category,
+.place-number {
+  position: absolute;
+  z-index: 2;
+  top: 14px;
+  padding: 9px 12px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #254b38;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.place-category {
+  left: 14px;
+}
+
+.place-number {
+  right: 14px;
+}
+
+/* Centered information on the right */
+.place-card-content {
+  grid-area: content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 22px 18px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.place-card-content h3 {
+  width: 100%;
+  margin: 0 0 10px;
+  color: #173e2a;
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(21px, 2vw, 28px);
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.place-card-content p {
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.place-card-content .place-description {
+  margin-bottom: 8px;
+  color: #526458;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.place-card-content .place-detail {
+  color: #526458;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.place-detail strong {
+  color: #234b35;
+  font-weight: 700;
+}
+
+/* Mobile: image above information */
+@media (max-width: 700px) {
+  .place-card,
+  .place-card:nth-child(odd),
+  .place-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "image"
+      "content";
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .place-card .place-card-art {
+    height: 260px;
+    min-height: 260px;
+  }
+
+  .place-card .place-card-image {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .place-card .place-image-placeholder {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .place-card .place-card-content {
+    padding: 18px 10px;
+  }
+
+  .place-card-content h3 {
+    font-size: 23px;
+  }
+}
+
+@media (max-width: 420px) {
+  .place-card .place-card-art {
+    height: 220px;
+    min-height: 220px;
+  }
+
+  .place-card-content .place-detail {
+    font-size: 13px;
+  }
+}
+
+/* =========================================================
+   FINAL SabaTrail destination-card layout
+   This block intentionally overrides older duplicate card rules.
+   ========================================================= */
+.app .explore-section .places-section .places-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 26px !important;
+  width: 100% !important;
+  max-width: 1120px !important;
+  margin: 24px auto 0 !important;
+}
+
+.app .explore-section .places-section .places-grid > .place-card {
+  display: grid !important;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr) !important;
+  grid-template-areas: "image content" !important;
+  align-items: stretch !important;
+  gap: 0 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 300px !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  border: 1px solid #e1e9e2 !important;
+  border-radius: 18px !important;
+  background: #ffffff !important;
+  box-shadow: 0 8px 26px rgba(24, 58, 38, 0.08) !important;
+}
+
+.app .explore-section .places-section .places-grid > .place-card:nth-child(even) {
+  grid-template-areas: "content image" !important;
+}
+
+.app .explore-section .places-section .places-grid > .place-card > .place-card-art {
+  grid-area: image !important;
+  position: relative !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 300px !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border-radius: 0 !important;
+  aspect-ratio: auto !important;
+  align-self: stretch !important;
+}
+
+.app .explore-section .places-section .places-grid .place-card-art > .place-card-image {
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: 0 !important;
+}
+
+.app .explore-section .places-section .places-grid .place-card-art > .place-image-placeholder {
+  display: flex !important;
+  position: absolute !important;
+  inset: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.app .explore-section .places-section .places-grid > .place-card > .place-card-content {
+  grid-area: content !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  align-self: stretch !important;
+  width: 100% !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 26px 30px !important;
+  box-sizing: border-box !important;
+  overflow-wrap: anywhere !important;
+  text-align: left !important;
+  gap: 8px !important;
+}
+
+.app .explore-section .places-section .places-grid .place-card-content h3 {
+  width: 100% !important;
+  margin: 0 0 5px !important;
+  padding: 0 !important;
+  color: #173e2a !important;
+  font-size: clamp(21px, 2vw, 28px) !important;
+  font-weight: 800 !important;
+  line-height: 1.3 !important;
+  text-align: left !important;
+  overflow-wrap: anywhere !important;
+}
+
+.app .explore-section .places-section .places-grid .place-card-content p {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+  overflow-wrap: anywhere !important;
+}
+
+.app .explore-section .places-section .places-grid .place-card-content .place-description {
+  margin-bottom: 7px !important;
+  color: #526458 !important;
+  font-size: 14px !important;
+  line-height: 1.65 !important;
+}
+
+.app .explore-section .places-section .places-grid .place-card-content .place-detail {
+  color: #526458 !important;
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+}
+
+.app .explore-section .places-section .places-grid .place-card-content .place-detail strong {
+  color: #234b35 !important;
+  font-weight: 700 !important;
+}
+
+.app .explore-section .places-section .places-grid .place-category,
+.app .explore-section .places-section .places-grid .place-number {
+  position: absolute !important;
+  z-index: 2 !important;
+  top: 14px !important;
+  bottom: auto !important;
+  max-width: calc(100% - 28px) !important;
+}
+
+.app .explore-section .places-section .places-grid .place-category {
+  left: 14px !important;
+  right: auto !important;
+}
+
+.app .explore-section .places-section .places-grid .place-number {
+  right: 14px !important;
+  left: auto !important;
+}
+
+@media (max-width: 760px) {
+  .app .explore-section .places-section .places-grid > .place-card,
+  .app .explore-section .places-section .places-grid > .place-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas: "image" "content" !important;
+    min-height: 0 !important;
+  }
+
+  .app .explore-section .places-section .places-grid > .place-card > .place-card-art {
+    height: 260px !important;
+    min-height: 260px !important;
+  }
+
+  .app .explore-section .places-section .places-grid > .place-card > .place-card-content {
+    padding: 22px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .app .explore-section .places-section .places-grid > .place-card > .place-card-art {
+    height: 220px !important;
+    min-height: 220px !important;
+  }
+
+  .app .explore-section .places-section .places-grid > .place-card > .place-card-content {
+    padding: 18px !important;
+  }
+}
+
