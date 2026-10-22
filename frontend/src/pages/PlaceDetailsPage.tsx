@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { assetUrl } from "../api";
 import { Link, useParams } from "react-router";
 import AddToDayButton from "../components/AddToDayButton";
 import PlaceMap, { type MapMarker } from "../components/PlaceMap";
@@ -151,7 +152,7 @@ export default function PlaceDetailsPage() {
         <header className="details-hero">
           <figure className="details-photo">
             {place.image && !imageFailed ? (
-              <img src={place.image} alt={place.place_name} onError={() => setImageFailed(true)} />
+              <img src={assetUrl(place.image)} alt={place.place_name} onError={() => setImageFailed(true)} />
             ) : (
               <div className="details-photo-placeholder" aria-hidden="true">
                 {category ?? "SabaTrail"}

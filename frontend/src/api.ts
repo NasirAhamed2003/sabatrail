@@ -41,4 +41,13 @@ api.interceptors.response.use(
   }
 );
 
+// Uploaded place photos are stored as "/uploads/<file>" and served by the API
+// server (next to /api). External photo URLs are returned unchanged.
+const apiRoot = baseURL.replace(/\/api\/?$/, "");
+
+export function assetUrl(image: string | null | undefined) {
+  if (!image) return undefined;
+  return image.startsWith("/uploads/") ? `${apiRoot}${image}` : image;
+}
+
 export default api;

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
-import api from "../../api";
+import api, { assetUrl } from "../../api";
 import { Button, ButtonLink } from "../../components/ui/Button";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import Icon from "../../components/ui/Icon";
@@ -212,7 +212,7 @@ export default function AdminPlacesPage() {
                     <td data-label="Place">
                       <div className="admin-place-cell">
                         {place.image ? (
-                          <img src={place.image} alt="" loading="lazy" />
+                          <img src={assetUrl(place.image)} alt="" loading="lazy" />
                         ) : (
                           <span className="admin-thumb-empty" aria-hidden="true" />
                         )}

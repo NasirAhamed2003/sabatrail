@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { assetUrl } from "../api";
 import { Link } from "react-router";
 import { formatDuration, formatKm, formatOpeningHours } from "../lib/format";
 import { useStartPoint } from "../lib/startPoint";
@@ -24,7 +25,7 @@ export default function PlaceCard({ place }: { place: Place }) {
     <article className="place-tile">
       <Link to={`/places/${place.place_id}`} className="place-tile-media" tabIndex={-1} aria-hidden="true">
         {place.image && !imageFailed ? (
-          <img src={place.image} alt="" loading="lazy" onError={() => setImageFailed(true)} />
+          <img src={assetUrl(place.image)} alt="" loading="lazy" onError={() => setImageFailed(true)} />
         ) : (
           <span className="place-tile-placeholder">{category ?? "SabaTrail"}</span>
         )}

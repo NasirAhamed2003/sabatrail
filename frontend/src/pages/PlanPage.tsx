@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import api from "../api";
+import api, { assetUrl } from "../api";
 import FoodStops from "../components/FoodStops";
 import PlaceMap, { type MapMarker } from "../components/PlaceMap";
 import PlanFormDialog from "../components/PlanFormDialog";
@@ -149,7 +149,7 @@ function StopItem({
 
         <div className="stop-media">
           {place.image && !imageFailed ? (
-            <img src={place.image} alt="" loading="lazy" onError={() => setImageFailed(true)} />
+            <img src={assetUrl(place.image)} alt="" loading="lazy" onError={() => setImageFailed(true)} />
           ) : (
             <span className="stop-media-placeholder" aria-hidden="true">
               {place.category?.category_name ?? "Stop"}

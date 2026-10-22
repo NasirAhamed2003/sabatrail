@@ -3,12 +3,14 @@ import cors from "cors";
 
 import { config } from "./config";
 import { prisma } from "./prisma";
+import { UPLOADS_DIR } from "./uploads";
 
 import categoryRoutes from "./routes/categoryRoutes";
 import placeRoutes from "./routes/placeRoutes";
 import authRoutes from "./routes/authRoutes";
 import visitPlanRoutes from "./routes/visitPlanRoutes";
 import visitPlanPlaceRoutes from "./routes/visitPlanPlaceRoutes";
+import uploadRoutes from "./routes/uploadRoutes";
 
 import {
   authenticateToken,
@@ -35,6 +37,23 @@ app.use(
 
 app.use(express.json({ limit: "100kb" }));
 
+// Uploaded place photos. File names are random UUIDs that never change, so
+// they can be cached for a long time. nosniff stops a browser from treating
+// an image as anything else.
+app.use(
+  "/uploads",
+  express.static(UPLOADS_DIR, {
+    index: false,
+    dotfiles: "deny",
+    fallthrough: false,
+    maxAge: "30d",
+    immutable: true,
+    setHeaders: (res) => {
+      res.setHeader("X-Content-Type-Options", "nosniff");
+    },
+  })
+);
+
 // ===============================
 // API ROUTES
 // ===============================
@@ -48,6 +67,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/visit-plans", visitPlanRoutes);
 
 app.use("/api/visit-plans", visitPlanPlaceRoutes);
+
+app.use("/api/uploads", uploadRoutes);
 
 // ===============================
 // BASIC STATUS ROUTE
@@ -124,6 +145,12 @@ app.use(
   ) => {
     if (error.type === "entity.parse.failed") {
       return res.status(400).json({ message: "Request body must be valid JSON" });
+    }
+
+    // Missing file under /uploads (express.static with fallthrough: false)
+    const status = (error as { status?: number }).status;
+    if (status === 404 || status === 403) {
+      return res.status(status).json({ message: status === 404 ? "File not found" : "Forbidden" });
     }
 
     console.error("Unhandled error:", error);

@@ -10,6 +10,7 @@ import type { AddressInfo } from "node:net";
 import type { Server } from "node:http";
 import { app } from "../Src/app";
 import { prisma } from "../Src/prisma";
+import { removeLocalUpload } from "../Src/uploads";
 
 let server: Server;
 let base = "";
@@ -23,6 +24,28 @@ let userToken = "";
 let adminToken = "";
 const createdPlaceIds: number[] = [];
 const createdCategoryIds: number[] = [];
+const uploadedImages: string[] = [];
+
+// Smallest valid PNG (1x1)
+const PNG = Buffer.from(
+  "89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d49444154789c6360f8cfc0f01f0005000201a5e2b5b50000000049454e44ae426082",
+  "hex"
+);
+
+async function upload(data: Buffer, type: string, name: string, token?: string) {
+  const form = new FormData();
+  form.append("image", new Blob([new Uint8Array(data)], { type }), name);
+
+  const response = await fetch(base + "/api/uploads", {
+    method: "POST",
+    body: form,
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+  const body = await response.json().catch(() => null);
+  if (body?.url) uploadedImages.push(body.url);
+  return { status: response.status, data: body };
+}
 
 async function call(method: string, path: string, body?: unknown, token?: string) {
   const response = await fetch(base + path, {
@@ -68,6 +91,7 @@ after(async () => {
   await prisma.place.deleteMany({ where: { place_id: { in: createdPlaceIds } } });
   await prisma.category.deleteMany({ where: { category_id: { in: createdCategoryIds } } });
   await prisma.user.deleteMany({ where: { user_id: { in: userIds } } });
+  await Promise.all(uploadedImages.map((url) => removeLocalUpload(url)));
 
   await prisma.$disconnect();
   server.close();
@@ -275,6 +299,60 @@ describe("visit plans (FR-029 to FR-045)", () => {
     const forced = await call("DELETE", `/api/places/${placeId}?force=true`, undefined, adminToken);
     assert.equal(forced.status, 200);
     assert.equal(forced.data.removed_from_plans, 1);
+  });
+});
+
+describe("image uploads (admin photo)", () => {
+  test("only admins can upload (401 / 403)", async () => {
+    assert.equal((await upload(PNG, "image/png", "a.png")).status, 401);
+    assert.equal((await upload(PNG, "image/png", "a.png", userToken)).status, 403);
+  });
+
+  test("non-images are refused, even with an image name and type", async () => {
+    const { status, data } = await upload(Buffer.from("just some text"), "image/jpeg", "photo.jpg", adminToken);
+    assert.equal(status, 400);
+    assert.equal(data.errors.image, "Upload a JPEG, PNG or WebP image");
+  });
+
+  test("files over 5 MB are refused (413)", async () => {
+    const big = Buffer.concat([PNG, Buffer.alloc(5 * 1024 * 1024)]);
+    const { status, data } = await upload(big, "image/png", "big.png", adminToken);
+    assert.equal(status, 413);
+    assert.equal(data.errors.image, "Image must be 5 MB or smaller");
+  });
+
+  test("a valid image is stored under a random name and served", async () => {
+    const { status, data } = await upload(PNG, "image/png", "../../holiday.png", adminToken);
+    assert.equal(status, 201);
+    assert.match(data.url, /^\/uploads\/[0-9a-f-]{36}\.png$/);
+
+    const file = await fetch(base + data.url);
+    assert.equal(file.status, 200);
+    assert.equal(file.headers.get("content-type"), "image/png");
+    assert.equal(file.headers.get("x-content-type-options"), "nosniff");
+  });
+
+  test("replacing or deleting a place removes its old uploaded photo, not external URLs", async () => {
+    const categories = (await call("GET", "/api/categories")).data;
+    const first = (await upload(PNG, "image/png", "a.png", adminToken)).data.url;
+    const second = (await upload(PNG, "image/png", "b.png", adminToken)).data.url;
+    const body = { category_id: categories[0].category_id, place_name: `API upload place ${stamp}`, latitude: 7.2, longitude: 80.5 };
+
+    const created = await call("POST", "/api/places", { ...body, image: first }, adminToken);
+    assert.equal(created.status, 201);
+    createdPlaceIds.push(created.data.place_id);
+    const id = created.data.place_id;
+
+    assert.equal((await call("PUT", `/api/places/${id}`, { ...body, image: second }, adminToken)).status, 200);
+    assert.equal((await fetch(base + first)).status, 404, "replaced upload should be removed");
+    assert.equal((await fetch(base + second)).status, 200);
+
+    // Only real upload paths are accepted as local images
+    const sneaky = await call("PUT", `/api/places/${id}`, { ...body, image: "/uploads/../.env" }, adminToken);
+    assert.equal(sneaky.status, 400);
+
+    assert.equal((await call("DELETE", `/api/places/${id}`, undefined, adminToken)).status, 200);
+    assert.equal((await fetch(base + second)).status, 404, "deleted place's upload should be removed");
   });
 });
 

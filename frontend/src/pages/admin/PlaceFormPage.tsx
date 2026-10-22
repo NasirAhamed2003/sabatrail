@@ -1,7 +1,9 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import api from "../../api";
+import ImageUploadField from "../../components/ImageUploadField";
 import LocationPicker from "../../components/LocationPicker";
+import FormField from "../../components/ui/Field";
 import { Button } from "../../components/ui/Button";
 import { useToast } from "../../components/ui/Toast";
 import { apiErrorMessage, apiFieldErrors, apiStatus } from "../../lib/errors";
@@ -87,8 +89,9 @@ function validate(values: Values): Errors {
     errors.closing_time = "Closing time must be after opening time.";
   }
 
-  if (values.image.trim() && !/^https?:\/\/\S+$/i.test(values.image.trim())) {
-    errors.image = "Use a full web address starting with https://";
+  const image = values.image.trim();
+  if (image && !image.startsWith("/uploads/") && !/^https?:\/\/\S+$/i.test(image)) {
+    errors.image = "Use a full web address starting with https://, or upload a file";
   }
 
   return errors;
@@ -116,7 +119,6 @@ export default function PlaceFormPage() {
   const [loadState, setLoadState] = useState<"loading" | "ready" | "missing" | "error">(editing ? "loading" : "ready");
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
-  const [imageFailed, setImageFailed] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -152,7 +154,6 @@ export default function PlaceFormPage() {
     setValues((current) => ({ ...current, [field]: value }));
     if (errors[field]) setErrors((current) => ({ ...current, [field]: undefined }));
     if (formError) setFormError("");
-    if (field === "image") setImageFailed(false);
   };
 
   // Validate one field when the admin leaves it
@@ -253,7 +254,6 @@ export default function PlaceFormPage() {
   const validPoint = lat !== null && lng !== null && Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
   const distance = validPoint ? haversineKm(HEMMATHAGAMA, { latitude: lat!, longitude: lng! }) : null;
   const minutes = Number(values.visit_duration_minutes);
-  const showPreview = /^https?:\/\/\S+$/i.test(values.image.trim());
 
   return (
     <section className="admin-page" aria-labelledby="place-form-heading">
@@ -406,37 +406,28 @@ export default function PlaceFormPage() {
         </Section>
 
         <Section title="Photo">
-          <div className="field form-wide">
-            <label htmlFor="place-image">Image URL</label>
-            <input
-              {...control("image")}
-              type="url"
-              inputMode="url"
-              onChange={(e) => set("image", e.target.value)}
-              placeholder="https://"
-            />
-            {meta("image")}
-          </div>
+          <ImageUploadField
+            id="place-image"
+            value={values.image}
+            error={errors.image}
+            onChange={(image) => set("image", image)}
+          />
 
-          <div className="field form-wide">
-            <label htmlFor="place-image_credit">Photo credit</label>
+          <FormField
+            id="place-image_credit"
+            className="form-wide"
+            label="Photo credit"
+            optional
+            hint="For photos from the web: author and licence, e.g. “Jane Doe, CC BY-SA 4.0, via Wikimedia Commons”."
+            error={errors.image_credit}
+          >
             <input
-              {...control("image_credit", "Author and licence, e.g. “Jane Doe, CC BY-SA 4.0, via Wikimedia Commons”.")}
+              name="image_credit"
+              className="input"
+              value={values.image_credit}
               onChange={(e) => set("image_credit", e.target.value)}
             />
-            {meta("image_credit", "Author and licence, e.g. “Jane Doe, CC BY-SA 4.0, via Wikimedia Commons”.")}
-          </div>
-
-          {showPreview && (
-            <figure className="image-preview form-wide">
-              {imageFailed ? (
-                <Alert tone="warning">This address didn&apos;t load as an image. Check the URL.</Alert>
-              ) : (
-                <img src={values.image.trim()} alt="Preview of the place's photo" onError={() => setImageFailed(true)} />
-              )}
-              <figcaption className="muted">Preview</figcaption>
-            </figure>
-          )}
+          </FormField>
         </Section>
 
         {formError && (

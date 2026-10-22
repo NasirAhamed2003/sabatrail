@@ -1,8 +1,18 @@
 import { z } from "zod";
+import { isLocalUpload } from "./uploads";
 
 // ===============================
 // REQUEST VALIDATION SCHEMAS
 // ===============================
+
+const isHttpUrl = (value: string) => {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
 
 // Optional text: empty strings become null, other values must be strings
 const optionalText = (max: number) =>
@@ -105,13 +115,15 @@ export const placeSchema = z.object({
   travel_tips: optionalText(5000),
   facilities: optionalText(5000),
   before_you_go: optionalText(5000),
+  // Either an uploaded photo ("/uploads/<uuid>.<ext>") or an external web address
   image: z
     .string({ invalid_type_error: "Image must be a URL" })
     .trim()
     .max(2000, "Image URL is too long")
-    .url("Image must be a valid URL")
-    .refine((url) => /^https?:\/\//i.test(url), "Image URL must start with http:// or https://")
-    .or(z.literal(""))
+    .refine(
+      (value) => value === "" || isLocalUpload(value) || isHttpUrl(value),
+      "Image must be an uploaded photo or a web address starting with http:// or https://"
+    )
     .nullish()
     .transform((value) => (value ? value : null)),
   image_credit: optionalText(191),

@@ -291,6 +291,49 @@
   object-fit: cover;
 }
 
+/* ---------- Photo upload ---------- */
+
+.image-field {
+  justify-items: start;
+}
+
+.image-field > .field {
+  width: 100%;
+}
+
+.image-preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.upload-drop {
+  display: grid;
+  width: 100%;
+  gap: var(--space-2);
+  justify-items: center;
+  padding: var(--space-8) var(--space-4);
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--canvas-alt);
+  color: var(--ink-muted);
+  text-align: center;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.upload-drop.is-dragging {
+  border-color: var(--green-700);
+  background: var(--green-100);
+}
+
+.upload-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
 .form-actions {
   display: flex;
   flex-wrap: wrap;

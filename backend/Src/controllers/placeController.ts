@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "../prisma";
 import { distanceFromTownKm, formatDuration } from "../geo";
 import { idParam, parseOrRespond, sendError } from "../http";
+import { removeLocalUpload } from "../uploads";
 import { placeSchema } from "../validation";
 
 // Turn validated input into database fields. Distance is always computed
@@ -114,6 +115,11 @@ export const updatePlace = async (req: Request, res: Response) => {
       });
     }
 
+    const previous = await prisma.place.findUnique({
+      where: { place_id: placeId },
+      select: { image: true },
+    });
+
     const place = await prisma.place.update({
       where: {
         place_id: placeId,
@@ -123,6 +129,11 @@ export const updatePlace = async (req: Request, res: Response) => {
         category: true,
       },
     });
+
+    // A replaced uploaded photo is no longer used; external URLs are left alone
+    if (previous?.image && previous.image !== place.image) {
+      await removeLocalUpload(previous.image);
+    }
 
     res.json(place);
   } catch (error) {
@@ -189,6 +200,8 @@ export const deletePlace = async (req: Request, res: Response) => {
         where: { place_id: placeId },
       }),
     ]);
+
+    await removeLocalUpload(place.image);
 
     res.json({
       message: "Place deleted successfully",
