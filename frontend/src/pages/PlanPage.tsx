@@ -1,6 +1,7 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import api from "./api";
+import { useNavigate, useParams } from "react-router";
+import api from "../api";
 import L from "leaflet";
 import {
   MapContainer,
@@ -53,10 +54,6 @@ interface VisitPlanDetails {
   places: PlanPlace[];
 }
 
-interface VisitPlansProps {
-  onBack: () => void;
-}
-
 // Today's date as YYYY-MM-DD in the visitor's time zone
 function todayIso() {
   const now = new Date();
@@ -93,10 +90,24 @@ function FitMapToDestinations({
   return null;
 }
 
-export default function VisitPlans({ onBack }: VisitPlansProps) {
+export default function PlanPage() {
+  const navigate = useNavigate();
+  const { planId } = useParams();
   const [plans, setPlans] = useState<VisitPlan[]>([]);
+  const [plansLoaded, setPlansLoaded] = useState(false);
   const [allPlaces, setAllPlaces] = useState<Place[]>([]);
-  const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
+
+  // The selected plan lives in the URL (/plan/:planId)
+  const routePlanId = planId ? Number(planId) : null;
+  const selectedPlanId =
+    routePlanId !== null && Number.isInteger(routePlanId) ? routePlanId : null;
+
+  const setSelectedPlanId = useCallback(
+    (id: number | null) => {
+      navigate(id === null ? "/plan" : `/plan/${id}`);
+    },
+    [navigate]
+  );
   const [selectedPlan, setSelectedPlan] =
     useState<VisitPlanDetails | null>(null);
 
@@ -115,22 +126,24 @@ export default function VisitPlans({ onBack }: VisitPlansProps) {
       const loadedPlans = Array.isArray(response.data) ? response.data : [];
 
       setPlans(loadedPlans);
-
-      setSelectedPlanId((currentId) => {
-        if (
-          currentId !== null &&
-          loadedPlans.some((plan) => plan.plan_id === currentId)
-        ) {
-          return currentId;
-        }
-
-        return loadedPlans.length > 0 ? loadedPlans[0].plan_id : null;
-      });
+      setPlansLoaded(true);
     } catch (err) {
       console.error("Failed to load visit plans:", err);
       setError("Unable to load your visit plans. Please try again.");
     }
   }, []);
+
+  // Open the first plan when none (or an unknown one) is in the URL
+  useEffect(() => {
+    if (!plansLoaded || plans.length === 0) return;
+
+    if (
+      selectedPlanId === null ||
+      !plans.some((plan) => plan.plan_id === selectedPlanId)
+    ) {
+      navigate(`/plan/${plans[0].plan_id}`, { replace: true });
+    }
+  }, [plansLoaded, plans, selectedPlanId, navigate]);
 
   const loadPlaces = useCallback(async () => {
     try {
@@ -399,10 +412,6 @@ export default function VisitPlans({ onBack }: VisitPlansProps) {
 
   return (
     <main className="visit-plans-page">
-      <button type="button" onClick={onBack} className="back-button">
-        ← Back
-      </button>
-
       <h2>My Visit Plans</h2>
 
       {error && (

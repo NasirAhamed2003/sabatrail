@@ -1,8 +1,9 @@
 
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import api from "./api";
-import "./AdminDashboard.css";
+import { useNavigate } from "react-router";
+import api from "../api";
+import "./AdminPage.css";
 
 interface Category {
   category_id: number;
@@ -30,8 +31,10 @@ interface Place {
   category?: Category | null;
 }
 
+export type AdminTab = "places" | "categories";
+
 interface AdminDashboardProps {
-  onBack: () => void;
+  tab: AdminTab;
 }
 
 const emptyPlace = {
@@ -51,7 +54,9 @@ const emptyPlace = {
   image: "",
 };
 
-function AdminDashboard({ onBack }: AdminDashboardProps) {
+function AdminDashboard({ tab: activeTab }: AdminDashboardProps) {
+  const navigate = useNavigate();
+  const setActiveTab = (tab: AdminTab) => navigate(`/admin/${tab}`);
   const [places, setPlaces] = useState<Place[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [placeForm, setPlaceForm] = useState({ ...emptyPlace });
@@ -61,7 +66,6 @@ function AdminDashboard({ onBack }: AdminDashboardProps) {
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
   const [editingCategoryName, setEditingCategoryName] = useState("");
   const [editingCategoryDescription, setEditingCategoryDescription] = useState("");
-  const [activeTab, setActiveTab] = useState<"places" | "categories">("places");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -285,9 +289,6 @@ function AdminDashboard({ onBack }: AdminDashboardProps) {
           <h1>Admin Dashboard</h1>
           <p>Manage local destinations and their categories.</p>
         </div>
-        <button className="admin-secondary-button" onClick={onBack}>
-          Back to SabaTrail
-        </button>
       </header>
 
       <section className="admin-stats">

@@ -43,69 +43,8 @@ a {
   overflow: hidden;
 }
 
-.navbar {
-  width: min(1180px, calc(100% - 64px));
-  height: 86px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #e9e8df;
-}
-
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-family: "Manrope", sans-serif;
-  font-size: 23px;
-  font-weight: 800;
-  letter-spacing: -1px;
-}
-
-.brand-icon {
-  width: 35px;
-  height: 35px;
-  display: grid;
-  place-items: center;
-  color: white;
-  background: #276b4b;
-  border-radius: 11px;
-  font-size: 22px;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 38px;
-  color: #65736b;
-  font-size: 14px;
-}
-
-.nav-links a,
-.login-button,
 .secondary-button {
   transition: color 0.2s ease, background 0.2s ease;
-}
-
-.nav-links a:hover {
-  color: #276b4b;
-}
-
-.login-button {
-  border: 1px solid #276b4b;
-  background: transparent;
-  cursor: pointer;
-  border-radius: 7px;
-  padding: 11px 23px;
-  color: #276b4b;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.login-button:hover {
-  background: #276b4b;
-  color: white;
 }
 
 .hero {
@@ -445,47 +384,10 @@ a {
   margin: 0;
 }
 
-.footer {
-  width: min(1180px, calc(100% - 64px));
-  min-height: 95px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  border-top: 1px solid #e9e8df;
-}
-
-.footer .brand {
-  font-size: 19px;
-}
-
-.footer .brand-icon {
-  width: 30px;
-  height: 30px;
-  font-size: 19px;
-}
-
-.footer p,
-.footer > span {
-  color: var(--ink-muted);
-  font-size: 12px;
-}
-
 @media (max-width: 800px) {
-  .navbar,
   .hero,
-  .about-section,
-  .footer {
+  .about-section {
     width: calc(100% - 40px);
-  }
-
-  .navbar {
-    height: 74px;
-  }
-
-  .nav-links {
-    gap: 17px;
   }
 
   .hero {
@@ -510,31 +412,8 @@ a {
 }
 
 @media (max-width: 520px) {
-  .navbar {
-    width: calc(100% - 32px);
-  }
-
-  .brand {
-    font-size: 20px;
-  }
-
-  .nav-links {
-    gap: 12px;
-    font-size: var(--text-xs);
-  }
-
-  .nav-links a:last-child {
-    display: none;
-  }
-
-  .login-button {
-    padding: 9px 12px;
-    font-size: 12px;
-  }
-
   .hero,
-  .about-section,
-  .footer {
+  .about-section {
     width: calc(100% - 32px);
   }
 
@@ -583,18 +462,6 @@ a {
 
   .search-row button {
     min-height: 46px;
-  }
-
-  .footer {
-    align-items: flex-start;
-    flex-direction: column;
-    justify-content: center;
-    gap: 8px;
-    padding: 24px 0;
-  }
-
-  .footer p {
-    margin: 0;
   }
 }
 
@@ -676,7 +543,7 @@ a {
 ===================================== */
 
 .auth-page {
-  min-height: 100vh;
+  min-height: calc(100svh - 64px);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,13 +1,15 @@
-
 import { useState } from "react";
-import api from "./api";
+import { Link, useNavigate, useSearchParams } from "react-router";
+import api from "../api";
+import { useAuth, type AuthUser } from "../lib/auth";
+import { safeNext } from "../lib/routing";
 
-interface LoginProps {
-  onLoginSuccess: (token: string) => void;
-  onBack: () => void;
-}
+function LoginPage() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const next = safeNext(searchParams.get("next"));
 
-function Login({ onLoginSuccess, onBack }: LoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -19,20 +21,20 @@ function Login({ onLoginSuccess, onBack }: LoginProps) {
     setLoading(true);
 
     try {
-      const response = await api.post("/auth/login", {
+      const response = await api.post<{ token?: string; user?: AuthUser }>("/auth/login", {
         email,
         password,
       });
 
-      const token = response.data.token;
+      const { token, user } = response.data;
 
-      if (!token) {
+      if (!token || !user) {
         setMessage("Login failed: no token was returned.");
         return;
       }
 
-      localStorage.setItem("sabatrail_token", token);
-      onLoginSuccess(token);
+      login(token, user);
+      navigate(next, { replace: true });
     } catch (error: unknown) {
       if (
         typeof error === "object" &&
@@ -53,7 +55,7 @@ function Login({ onLoginSuccess, onBack }: LoginProps) {
   };
 
   return (
-    <main className="auth-page">
+    <div className="auth-page">
       <section className="auth-card">
         <h1>Welcome to SabaTrail</h1>
         <p>Log in to manage your visit plans.</p>
@@ -88,12 +90,12 @@ function Login({ onLoginSuccess, onBack }: LoginProps) {
           </button>
         </form>
 
-        <button type="button" className="auth-back-button" onClick={onBack}>
+        <Link className="auth-back-button" to="/">
           Back to destinations
-        </button>
+        </Link>
       </section>
-    </main>
+    </div>
   );
 }
 
-export default Login;
+export default LoginPage;
