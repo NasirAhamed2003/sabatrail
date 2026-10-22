@@ -43,10 +43,10 @@
   height: 32px;
   align-items: center;
   justify-content: center;
-  border: 3px solid #ffffff;
+  border: 3px solid var(--on-accent);
   border-radius: 50%;
   background: var(--green-700);
-  color: #ffffff;
+  color: var(--on-accent);
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 700;
@@ -61,7 +61,7 @@
 }
 
 .map-marker-nearby {
-  background: #6d8c78;
+  background: var(--green-400);
 }
 
 .map-marker-food {

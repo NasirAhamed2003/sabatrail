@@ -48,7 +48,7 @@
   place-items: center;
   border-radius: var(--radius-md);
   background: var(--green-700);
-  color: #ffffff;
+  color: var(--on-accent);
   font-size: 1.25rem;
 }
 
@@ -132,7 +132,7 @@
 
 .nav-login:hover {
   background: var(--green-700);
-  color: #ffffff;
+  color: var(--on-accent);
 }
 
 /* ---------- Compact menu (below 960px) ---------- */
@@ -242,7 +242,6 @@
 /* ---------- Footer ---------- */
 
 .site-footer {
-  margin-top: var(--space-16);
   border-top: 1px solid var(--border);
 }
 

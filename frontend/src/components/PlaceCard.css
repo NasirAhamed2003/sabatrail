@@ -53,7 +53,7 @@
   height: 100%;
   place-items: center;
   padding: var(--space-4);
-  background: linear-gradient(135deg, var(--green-100), #c6dfcc);
+  background: linear-gradient(135deg, var(--green-100), var(--green-200));
   color: var(--green-900);
   font-family: var(--font-display);
   font-size: var(--text-lg);
@@ -133,7 +133,7 @@
 }
 
 .btn-added:hover {
-  background: #f7e5c3;
+  background: var(--sand-200);
 }
 
 /* ---------- Start point control ---------- */

@@ -5,6 +5,7 @@ import PlaceCard from "../components/PlaceCard";
 import StartPointControl from "../components/StartPointControl";
 import { Button } from "../components/ui/Button";
 import { usePlaces } from "../lib/places";
+import "./HomePage.css";
 
 function HomePage() {
   const { places, status, reload } = usePlaces();
@@ -60,7 +61,7 @@ function HomePage() {
   };
 
   return (
-    <div className="app">
+    <div className="home">
       <section className="hero" id="home">
         <div className="hero-content">
           <span className="eyebrow">

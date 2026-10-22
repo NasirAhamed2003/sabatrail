@@ -11,9 +11,13 @@
   --green-800: #1b5037; /* primary hover / pressed */
   --green-700: #276b4b; /* primary action, links, markers (6.4:1) */
   --green-600: #3f6b4d; /* eyebrows, accent text (5.9:1 on canvas) */
+  --green-400: #6d8c78; /* secondary map markers */
+  --green-200: #c6dfcc; /* placeholder gradients */
   --green-100: #e7f1e8; /* chips, selected rows, placeholders */
   --sand-400: #e4bc73;  /* warm accent: "added to your day" */
+  --sand-200: #f7e5c3;
   --sand-100: #fbf1dd;
+  --on-accent: #ffffff; /* text and icons on green or red fills */
 
   --ink: #19352b;        /* body text */
   --ink-muted: #5f6b64;  /* secondary text (5.3:1 canvas, 4.9:1 canvas-alt) */

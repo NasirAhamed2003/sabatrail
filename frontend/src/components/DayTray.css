@@ -137,7 +137,7 @@
   place-items: center;
   border-radius: 50%;
   background: var(--green-700);
-  color: #ffffff;
+  color: var(--on-accent);
   content: counter(stop);
   font-size: var(--text-xs);
   font-weight: 700;

@@ -33,7 +33,7 @@
 
 .btn-primary {
   background: var(--green-700);
-  color: #ffffff;
+  color: var(--on-accent);
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -281,7 +281,7 @@ textarea.input {
   padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
   border-radius: var(--radius-md);
   background: var(--green-900);
-  color: #ffffff;
+  color: var(--on-accent);
   font-size: var(--text-sm);
   box-shadow: var(--shadow-md);
   pointer-events: auto;
@@ -306,7 +306,7 @@ textarea.input {
   border: 0;
   border-radius: var(--radius-sm);
   background: transparent;
-  color: #ffffff;
+  color: var(--on-accent);
   font-weight: 700;
   text-decoration: underline;
   cursor: pointer;
@@ -320,4 +320,60 @@ textarea.input {
 .toast-action:hover,
 .toast-dismiss:hover {
   background: rgba(255, 255, 255, 0.12);
+}
+
+/* ---------- Add-to-plan picker (lib/plans.tsx) ---------- */
+
+.add-to-plan-form,
+.new-plan-fields {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.dialog-intro {
+  color: var(--ink-muted);
+}
+
+.plan-choices {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.plan-choice {
+  display: flex;
+  min-height: 56px;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.plan-choice:hover {
+  border-color: var(--border-strong);
+}
+
+.plan-choice:has(input:checked) {
+  border-color: var(--green-700);
+  background: var(--green-100);
+}
+
+.plan-choice input {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  accent-color: var(--green-700);
+}
+
+.plan-choice span {
+  display: grid;
+}
+
+.plan-choice small {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
 }

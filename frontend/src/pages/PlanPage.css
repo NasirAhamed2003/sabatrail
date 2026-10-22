@@ -152,7 +152,7 @@
   border: 3px solid var(--canvas);
   border-radius: 50%;
   background: var(--green-700);
-  color: #ffffff;
+  color: var(--on-accent);
   font-weight: 800;
 }
 
@@ -258,9 +258,9 @@
   font-size: var(--text-md);
 }
 
-.stop-remove {
+.stop-actions .stop-remove {
   color: var(--danger);
-  font-size: var(--text-sm) !important;
+  font-size: var(--text-sm);
 }
 
 .timeline-empty {

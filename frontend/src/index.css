@@ -121,3 +121,40 @@ textarea:focus-visible {
   padding-block: 11px;
   margin-block: -11px;
 }
+
+/* ==========================================
+   LINKS
+   Green and underlined in running text; title-style links (cards, lists,
+   navigation) opt out of the underline in their own styles below.
+========================================== */
+
+a {
+  color: var(--green-700);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.place-tile h3 a,
+.nearby-item a,
+.stop-body h3 a,
+.admin-place-cell a,
+.day-rail li a,
+.back-link,
+.place-tile-more,
+.place-tile-media {
+  text-decoration: none;
+}
+
+.place-tile h3 a:hover,
+.nearby-item a:hover,
+.stop-body h3 a:hover,
+.admin-place-cell a:hover,
+.day-rail li a:hover,
+.back-link:hover,
+.place-tile-more:hover {
+  text-decoration: underline;
+}

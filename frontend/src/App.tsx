@@ -11,7 +11,6 @@ import NotFoundPage from "./pages/NotFoundPage";
 import PlaceDetailsPage from "./pages/PlaceDetailsPage";
 import PlanPage from "./pages/PlanPage";
 import RegisterPage from "./pages/RegisterPage";
-import "./App.css";
 
 export default function App() {
   return (
