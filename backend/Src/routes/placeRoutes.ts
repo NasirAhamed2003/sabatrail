@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   getPlaces,
   getPlaceById,
+  getPlaceUsage,
   createPlace,
   updatePlace,
   deletePlace,
@@ -15,7 +16,8 @@ const router = Router();
 router.get("/", getPlaces);
 router.get("/:id", getPlaceById);
 
-// Admin-only routes - create, update and delete places
+// Admin-only routes - usage, create, update and delete places
+router.get("/:id/usage", authenticateToken, requireAdmin, getPlaceUsage);
 router.post("/", authenticateToken, requireAdmin, createPlace);
 router.put("/:id", authenticateToken, requireAdmin, updatePlace);
 router.delete("/:id", authenticateToken, requireAdmin, deletePlace);

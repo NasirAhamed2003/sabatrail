@@ -20,7 +20,8 @@ function fetchPlaces(force = false) {
   return cachedRequest;
 }
 
-export function usePlaces() {
+// fresh: skip the shared cache (admin screens must show the latest data)
+export function usePlaces({ fresh = false }: { fresh?: boolean } = {}) {
   const [places, setPlaces] = useState<Place[]>([]);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
 
@@ -38,12 +39,12 @@ export function usePlaces() {
 
   useEffect(() => {
     let active = true;
-    void apply(fetchPlaces(), () => active);
+    void apply(fetchPlaces(fresh), () => active);
 
     return () => {
       active = false;
     };
-  }, [apply]);
+  }, [apply, fresh]);
 
   // Retry or refresh, called from event handlers
   const reload = useCallback(() => {

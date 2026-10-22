@@ -130,20 +130,69 @@ export const updatePlace = async (req: Request, res: Response) => {
   }
 };
 
-// Delete a place
+// How many visit plans include a place (shown before deleting it)
+export const getPlaceUsage = async (req: Request, res: Response) => {
+  try {
+    const placeId = parseOrRespond(idParam, req.params.id, res);
+    if (placeId === null) return;
+
+    const place = await prisma.place.findUnique({
+      where: { place_id: placeId },
+      include: { _count: { select: { plan_places: true } } },
+    });
+
+    if (!place) {
+      return res.status(404).json({
+        message: "Place not found",
+      });
+    }
+
+    res.json({ place_id: placeId, plan_count: place._count.plan_places });
+  } catch (error) {
+    sendError(res, error, "Failed to get place usage");
+  }
+};
+
+// Delete a place. If visitors have it in their plans, the request is
+// refused (409) unless ?force=true, which also removes it from those plans.
 export const deletePlace = async (req: Request, res: Response) => {
   try {
     const placeId = parseOrRespond(idParam, req.params.id, res);
     if (placeId === null) return;
 
-    await prisma.place.delete({
-      where: {
-        place_id: placeId,
-      },
+    const place = await prisma.place.findUnique({
+      where: { place_id: placeId },
+      include: { _count: { select: { plan_places: true } } },
     });
+
+    if (!place) {
+      return res.status(404).json({
+        message: "Place not found",
+      });
+    }
+
+    const planCount = place._count.plan_places;
+    const force = req.query.force === "true";
+
+    if (planCount > 0 && !force) {
+      return res.status(409).json({
+        message: `"${place.place_name}" is in ${planCount} visitor ${planCount === 1 ? "plan" : "plans"}. Deleting it will also remove it from ${planCount === 1 ? "that plan" : "those plans"}.`,
+        plan_count: planCount,
+      });
+    }
+
+    await prisma.$transaction([
+      prisma.visitPlanPlace.deleteMany({
+        where: { place_id: placeId },
+      }),
+      prisma.place.delete({
+        where: { place_id: placeId },
+      }),
+    ]);
 
     res.json({
       message: "Place deleted successfully",
+      removed_from_plans: planCount,
     });
   } catch (error) {
     sendError(res, error, "Failed to delete place", "Place not found");

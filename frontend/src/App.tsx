@@ -1,7 +1,10 @@
 import { Navigate, Route, Routes } from "react-router";
 import Layout from "./components/Layout";
 import { RequireAdmin, RequireAuth } from "./components/RouteGuards";
-import AdminPage from "./pages/AdminPage";
+import AdminCategoriesPage from "./pages/admin/AdminCategoriesPage";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminPlacesPage from "./pages/admin/AdminPlacesPage";
+import PlaceFormPage from "./pages/admin/PlaceFormPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -36,23 +39,20 @@ export default function App() {
           }
         />
 
-        <Route path="admin" element={<Navigate to="/admin/places" replace />} />
         <Route
-          path="admin/places"
+          path="admin"
           element={
             <RequireAdmin>
-              <AdminPage tab="places" />
+              <AdminLayout />
             </RequireAdmin>
           }
-        />
-        <Route
-          path="admin/categories"
-          element={
-            <RequireAdmin>
-              <AdminPage tab="categories" />
-            </RequireAdmin>
-          }
-        />
+        >
+          <Route index element={<Navigate to="/admin/places" replace />} />
+          <Route path="places" element={<AdminPlacesPage />} />
+          <Route path="places/new" element={<PlaceFormPage />} />
+          <Route path="places/:id/edit" element={<PlaceFormPage />} />
+          <Route path="categories" element={<AdminCategoriesPage />} />
+        </Route>
 
         <Route path="*" element={<NotFoundPage />} />
       </Route>

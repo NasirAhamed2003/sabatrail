@@ -6,6 +6,7 @@
 /* ---------- Button ---------- */
 
 .btn {
+  position: relative; /* contains visually-hidden labels */
   display: inline-flex;
   min-height: 44px;
   align-items: center;
