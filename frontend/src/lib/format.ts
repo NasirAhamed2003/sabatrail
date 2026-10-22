@@ -21,13 +21,18 @@ export function formatDate(iso: string | null | undefined) {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "";
 
-  return date.toLocaleDateString("en-GB", {
+  // Built from parts so every browser shows the same "Sun 1 Nov 2026"
+  const parts = new Intl.DateTimeFormat("en-GB", {
     weekday: "short",
     day: "numeric",
     month: "short",
     year: "numeric",
     timeZone: "UTC",
-  });
+  }).formatToParts(date);
+
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === type)?.value ?? "";
+
+  return `${part("weekday")} ${part("day")} ${part("month")} ${part("year")}`;
 }
 
 // Today's date as YYYY-MM-DD in the visitor's time zone

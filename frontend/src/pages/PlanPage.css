@@ -1,0 +1,465 @@
+/* ==========================================
+   PLANNER: header, timeline of stops, sticky summary + map
+========================================== */
+
+.planner {
+  padding-block: var(--space-8) var(--space-12);
+}
+
+.planner-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--border);
+}
+
+.planner-title {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.planner-title h1 {
+  font-size: var(--text-2xl);
+  letter-spacing: -1px;
+}
+
+.planner-title p {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink-muted);
+}
+
+.planner-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+
+.planner-switch {
+  min-width: 240px;
+}
+
+.planner-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.planner-alert {
+  margin-top: var(--space-6);
+}
+
+.planner-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: var(--space-8);
+  align-items: start;
+  margin-top: var(--space-8);
+}
+
+.planner-side {
+  position: sticky;
+  top: 88px;
+  display: grid;
+  gap: var(--space-6);
+}
+
+.planner-side h2,
+.timeline h2 {
+  font-size: var(--text-lg);
+}
+
+.planner-map {
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* ---------- Timeline ---------- */
+
+.timeline {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.timeline-list {
+  position: relative;
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The dashed trail running through the stop numbers */
+.timeline-list::before {
+  position: absolute;
+  top: 24px;
+  bottom: 24px;
+  left: 19px;
+  border-left: 3px dashed var(--sand-400);
+  content: "";
+}
+
+.stop {
+  position: relative;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.stop-leg {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  margin-left: 56px;
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+.stop-leg .icon {
+  color: var(--warning);
+}
+
+.stop-leg a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 0 var(--space-2);
+  color: var(--green-700);
+  font-weight: 600;
+}
+
+.stop-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px 140px minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+  padding: var(--space-4) var(--space-4) var(--space-4) 0;
+}
+
+.stop-number {
+  z-index: 1;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 3px solid var(--canvas);
+  border-radius: 50%;
+  background: var(--green-700);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.stop-media {
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  background: var(--green-100);
+}
+
+.stop-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.stop-media-placeholder {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  padding: var(--space-2);
+  color: var(--green-900);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-align: center;
+}
+
+.stop-body {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.stop-body h3 {
+  font-size: var(--text-lg);
+}
+
+.stop-body h3 a {
+  color: var(--green-900);
+  text-decoration: none;
+}
+
+.stop-body h3 a:hover {
+  text-decoration: underline;
+}
+
+.stop-meta {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+.stop-time {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.stop-time label {
+  color: var(--green-900);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.stop-time-input {
+  width: auto;
+  min-width: 132px;
+}
+
+.save-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 1.5em;
+  font-size: var(--text-sm);
+}
+
+.save-saved {
+  color: var(--success);
+}
+
+.save-saving {
+  color: var(--ink-muted);
+}
+
+.save-error {
+  color: var(--danger);
+}
+
+.stop-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  margin-left: calc(-1 * var(--space-3));
+}
+
+.stop-actions .btn {
+  min-width: 44px;
+  padding: 0 var(--space-3);
+  font-size: var(--text-md);
+}
+
+.stop-remove {
+  color: var(--danger);
+  font-size: var(--text-sm) !important;
+}
+
+.timeline-empty {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  padding: var(--space-6);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.add-stop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--canvas-alt);
+}
+
+.add-stop .field {
+  flex: 1 1 260px;
+}
+
+/* ---------- Summary, food stops (inside the side column) ---------- */
+
+.trip-summary,
+.food-stops {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.food-stops h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.food-stops h2 .icon {
+  color: var(--warning);
+}
+
+.trip-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.trip-stats div {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--canvas-alt);
+}
+
+.trip-stats dt {
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.trip-stats dd {
+  margin: 2px 0 0;
+  color: var(--green-900);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 800;
+}
+
+.trip-note {
+  color: var(--warning);
+  font-size: var(--text-sm);
+}
+
+.trip-legs {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+}
+
+.trip-legs li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+}
+
+.trip-leg-time {
+  color: var(--ink-muted);
+}
+
+.trip-leg-link {
+  color: var(--green-700);
+  font-weight: 600;
+}
+
+.trip-full-route {
+  justify-self: start;
+}
+
+.trip-disclaimer {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--warning-bg);
+  color: var(--warning);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.trip-disclaimer .icon {
+  flex: none;
+  margin-top: 2px;
+}
+
+/* ---------- Empty state (no plans) ---------- */
+
+.planner-empty {
+  display: grid;
+  max-width: 640px;
+  gap: var(--space-4);
+  padding-block: var(--space-16);
+}
+
+.planner-empty h1 {
+  font-size: var(--text-2xl);
+}
+
+.planner-empty p {
+  color: var(--ink-muted);
+  font-size: 1.0625rem;
+}
+
+.planner-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 959px) {
+  .planner-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .planner-side {
+    position: static;
+  }
+}
+
+@media (max-width: 639px) {
+  .planner {
+    padding-top: var(--space-6);
+  }
+
+  .planner-toolbar,
+  .planner-switch,
+  .planner-buttons {
+    width: 100%;
+  }
+
+  .planner-buttons .btn {
+    flex: 1 1 auto;
+  }
+
+  .stop-card {
+    grid-template-columns: 40px minmax(0, 1fr);
+    padding-right: 0;
+  }
+
+  .stop-media {
+    grid-column: 2;
+  }
+
+  .stop-body {
+    grid-column: 2;
+  }
+
+  .stop-leg {
+    margin-left: 56px;
+  }
+
+  .trip-summary,
+  .food-stops {
+    padding: var(--space-4);
+  }
+}

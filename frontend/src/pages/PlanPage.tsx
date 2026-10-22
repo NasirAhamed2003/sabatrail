@@ -1,771 +1,670 @@
-
-import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { Link, useNavigate, useParams } from "react-router";
 import api from "../api";
 import FoodStops from "../components/FoodStops";
+import PlaceMap, { type MapMarker } from "../components/PlaceMap";
+import PlanFormDialog from "../components/PlanFormDialog";
 import TripSummary from "../components/TripSummary";
+import { Button, ButtonLink } from "../components/ui/Button";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
+import Icon from "../components/ui/Icon";
+import { useToast } from "../components/ui/Toast";
+import { apiErrorMessage, apiStatus } from "../lib/errors";
+import { formatDate, formatDuration, formatKm } from "../lib/format";
+import { HEMMATHAGAMA, directionsUrl, hasCoordinates } from "../lib/geo";
+import { usePlaces } from "../lib/places";
 import { usePlans } from "../lib/plans";
 import { useTripEstimate } from "../lib/trip";
-import type { Place as CatalogPlace } from "../lib/types";
-import L from "leaflet";
-import {
-  MapContainer,
-  Marker,
-  Popup,
-  Polyline,
-  TileLayer,
-  useMap,
-} from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+import type { TravelLeg } from "../lib/travel";
+import type { PlanDetails, PlanStop, VisitPlan } from "../lib/types";
+import "./PlanPage.css";
 
-interface Category {
-  category_id: number;
-  category_name: string;
-}
+type DetailsState = {
+  planId: number;
+  status: "ready" | "missing" | "error";
+  stops: PlanStop[];
+};
 
-interface Place {
-  place_id: number;
-  place_name: string;
-  description?: string | null;
-  address?: string | null;
-  distance?: number | null;
-  latitude?: number | null;
-  longitude?: number | null;
-  image?: string | null;
-  visit_duration?: string | null;
-  best_time_to_visit?: string | null;
-  category?: Category | null;
-}
+// ==========================================
+// PLANNED TIME: saves 600 ms after typing stops, or on blur
+// ==========================================
 
-interface VisitPlan {
-  plan_id: number;
-  plan_name: string;
-  visit_date: string;
-}
-
-interface PlanPlace {
-  plan_place_id: number;
-  plan_id: number;
-  place_id: number;
-  visit_order: number;
-  planned_time?: string | null;
-  place: Place;
-}
-
-interface VisitPlanDetails {
-  plan_id: number;
-  plan_name: string;
-  total_places: number;
-  places: PlanPlace[];
-}
-
-// Today's date as YYYY-MM-DD in the visitor's time zone
-function todayIso() {
-  const now = new Date();
-  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-
-  return local.toISOString().slice(0, 10);
-}
-
-function createNumberedIcon(number: number) {
-  return L.divIcon({
-    className: "sabatrail-numbered-marker-wrapper",
-    html: `<div class="sabatrail-numbered-marker">${number}</div>`,
-    iconSize: [36, 36],
-    iconAnchor: [18, 18],
-    popupAnchor: [0, -18],
-  });
-}
-
-function FitMapToDestinations({
-  coordinates,
+function PlannedTimeInput({
+  stop,
+  onSave,
 }: {
-  coordinates: [number, number][];
+  stop: PlanStop;
+  onSave: (time: string | null) => Promise<void>;
 }) {
-  const map = useMap();
+  const initial = stop.planned_time?.slice(0, 5) ?? "";
+  const [value, setValue] = useState(initial);
+  const [state, setState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const timer = useRef<number | undefined>(undefined);
+  const lastSaved = useRef(initial);
 
-  useEffect(() => {
-    if (coordinates.length > 1) {
-      map.fitBounds(coordinates, { padding: [35, 35] });
-    } else if (coordinates.length === 1) {
-      map.setView(coordinates[0], 12);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+
+  const save = async (next: string) => {
+    window.clearTimeout(timer.current);
+    if (next === lastSaved.current) return;
+
+    setState("saving");
+
+    try {
+      await onSave(next || null);
+      lastSaved.current = next;
+      setState("saved");
+    } catch {
+      setState("error");
     }
-  }, [coordinates, map]);
+  };
 
-  return null;
+  const id = `planned-time-${stop.plan_place_id}`;
+
+  return (
+    <div className="stop-time">
+      <label htmlFor={id}>Arrival time</label>
+      <input
+        id={id}
+        className="input stop-time-input"
+        type="time"
+        value={value}
+        onChange={(event) => {
+          const next = event.target.value;
+          setValue(next);
+          window.clearTimeout(timer.current);
+          timer.current = window.setTimeout(() => void save(next), 600);
+        }}
+        onBlur={() => void save(value)}
+      />
+      <span className={`save-status save-${state}`} aria-live="polite">
+        {state === "saving" && "Saving…"}
+        {state === "saved" && (
+          <>
+            <Icon name="check" size={14} /> Saved
+          </>
+        )}
+        {state === "error" && "Couldn't save — try again"}
+      </span>
+    </div>
+  );
 }
+
+// ==========================================
+// ONE STOP ON THE TIMELINE
+// ==========================================
+
+function StopItem({
+  stop,
+  index,
+  total,
+  previousName,
+  previous,
+  leg,
+  legStatus,
+  onMove,
+  onRemove,
+  onSaveTime,
+}: {
+  stop: PlanStop;
+  index: number;
+  total: number;
+  previousName: string;
+  previous: { latitude: number; longitude: number };
+  leg: TravelLeg | null;
+  legStatus: string;
+  onMove: (direction: -1 | 1) => void;
+  onRemove: () => void;
+  onSaveTime: (time: string | null) => Promise<void>;
+}) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const place = stop.place;
+  const duration = formatDuration(place.visit_duration_minutes);
+
+  return (
+    <li className="stop">
+      <div className="stop-leg">
+        <Icon name="car" size={16} />
+        <span>
+          {leg
+            ? `~${formatDuration(leg.minutes)} drive · ${formatKm(leg.km)} from ${previousName}`
+            : legStatus === "loading"
+              ? `Calculating drive from ${previousName}…`
+              : `Travel time unavailable from ${previousName}`}
+        </span>
+        {hasCoordinates(place) && (
+          <a href={directionsUrl(place, previous)} target="_blank" rel="noreferrer">
+            Directions<span className="visually-hidden"> from {previousName} to {place.place_name} (opens Google Maps in a new tab)</span>
+          </a>
+        )}
+      </div>
+
+      <article className="stop-card" aria-labelledby={`stop-title-${stop.plan_place_id}`}>
+        <span className="stop-number" aria-hidden="true">
+          {index + 1}
+        </span>
+
+        <div className="stop-media">
+          {place.image && !imageFailed ? (
+            <img src={place.image} alt="" loading="lazy" onError={() => setImageFailed(true)} />
+          ) : (
+            <span className="stop-media-placeholder" aria-hidden="true">
+              {place.category?.category_name ?? "Stop"}
+            </span>
+          )}
+        </div>
+
+        <div className="stop-body">
+          <h3 id={`stop-title-${stop.plan_place_id}`}>
+            <span className="visually-hidden">Stop {index + 1}: </span>
+            <Link to={`/places/${place.place_id}`}>{place.place_name}</Link>
+          </h3>
+          <p className="stop-meta">
+            {[place.category?.category_name, duration && `${duration} here`].filter(Boolean).join(" · ")}
+          </p>
+          <PlannedTimeInput stop={stop} onSave={onSaveTime} />
+
+        <div className="stop-actions">
+          <Button
+            variant="ghost"
+            size="sm"
+            data-move={`${place.place_id}-up`}
+            disabled={index === 0}
+            onClick={() => onMove(-1)}
+          >
+            <span aria-hidden="true">↑</span>
+            <span className="visually-hidden">Move {place.place_name} earlier</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            data-move={`${place.place_id}-down`}
+            disabled={index === total - 1}
+            onClick={() => onMove(1)}
+          >
+            <span aria-hidden="true">↓</span>
+            <span className="visually-hidden">Move {place.place_name} later</span>
+          </Button>
+          <Button variant="ghost" size="sm" className="stop-remove" onClick={onRemove}>
+            Remove<span className="visually-hidden"> {place.place_name}</span>
+          </Button>
+        </div>
+        </div>
+      </article>
+    </li>
+  );
+}
+
+// ==========================================
+// PLANNER PAGE
+// ==========================================
 
 export default function PlanPage() {
   const navigate = useNavigate();
   const { planId } = useParams();
-  const [plans, setPlans] = useState<VisitPlan[]>([]);
-  const [plansLoaded, setPlansLoaded] = useState(false);
-  const [allPlaces, setAllPlaces] = useState<Place[]>([]);
+  const { plans, plansError, refreshPlans, setActivePlanId, refreshActiveStops, activeStops } = usePlans();
 
-  // The selected plan lives in the URL (/plan/:planId)
-  const routePlanId = planId ? Number(planId) : null;
-  const selectedPlanId =
-    routePlanId !== null && Number.isInteger(routePlanId) ? routePlanId : null;
+  // Adds made elsewhere (e.g. food-stop suggestions) update the shared stops; refetch when they change
+  const sharedStopsKey = activeStops.map((stop) => `${stop.plan_place_id}:${stop.visit_order}`).join(",");
+  const { places: catalogue } = usePlaces();
+  const { showToast } = useToast();
 
-  const setSelectedPlanId = useCallback(
-    (id: number | null) => {
-      navigate(id === null ? "/plan" : `/plan/${id}`);
-    },
-    [navigate]
-  );
-  const [selectedPlan, setSelectedPlan] =
-    useState<VisitPlanDetails | null>(null);
+  const routeId = planId ? Number(planId) : null;
+  const selectedId = routeId !== null && Number.isInteger(routeId) ? routeId : null;
+  const plan: VisitPlan | undefined = plans?.find((p) => p.plan_id === selectedId);
 
-  const [newPlanName, setNewPlanName] = useState("");
-  const [newPlanDate, setNewPlanDate] = useState(todayIso);
-  const [selectedPlaceId, setSelectedPlaceId] = useState("");
-  const [plannedTime, setPlannedTime] = useState("");
+  const [details, setDetails] = useState<DetailsState | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [dialog, setDialog] = useState<"create" | "edit" | "delete" | null>(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  const [addPlaceId, setAddPlaceId] = useState("");
+  const [adding, setAdding] = useState(false);
 
-  const { setActivePlanId, activeStops, refreshActiveStops } = usePlans();
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-
-  const loadPlans = useCallback(async () => {
-    try {
-      const response = await api.get<VisitPlan[]>("/visit-plans");
-      const loadedPlans = Array.isArray(response.data) ? response.data : [];
-
-      setPlans(loadedPlans);
-      setPlansLoaded(true);
-    } catch (err) {
-      console.error("Failed to load visit plans:", err);
-      setError("Unable to load your visit plans. Please try again.");
-    }
-  }, []);
-
-  // Open the first plan when none (or an unknown one) is in the URL
+  // Open the first plan when the URL has none (or one that isn't the visitor's)
   useEffect(() => {
-    if (!plansLoaded || plans.length === 0) return;
+    if (!plans || plans.length === 0) return;
 
-    if (
-      selectedPlanId === null ||
-      !plans.some((plan) => plan.plan_id === selectedPlanId)
-    ) {
+    if (selectedId === null || !plans.some((p) => p.plan_id === selectedId)) {
       navigate(`/plan/${plans[0].plan_id}`, { replace: true });
     }
-  }, [plansLoaded, plans, selectedPlanId, navigate]);
+  }, [plans, selectedId, navigate]);
 
-  const loadPlaces = useCallback(async () => {
-    try {
-      const response = await api.get<Place[] | { places: Place[] }>("/places");
-      const data = response.data;
-      const places = Array.isArray(data) ? data : data.places;
-
-      setAllPlaces(Array.isArray(places) ? places : []);
-    } catch (err) {
-      console.error("Failed to load destinations:", err);
-      setError("Unable to load destinations. Please try again.");
-    }
-  }, []);
-
-  const loadPlanDetails = useCallback(async (planId: number) => {
-    try {
-      const response = await api.get<VisitPlanDetails>(
-        `/visit-plans/${planId}/places`
-      );
-
-      const details = response.data;
-
-      const orderedPlaces = [...(details.places ?? [])].sort(
-        (a, b) =>
-          a.visit_order - b.visit_order ||
-          a.plan_place_id - b.plan_place_id
-      );
-
-      setSelectedPlan({
-        ...details,
-        places: orderedPlaces,
-        total_places: orderedPlaces.length,
-      });
-    } catch (err) {
-      console.error("Failed to load visit-plan details:", err);
-      setSelectedPlan(null);
-      setError("Unable to load this itinerary. Please try again.");
-    }
-  }, []);
-
+  // The plan being viewed is the "active" plan for Add-to-my-day buttons
   useEffect(() => {
-    void loadPlans();
-    void loadPlaces();
-  }, [loadPlans, loadPlaces]);
+    if (selectedId !== null) setActivePlanId(selectedId);
+  }, [selectedId, setActivePlanId]);
 
+  // Load the plan's stops
   useEffect(() => {
-    if (selectedPlanId === null) {
-      setSelectedPlan(null);
-      return;
-    }
+    if (selectedId === null) return;
 
-    void loadPlanDetails(selectedPlanId);
-  }, [selectedPlanId, loadPlanDetails]);
+    let active = true;
 
-  useEffect(() => {
-    if (selectedPlanId !== null) setActivePlanId(selectedPlanId);
-  }, [selectedPlanId, setActivePlanId]);
-
-  const activeStopKey = activeStops.map((stop) => stop.plan_place_id).join(",");
-
-  useEffect(() => {
-    if (selectedPlanId !== null && activeStopKey) void loadPlanDetails(selectedPlanId);
-  }, [activeStopKey, selectedPlanId, loadPlanDetails]);
-
-  const handleCreatePlan = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError("");
-    setMessage("");
-
-    if (!newPlanName.trim()) {
-      setError("Please enter a name for your visit plan.");
-      return;
-    }
-
-    if (!newPlanDate) {
-      setError("Please choose the date of your visit.");
-      return;
-    }
-
-    setSaving(true);
-
-    try {
-      const response = await api.post<VisitPlan>("/visit-plans", {
-        plan_name: newPlanName.trim(),
-        visit_date: newPlanDate,
-      });
-
-      setNewPlanName("");
-      setNewPlanDate(todayIso());
-
-      await loadPlans();
-      setSelectedPlanId(response.data.plan_id);
-      setMessage("Your visit plan was created successfully.");
-    } catch (err) {
-      console.error("Failed to create visit plan:", err);
-      setError("Unable to create the visit plan. Please try again.");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleAddPlace = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError("");
-    setMessage("");
-
-    if (selectedPlanId === null) {
-      setError("Please select or create a visit plan first.");
-      return;
-    }
-
-    if (!selectedPlaceId) {
-      setError("Please select a destination.");
-      return;
-    }
-
-    const placeId = Number(selectedPlaceId);
-
-    if (selectedPlan?.places.some((item) => item.place_id === placeId)) {
-      setError("This destination is already in your visit plan.");
-      return;
-    }
-
-    setSaving(true);
-
-    try {
-      const nextOrder = (selectedPlan?.places.length ?? 0) + 1;
-
-      await api.post(`/visit-plans/${selectedPlanId}/places`, {
-        place_id: placeId,
-        visit_order: nextOrder,
-        planned_time: plannedTime || null,
-      });
-
-      setSelectedPlaceId("");
-      setPlannedTime("");
-
-      await loadPlanDetails(selectedPlanId);
-      void refreshActiveStops();
-      setMessage("Destination added successfully.");
-    } catch (err) {
-      console.error("Failed to add destination:", err);
-      setError("Unable to add this destination. Please try again.");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleRemovePlace = async (placeId: number) => {
-    if (selectedPlanId === null || !selectedPlan) {
-      return;
-    }
-
-    if (
-      !window.confirm("Are you sure you want to remove this destination?")
-    ) {
-      return;
-    }
-
-    setError("");
-    setMessage("");
-    setSaving(true);
-
-    try {
-      await api.delete(
-        `/visit-plans/${selectedPlanId}/places/${placeId}`
-      );
-
-      const response = await api.get<VisitPlanDetails>(
-        `/visit-plans/${selectedPlanId}/places`
-      );
-
-      const remainingPlaces = [...(response.data.places ?? [])].sort(
-        (a, b) =>
-          a.visit_order - b.visit_order ||
-          a.plan_place_id - b.plan_place_id
-      );
-
-      // Update stored visit order after removing a destination.
-      for (let index = 0; index < remainingPlaces.length; index++) {
-        const item = remainingPlaces[index];
-        const newOrder = index + 1;
-
-        if (item.visit_order !== newOrder) {
-          await api.put(
-            `/visit-plans/${selectedPlanId}/places/${item.place_id}`,
-            {
-              visit_order: newOrder,
-              planned_time: item.planned_time ?? null,
-            }
-          );
+    api
+      .get<PlanDetails>(`/visit-plans/${selectedId}/places`)
+      .then((response) => {
+        if (active) setDetails({ planId: selectedId, status: "ready", stops: response.data.places ?? [] });
+      })
+      .catch((error) => {
+        if (active) {
+          setDetails({
+            planId: selectedId,
+            status: apiStatus(error) === 404 ? "missing" : "error",
+            stops: [],
+          });
         }
-      }
+      });
 
-      await loadPlanDetails(selectedPlanId);
-      void refreshActiveStops();
-      setMessage("Destination removed and visit order updated.");
-    } catch (err) {
-      console.error("Failed to remove or reorder destination:", err);
-      await loadPlanDetails(selectedPlanId);
-      void refreshActiveStops();
+    return () => {
+      active = false;
+    };
+  }, [selectedId, reloadKey, sharedStopsKey]);
 
-      setError(
-        "The destination may have been removed, but the visit order could not be fully updated. Please refresh and check your itinerary."
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleUpdateTime = async (item: PlanPlace, newTime: string) => {
-    if (selectedPlanId === null) {
-      return;
-    }
-
-    setError("");
-    setMessage("");
-
-    try {
-      await api.put(
-        `/visit-plans/${selectedPlanId}/places/${item.place_id}`,
-        {
-          visit_order: item.visit_order,
-          planned_time: newTime || null,
-        }
-      );
-
-      await loadPlanDetails(selectedPlanId);
-      void refreshActiveStops();
-      setMessage("Planned time updated.");
-    } catch (err) {
-      console.error("Failed to update planned time:", err);
-      setError("Unable to update the planned time. Please try again.");
-    }
-  };
-
-  const itineraryPlaces = selectedPlan?.places ?? [];
-  const stopPlaces = itineraryPlaces.map((item) => item.place as unknown as CatalogPlace);
+  const current = details && details.planId === selectedId ? details : null;
+  const stops = current?.stops ?? [];
+  const stopPlaces = stops.map((stop) => stop.place);
   const estimate = useTripEstimate(stopPlaces);
 
-  const availablePlaces = allPlaces.filter(
-    (place) =>
-      !itineraryPlaces.some((item) => item.place_id === place.place_id)
+  const reload = () => {
+    setReloadKey((key) => key + 1);
+    void refreshActiveStops();
+  };
+
+  const setStops = (update: (stops: PlanStop[]) => PlanStop[]) => {
+    setDetails((state) => (state ? { ...state, stops: update(state.stops) } : state));
+  };
+
+  // ---------- Stop actions ----------
+
+  const move = async (index: number, direction: -1 | 1) => {
+    if (selectedId === null) return;
+
+    const target = index + direction;
+    if (target < 0 || target >= stops.length) return;
+
+    const reordered = [...stops];
+    [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
+    const moved = reordered[target];
+
+    setStops(() => reordered.map((stop, i) => ({ ...stop, visit_order: i + 1 })));
+
+    // Keep keyboard focus on the moved stop's arrow (or its other arrow at the ends)
+    requestAnimationFrame(() => {
+      const same = document.querySelector<HTMLButtonElement>(
+        `[data-move="${moved.place_id}-${direction === -1 ? "up" : "down"}"]`
+      );
+      const other = document.querySelector<HTMLButtonElement>(
+        `[data-move="${moved.place_id}-${direction === -1 ? "down" : "up"}"]`
+      );
+      (same && !same.disabled ? same : other)?.focus();
+    });
+
+    try {
+      await api.put(`/visit-plans/${selectedId}/order`, { place_ids: reordered.map((stop) => stop.place_id) });
+      void refreshActiveStops();
+    } catch (error) {
+      showToast(apiErrorMessage(error, "Couldn't change the order. Please try again."), { tone: "error" });
+      reload();
+    }
+  };
+
+  const remove = async (stop: PlanStop) => {
+    if (selectedId === null) return;
+
+    const previousOrder = stops.map((s) => s.place_id);
+    const planIdAtRemoval = selectedId;
+
+    setStops((list) => list.filter((s) => s.plan_place_id !== stop.plan_place_id).map((s, i) => ({ ...s, visit_order: i + 1 })));
+
+    try {
+      await api.delete(`/visit-plans/${planIdAtRemoval}/places/${stop.place_id}`);
+      void refreshActiveStops();
+
+      showToast(`Removed ${stop.place.place_name}`, {
+        duration: 8000,
+        action: {
+          label: "Undo",
+          onClick: () => {
+            void (async () => {
+              try {
+                await api.post(`/visit-plans/${planIdAtRemoval}/places`, {
+                  place_id: stop.place_id,
+                  planned_time: stop.planned_time?.slice(0, 5) || null,
+                });
+                await api.put(`/visit-plans/${planIdAtRemoval}/order`, { place_ids: previousOrder });
+                showToast(`Restored ${stop.place.place_name}`);
+              } catch (error) {
+                showToast(apiErrorMessage(error, "Couldn't restore the stop."), { tone: "error" });
+              } finally {
+                reload();
+              }
+            })();
+          },
+        },
+      });
+    } catch (error) {
+      showToast(apiErrorMessage(error, "Couldn't remove the stop. Please try again."), { tone: "error" });
+      reload();
+    }
+  };
+
+  const saveTime = async (stop: PlanStop, time: string | null) => {
+    if (selectedId === null) return;
+
+    await api.put(`/visit-plans/${selectedId}/places/${stop.place_id}`, { planned_time: time });
+    setStops((list) => list.map((s) => (s.plan_place_id === stop.plan_place_id ? { ...s, planned_time: time } : s)));
+    void refreshActiveStops();
+  };
+
+  const addStop = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (selectedId === null || !addPlaceId) return;
+
+    const place = catalogue.find((p) => p.place_id === Number(addPlaceId));
+    setAdding(true);
+
+    try {
+      await api.post(`/visit-plans/${selectedId}/places`, { place_id: Number(addPlaceId) });
+      setAddPlaceId("");
+      showToast(`Added ${place?.place_name ?? "the place"}`);
+      reload();
+    } catch (error) {
+      showToast(apiErrorMessage(error, "Couldn't add this place. Please try again."), { tone: "error" });
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  // ---------- Plan actions ----------
+
+  const createPlan = async (values: { plan_name: string; visit_date: string }) => {
+    const response = await api.post<VisitPlan>("/visit-plans", values);
+    await refreshPlans();
+    setDialog(null);
+    showToast(`Created ${response.data.plan_name}`);
+    navigate(`/plan/${response.data.plan_id}`);
+  };
+
+  const editPlan = async (values: { plan_name: string; visit_date: string }) => {
+    if (selectedId === null) return;
+
+    await api.put(`/visit-plans/${selectedId}`, values);
+    await refreshPlans();
+    setDialog(null);
+    showToast("Plan updated");
+  };
+
+  const deletePlan = async () => {
+    if (selectedId === null || !plan) return;
+
+    setDeleteBusy(true);
+    setDeleteError("");
+
+    try {
+      await api.delete(`/visit-plans/${selectedId}`);
+      setDialog(null);
+      showToast(`Deleted ${plan.plan_name}`);
+      await refreshPlans();
+      navigate("/plan", { replace: true });
+    } catch (error) {
+      setDeleteError(apiErrorMessage(error, "Couldn't delete the plan. Please try again."));
+    } finally {
+      setDeleteBusy(false);
+    }
+  };
+
+  const dialogs = (
+    <>
+      <PlanFormDialog open={dialog === "create"} mode="create" onSubmit={createPlan} onClose={() => setDialog(null)} />
+      <PlanFormDialog
+        open={dialog === "edit"}
+        mode="edit"
+        initialName={plan?.plan_name}
+        initialDate={plan?.visit_date?.slice(0, 10)}
+        onSubmit={editPlan}
+        onClose={() => setDialog(null)}
+      />
+      <ConfirmDialog
+        open={dialog === "delete"}
+        title={`Delete "${plan?.plan_name ?? ""}"?`}
+        confirmLabel="Delete plan"
+        busy={deleteBusy}
+        error={deleteError}
+        onConfirm={() => void deletePlan()}
+        onCancel={() => {
+          setDialog(null);
+          setDeleteError("");
+        }}
+      >
+        <p>
+          This removes the plan and its {stops.length} {stops.length === 1 ? "stop" : "stops"}. The places themselves stay
+          in SabaTrail. This can&apos;t be undone.
+        </p>
+      </ConfirmDialog>
+    </>
   );
 
-  // Assign display numbers from the current position in the ordered list.
-  const mapDestinations = itineraryPlaces
-    .filter(
-      (item) =>
-        item.place &&
-        item.place.latitude !== null &&
-        item.place.latitude !== undefined &&
-        item.place.longitude !== null &&
-        item.place.longitude !== undefined &&
-        Number.isFinite(Number(item.place.latitude)) &&
-        Number.isFinite(Number(item.place.longitude))
-    )
-    .map((item, index) => ({
-      ...item,
-      displayOrder: index + 1,
-    }));
+  // ---------- Page states ----------
 
-  const coordinates: [number, number][] = mapDestinations.map((item) => [
-    Number(item.place.latitude),
-    Number(item.place.longitude),
-  ]);
+  if (plansError && plans === null) {
+    return (
+      <section className="container status-page">
+        <h1>My visit plans</h1>
+        <p className="alert alert-error" role="alert">
+          We couldn&apos;t load your plans. Check your connection and try again.
+        </p>
+        <Button variant="secondary" onClick={() => void refreshPlans()}>
+          Try again
+        </Button>
+      </section>
+    );
+  }
 
-  const scheduledTimes = itineraryPlaces
-    .map((item) => item.planned_time?.slice(0, 5))
-    .filter((time): time is string => Boolean(time))
-    .sort();
+  if (plans === null) {
+    return (
+      <section className="container status-page" role="status">
+        <p>Loading your plans…</p>
+      </section>
+    );
+  }
 
-  const scheduledCount = scheduledTimes.length;
-  const missingTimeCount = itineraryPlaces.length - scheduledCount;
-  const firstTime = scheduledTimes[0] ?? null;
-  const lastTime = scheduledTimes[scheduledTimes.length - 1] ?? null;
+  if (plans.length === 0) {
+    return (
+      <section className="container planner-empty">
+        <span className="eyebrow">MY VISIT PLANS</span>
+        <h1>Plan your first day</h1>
+        <p>
+          A plan keeps your stops in order, with arrival times, directions, and an estimate for the whole day. Start by
+          adding places as you browse, or create an empty plan.
+        </p>
+        <div className="planner-empty-actions">
+          <ButtonLink to="/#explore" size="lg">
+            Browse places
+          </ButtonLink>
+          <Button variant="secondary" size="lg" onClick={() => setDialog("create")}>
+            Create an empty plan
+          </Button>
+        </div>
+        {dialogs}
+      </section>
+    );
+  }
 
-  const totalDestinationDistance = itineraryPlaces.reduce(
-    (total, item) => total + (Number(item.place.distance) || 0),
-    0
-  );
+  if (!plan) {
+    // Redirecting to a valid plan
+    return (
+      <section className="container status-page" role="status">
+        <p>Opening your plan…</p>
+      </section>
+    );
+  }
+
+  const markers: MapMarker[] = [
+    { id: "start", ...HEMMATHAGAMA, label: "Start: Hemmathagama town centre", kind: "start" },
+    ...stops
+      .filter((stop) => hasCoordinates(stop.place))
+      .map((stop, index) => ({
+        id: stop.plan_place_id,
+        latitude: stop.place.latitude,
+        longitude: stop.place.longitude,
+        label: `${index + 1}. ${stop.place.place_name}`,
+        detail: stop.planned_time ? `Arrive ${stop.planned_time.slice(0, 5)}` : undefined,
+        number: index + 1,
+      })),
+  ];
+
+  const inPlan = new Set(stops.map((stop) => stop.place_id));
+  const available = catalogue.filter((place) => !inPlan.has(place.place_id));
+  const groups = [...new Set(available.map((place) => place.category?.category_name ?? "Other"))].sort();
 
   return (
-    <main className="visit-plans-page">
-      <h2>My Visit Plans</h2>
+    <div className="container planner">
+      <header className="planner-header">
+        <div className="planner-title">
+          <span className="eyebrow">MY VISIT PLANS</span>
+          <h1>{plan.plan_name}</h1>
+          <p>
+            <Icon name="sun" size={18} /> {formatDate(plan.visit_date)} · {stops.length}{" "}
+            {stops.length === 1 ? "stop" : "stops"}
+          </p>
+        </div>
 
-      {error && (
-        <p role="alert" className="error-message">
-          {error}
+        <div className="planner-toolbar">
+          {plans.length > 1 && (
+            <div className="field planner-switch">
+              <label htmlFor="plan-switcher">Switch plan</label>
+              <select
+                id="plan-switcher"
+                className="input"
+                value={plan.plan_id}
+                onChange={(event) => navigate(`/plan/${event.target.value}`)}
+              >
+                {plans.map((p) => (
+                  <option key={p.plan_id} value={p.plan_id}>
+                    {p.plan_name} — {formatDate(p.visit_date)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="planner-buttons">
+            <Button variant="secondary" onClick={() => setDialog("edit")}>
+              Rename or change date
+            </Button>
+            <Button variant="danger" onClick={() => setDialog("delete")}>
+              Delete plan
+            </Button>
+            <Button onClick={() => setDialog("create")}>
+              <Icon name="plus" size={16} /> New plan
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      {current === null && (
+        <p className="status-page" role="status">
+          Loading stops…
         </p>
       )}
 
-      {message && (
-        <p role="status" className="success-message">
-          {message}
-        </p>
-      )}
-
-      <section className="visit-plan-create-section">
-        <h3>Create a New Visit Plan</h3>
-
-        <form onSubmit={handleCreatePlan} className="create-plan-form">
-          <label>
-            Plan name
-            <input
-              type="text"
-              value={newPlanName}
-              onChange={(event) => setNewPlanName(event.target.value)}
-              placeholder="e.g. My Hemmathagama Day Trip"
-              required
-            />
-          </label>
-
-          <label>
-            Visit date
-            <input
-              type="date"
-              value={newPlanDate}
-              min={todayIso()}
-              onChange={(event) => setNewPlanDate(event.target.value)}
-              required
-            />
-          </label>
-
-          <button type="submit" disabled={saving}>
-            {saving ? "Please wait..." : "Create Plan"}
+      {current?.status === "error" && (
+        <div className="alert alert-error planner-alert" role="alert">
+          We couldn&apos;t load this plan&apos;s stops. Check your connection and{" "}
+          <button type="button" className="link-button" onClick={reload}>
+            try again
           </button>
-        </form>
-      </section>
+          .
+        </div>
+      )}
 
-      <section className="visit-plan-select-section">
-        <h3>Select a Visit Plan</h3>
+      {current?.status === "missing" && (
+        <div className="alert alert-warning planner-alert" role="alert">
+          This plan no longer exists. <Link to="/plan">Open your plans</Link>
+        </div>
+      )}
 
-        {plans.length === 0 ? (
-          <p>You have no visit plans yet. Create one above to get started.</p>
-        ) : (
-          <label>
-            Your plans
-            <select
-              value={selectedPlanId ?? ""}
-              onChange={(event) =>
-                setSelectedPlanId(
-                  event.target.value ? Number(event.target.value) : null
-                )
-              }
-            >
-              {plans.map((plan) => (
-                <option key={plan.plan_id} value={plan.plan_id}>
-                  {plan.plan_name}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-      </section>
+      {current?.status === "ready" && (
+        <div className="planner-grid">
+          <section className="timeline" aria-labelledby="stops-heading">
+            <h2 id="stops-heading">Your stops</h2>
 
-      {selectedPlan && (
-        <>
-          <section className="add-place-section">
-            <h3>Add a Destination</h3>
+            {stops.length === 0 ? (
+              <div className="timeline-empty">
+                <p>
+                  <strong>No stops yet.</strong> Browse places and choose “Add to my day”, or pick one below.
+                </p>
+                <ButtonLink to="/#explore" variant="secondary">
+                  Browse places
+                </ButtonLink>
+              </div>
+            ) : (
+              <ol className="timeline-list">
+                {stops.map((stop, index) => (
+                  <StopItem
+                    key={stop.plan_place_id}
+                    stop={stop}
+                    index={index}
+                    total={stops.length}
+                    previousName={index === 0 ? "Hemmathagama town centre" : stops[index - 1].place.place_name}
+                    previous={index === 0 ? HEMMATHAGAMA : stops[index - 1].place}
+                    leg={estimate.legs[index]}
+                    legStatus={estimate.travelStatus}
+                    onMove={(direction) => void move(index, direction)}
+                    onRemove={() => void remove(stop)}
+                    onSaveTime={(time) => saveTime(stop, time)}
+                  />
+                ))}
+              </ol>
+            )}
 
-            <form onSubmit={handleAddPlace} className="add-place-form">
-              <label>
-                Destination
+            <form className="add-stop" onSubmit={addStop}>
+              <div className="field">
+                <label htmlFor="add-stop-place">Add a place to this plan</label>
                 <select
-                  value={selectedPlaceId}
-                  onChange={(event) => setSelectedPlaceId(event.target.value)}
-                  required
+                  id="add-stop-place"
+                  className="input"
+                  value={addPlaceId}
+                  onChange={(event) => setAddPlaceId(event.target.value)}
                 >
-                  <option value="">Select a destination</option>
-                  {availablePlaces.map((place) => (
-                    <option key={place.place_id} value={place.place_id}>
-                      {place.place_name}
-                    </option>
+                  <option value="">Choose a place…</option>
+                  {groups.map((group) => (
+                    <optgroup key={group} label={group}>
+                      {available
+                        .filter((place) => (place.category?.category_name ?? "Other") === group)
+                        .map((place) => (
+                          <option key={place.place_id} value={place.place_id}>
+                            {place.place_name}
+                          </option>
+                        ))}
+                    </optgroup>
                   ))}
                 </select>
-              </label>
-
-              <label>
-                Planned time
-                <input
-                  type="time"
-                  value={plannedTime}
-                  onChange={(event) => setPlannedTime(event.target.value)}
-                />
-              </label>
-
-              <button
-                type="submit"
-                disabled={saving || availablePlaces.length === 0}
-              >
-                {saving ? "Please wait..." : "Add Destination"}
-              </button>
+              </div>
+              <Button type="submit" variant="secondary" disabled={!addPlaceId || adding}>
+                {adding ? "Adding…" : "Add stop"}
+              </Button>
             </form>
-
-            {availablePlaces.length === 0 && (
-              <p>All available destinations have been added to this plan.</p>
-            )}
           </section>
 
-          <section className="itinerary-summary">
-            <h3>Itinerary Summary</h3>
+          <aside className="planner-side">
+            <TripSummary stops={stopPlaces} estimate={estimate} showLegs={false} />
 
-            <div className="itinerary-summary-grid">
-              <div className="itinerary-summary-card">
-                <span>Total Destinations</span>
-                <strong>{itineraryPlaces.length}</strong>
-              </div>
-
-              <div className="itinerary-summary-card">
-                <span>Scheduled</span>
-                <strong>{scheduledCount}</strong>
-              </div>
-
-              <div className="itinerary-summary-card">
-                <span>Recorded Distance Total</span>
-                <strong>{totalDestinationDistance.toFixed(1)} km</strong>
-              </div>
-
-              <div className="itinerary-summary-card">
-                <span>Visit Time Range</span>
-                <strong>
-                  {firstTime && lastTime
-                    ? `${firstTime} – ${lastTime}`
-                    : "Not set"}
-                </strong>
-              </div>
-            </div>
-
-            {missingTimeCount > 0 && (
-              <p>
-                {missingTimeCount} destination
-                {missingTimeCount === 1 ? " has" : "s have"} no planned time.
-              </p>
+            {markers.length > 1 && (
+              <section className="planner-map" aria-labelledby="route-map-heading">
+                <h2 id="route-map-heading">Route map</h2>
+                <PlaceMap markers={markers} line label={`Map of ${plan.plan_name}: start point and ${stops.length} numbered stops`} height="340px" />
+                <p className="muted">The dashed line shows the order of your stops, not the road route.</p>
+              </section>
             )}
 
-            <p className="itinerary-map-note">
-              Distance total adds the recorded distance for each destination.
-              It is not the driving distance between destinations.
-            </p>
-          </section>
-
-          <TripSummary stops={stopPlaces} estimate={estimate} />
-
-          <FoodStops stops={stopPlaces} places={allPlaces as unknown as CatalogPlace[]} />
-
-          <section className="itinerary-map-section">
-            <h3>Destination Map</h3>
-
-            <p>
-              Showing {mapDestinations.length} of {itineraryPlaces.length}{" "}
-              selected destinations.
-            </p>
-
-            {coordinates.length > 0 ? (
-              <div className="itinerary-map">
-                <MapContainer
-                  key={`${selectedPlanId}-${mapDestinations
-                    .map((item) => item.place_id)
-                    .join("-")}`}
-                  center={coordinates[0]}
-                  zoom={11}
-                  scrollWheelZoom={true}
-                  style={{
-                    height: "400px",
-                    width: "100%",
-                    borderRadius: "12px",
-                  }}
-                >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
-
-                  <FitMapToDestinations coordinates={coordinates} />
-
-                  {coordinates.length > 1 && (
-                    <Polyline
-                      positions={coordinates}
-                      pathOptions={{
-                        color: "#285b3c",
-                        weight: 4,
-                        opacity: 0.85,
-                        dashArray: "8 8",
-                      }}
-                    />
-                  )}
-
-                  {mapDestinations.map((item) => (
-                    <Marker
-                      key={item.plan_place_id}
-                      position={[
-                        Number(item.place.latitude),
-                        Number(item.place.longitude),
-                      ]}
-                      icon={createNumberedIcon(item.displayOrder)}
-                    >
-                      <Popup>
-                        <strong>
-                          {item.displayOrder}. {item.place.place_name}
-                        </strong>
-                        <br />
-                        {item.planned_time
-                          ? `Planned time: ${item.planned_time.slice(0, 5)}`
-                          : "Planned time not set"}
-                        {item.place.address && (
-                          <>
-                            <br />
-                            {item.place.address}
-                          </>
-                        )}
-                      </Popup>
-                    </Marker>
-                  ))}
-                </MapContainer>
-              </div>
-            ) : (
-              <p>
-                No destinations with valid map coordinates have been added yet.
-              </p>
-            )}
-
-            <p className="itinerary-map-note">
-              The dashed line shows visit order only. It is not a road route
-              and does not represent driving distance.
-            </p>
-          </section>
-
-          <section className="planned-destinations-section">
-            <h3>Planned Destinations</h3>
-
-            {itineraryPlaces.length === 0 ? (
-              <p>
-                No destinations have been added to this plan yet. Add one above
-                to begin your itinerary.
-              </p>
-            ) : (
-              <div className="planned-destinations-list">
-                {itineraryPlaces.map((item, index) => (
-                  <article
-                    key={item.plan_place_id}
-                    className="planned-destination-card"
-                  >
-                    <div className="planned-destination-order">
-                      {index + 1}
-                    </div>
-
-                    {item.place.image && (
-                      <img
-                        className="planned-destination-image"
-                        src={item.place.image}
-                        alt={item.place.place_name}
-                        onError={(event) => {
-                          event.currentTarget.style.display = "none";
-                        }}
-                      />
-                    )}
-
-                    <div className="planned-destination-details">
-                      <h4>{item.place.place_name}</h4>
-
-                      {item.place.category && (
-                        <p>{item.place.category.category_name}</p>
-                      )}
-
-                      {item.place.address && <p>{item.place.address}</p>}
-
-                      {item.place.description && <p>{item.place.description}</p>}
-
-                      {item.place.distance !== null &&
-                        item.place.distance !== undefined && (
-                          <p>
-                            Recorded distance from Hemmathagama:{" "}
-                            {item.place.distance} km
-                          </p>
-                        )}
-
-                      {item.place.visit_duration && (
-                        <p>
-                          Suggested visit duration: {item.place.visit_duration}
-                        </p>
-                      )}
-
-                      {item.place.best_time_to_visit && (
-                        <p>
-                          Best time to visit: {item.place.best_time_to_visit}
-                        </p>
-                      )}
-
-                      <label>
-                        Planned time
-                        <input
-                          type="time"
-                          value={item.planned_time?.slice(0, 5) ?? ""}
-                          onChange={(event) =>
-                            void handleUpdateTime(item, event.target.value)
-                          }
-                        />
-                      </label>
-
-                      <button
-                        type="button"
-                        className="remove-destination-button"
-                        disabled={saving}
-                        onClick={() => void handleRemovePlace(item.place_id)}
-                      >
-                        Remove Destination
-                      </button>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            )}
-          </section>
-        </>
+            <FoodStops stops={stopPlaces} places={catalogue} />
+          </aside>
+        </div>
       )}
-    </main>
+
+      {dialogs}
+    </div>
   );
 }

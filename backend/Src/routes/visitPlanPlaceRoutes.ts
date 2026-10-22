@@ -5,6 +5,7 @@ import {
   addPlaceToVisitPlan,
   getPlacesInVisitPlan,
   removePlaceFromVisitPlan,
+  reorderVisitPlanPlaces,
   updateVisitPlanPlace,
 } from "../controllers/visitPlanPlaceController";
 
@@ -24,6 +25,13 @@ router.get(
   "/:planId/places",
   authenticateToken,
   getPlacesInVisitPlan
+);
+
+// Reorder every stop in a plan in one request
+router.put(
+  "/:planId/order",
+  authenticateToken,
+  reorderVisitPlanPlaces
 );
 
 // Update a place's visit order or planned time

@@ -6,7 +6,15 @@ import Icon from "./ui/Icon";
 
 // Route guidance for a plan: time at stops, estimated driving time, total
 // day estimate, and Google Maps directions for each leg (FR-018/019/041-044).
-export default function TripSummary({ stops, estimate }: { stops: Place[]; estimate: TripEstimate }) {
+export default function TripSummary({
+  stops,
+  estimate,
+  showLegs = true,
+}: {
+  stops: Place[];
+  estimate: TripEstimate;
+  showLegs?: boolean;
+}) {
   if (stops.length === 0) return null;
 
   const travelText =
@@ -27,7 +35,7 @@ export default function TripSummary({ stops, estimate }: { stops: Place[]; estim
 
   return (
     <section className="trip-summary" aria-labelledby="trip-heading">
-      <h3 id="trip-heading">Your day at a glance</h3>
+      <h2 id="trip-heading">Your day at a glance</h2>
 
       <dl className="trip-stats">
         <div>
@@ -55,6 +63,7 @@ export default function TripSummary({ stops, estimate }: { stops: Place[]; estim
         </p>
       )}
 
+      {showLegs && (
       <ol className="trip-legs">
         {stops.map((place, index) => {
           const leg = estimate.legs[index];
@@ -80,6 +89,7 @@ export default function TripSummary({ stops, estimate }: { stops: Place[]; estim
           );
         })}
       </ol>
+      )}
 
       {fullRoute && (
         <a className="btn btn-secondary trip-full-route" href={fullRoute} target="_blank" rel="noreferrer">

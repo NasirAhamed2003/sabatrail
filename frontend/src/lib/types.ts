@@ -34,6 +34,7 @@ export interface VisitPlan {
   plan_id: number;
   plan_name: string;
   visit_date: string;
+  _count?: { plan_places: number };
 }
 
 export interface PlanStop {

@@ -2,7 +2,7 @@ import { Response } from "express";
 import { prisma } from "../prisma";
 import { AuthRequest } from "../middleware/authMiddleware";
 import { idParam, parseOrRespond, sendError } from "../http";
-import { addPlanPlaceSchema, updatePlanPlaceSchema } from "../validation";
+import { addPlanPlaceSchema, reorderSchema, updatePlanPlaceSchema } from "../validation";
 
 // Find a plan only if it belongs to the logged-in user
 async function findOwnedPlan(planId: number, userId: number) {
@@ -209,11 +209,27 @@ export const removePlaceFromVisitPlan = async (
       });
     }
 
-    // Remove the place from the visit plan
-    await prisma.visitPlanPlace.delete({
-      where: {
-        plan_place_id: planPlace.plan_place_id,
-      },
+    // Remove the place and renumber the remaining stops 1..n in one transaction
+    await prisma.$transaction(async (tx) => {
+      await tx.visitPlanPlace.delete({
+        where: {
+          plan_place_id: planPlace.plan_place_id,
+        },
+      });
+
+      const remaining = await tx.visitPlanPlace.findMany({
+        where: { plan_id: planId },
+        orderBy: [{ visit_order: "asc" }, { plan_place_id: "asc" }],
+      });
+
+      for (const [index, stop] of remaining.entries()) {
+        if (stop.visit_order !== index + 1) {
+          await tx.visitPlanPlace.update({
+            where: { plan_place_id: stop.plan_place_id },
+            data: { visit_order: index + 1 },
+          });
+        }
+      }
     });
 
     return res.json({
@@ -298,5 +314,71 @@ export const updateVisitPlanPlace = async (
     });
   } catch (error) {
     return sendError(res, error, "Failed to update visit plan place");
+  }
+};
+
+// ==========================================
+// REORDER ALL STOPS IN A PLAN
+// Body: { place_ids: [3, 1, 2] } - every place in the plan, in the new order
+// ==========================================
+
+export const reorderVisitPlanPlaces = async (
+  req: AuthRequest,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Authentication required",
+      });
+    }
+
+    const planId = parseOrRespond(idParam, req.params.planId, res);
+    if (planId === null) return;
+
+    const data = parseOrRespond(reorderSchema, req.body, res);
+    if (!data) return;
+
+    const visitPlan = await findOwnedPlan(planId, req.user.user_id);
+
+    if (!visitPlan) {
+      return res.status(404).json({
+        message: "Visit plan not found",
+      });
+    }
+
+    const stops = await prisma.visitPlanPlace.findMany({
+      where: { plan_id: planId },
+    });
+
+    const current = new Set(stops.map((stop) => stop.place_id));
+    const requested = new Set(data.place_ids);
+
+    const sameSet =
+      requested.size === data.place_ids.length &&
+      requested.size === current.size &&
+      [...requested].every((id) => current.has(id));
+
+    if (!sameSet) {
+      return res.status(400).json({
+        message: "place_ids must list every place in the plan exactly once",
+      });
+    }
+
+    await prisma.$transaction(
+      data.place_ids.map((placeId, index) =>
+        prisma.visitPlanPlace.updateMany({
+          where: { plan_id: planId, place_id: placeId },
+          data: { visit_order: index + 1 },
+        })
+      )
+    );
+
+    return res.json({
+      message: "Visit order updated",
+      place_ids: data.place_ids,
+    });
+  } catch (error) {
+    return sendError(res, error, "Failed to reorder visit plan");
   }
 };

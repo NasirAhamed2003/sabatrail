@@ -29,9 +29,9 @@ export default function FoodStops({ stops, places }: { stops: Place[]; places: P
 
   return (
     <section className="food-stops" aria-labelledby="food-heading">
-      <h3 id="food-heading">
+      <h2 id="food-heading">
         <Icon name="food" size={20} /> Food stops for your day
-      </h3>
+      </h2>
 
       <p className="muted">
         {hasFoodStop
