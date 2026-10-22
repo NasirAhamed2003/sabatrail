@@ -5,13 +5,13 @@ import { useStartPoint } from "../lib/startPoint";
 const APPROXIMATE_M = 1000;
 
 // "Distances from: Hemmathagama town centre · Use my location"
-export default function StartPointControl() {
+export default function StartPointControl({ prefix = "Distances from" }: { prefix?: string }) {
   const { start, status, chooseDeviceLocation, chooseTownCentre } = useStartPoint();
 
   return (
     <div className="start-point" aria-live="polite">
       <span className="start-point-label">
-        Distances from <strong>{start.label}</strong>
+        {prefix} <strong>{start.label}</strong>
       </span>
 
       {start.kind === "town" ? (
@@ -36,10 +36,10 @@ export default function StartPointControl() {
         </span>
       )}
       {status === "denied" && (
-        <span className="start-point-note">Location permission was declined, so distances are from the town centre.</span>
+        <span className="start-point-note">Location permission was declined, so the town centre is used.</span>
       )}
       {status === "unavailable" && (
-        <span className="start-point-note">Your location isn't available, so distances are from the town centre.</span>
+        <span className="start-point-note">Your location isn't available, so the town centre is used.</span>
       )}
     </div>
   );

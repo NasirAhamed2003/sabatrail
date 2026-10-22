@@ -14,7 +14,7 @@ import {
 } from "../lib/format";
 import { directionsUrl, haversineKm } from "../lib/geo";
 import { usePlaces } from "../lib/places";
-import { useStartPoint } from "../lib/startPoint";
+import { useStartPoint, type PlaceDistance } from "../lib/startPoint";
 import { FOOD_CATEGORY, type Place } from "../lib/types";
 import "./PlaceDetailsPage.css";
 
@@ -71,10 +71,18 @@ function NearbyList({ title, places, origin, emptyText }: {
   );
 }
 
+function describeDistance(away: PlaceDistance, from: string) {
+  const km = formatKm(away.km);
+  if (!km) return null;
+  if (!away.road) return `${km} in a straight line from ${from}`;
+
+  return `${km} by road from ${from} (~${formatDuration(away.minutes)} drive)`;
+}
+
 export default function PlaceDetailsPage() {
   const { id } = useParams();
   const { places, status } = usePlaces();
-  const { start, distanceKm } = useStartPoint();
+  const { start, distanceTo } = useStartPoint();
   const [imageFailed, setImageFailed] = useState(false);
 
   const place = places.find((p) => p.place_id === Number(id));
@@ -171,7 +179,7 @@ export default function PlaceDetailsPage() {
             </div>
 
             <dl className="facts">
-              <Fact icon="pin" label="Distance" value={formatKm(distanceKm(place)) && `${formatKm(distanceKm(place))} from ${start.label}`} />
+              <Fact icon="pin" label="Distance" value={describeDistance(distanceTo(place), start.label)} />
               <Fact icon="clock" label="Time to spend" value={formatDuration(place.visit_duration_minutes)} />
               <Fact icon="door" label="Opening hours" value={formatOpeningHours(place.opening_time, place.closing_time) ?? "Check locally"} />
               <Fact icon="sun" label="Best time" value={place.best_time_to_visit ?? null} />
@@ -179,8 +187,8 @@ export default function PlaceDetailsPage() {
 
             <StartPointControl />
             <p className="estimate-note">
-              Distances are straight-line estimates; the road distance is longer. Hours and durations are a guide,
-              not a guarantee.
+              Road distances and driving times come from OpenStreetMap and assume normal traffic. Hours and
+              durations are a guide, not a guarantee.
             </p>
           </div>
         </header>

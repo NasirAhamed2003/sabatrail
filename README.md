@@ -98,5 +98,5 @@ ADMIN_PASSWORD=... node postman/build-collection.mjs --run http://localhost:5000
 
 - **Maps:** OpenStreetMap tiles through Leaflet. These need an internet connection.
 - **Directions:** links open Google Maps. Without an origin, Google uses the device's own location, so the visitor's position never passes through SabaTrail.
-- **Driving-time estimates:** come from the public OSRM routing service (OpenStreetMap road data). Only place and town-centre coordinates are sent. If the service can't be reached, the planner shows "Travel time unavailable" instead of guessing.
+- **Road distances and driving times:** come from the public OSRM routing service (OpenStreetMap road data). Place and town-centre coordinates are sent. If the visitor chooses "Use my location", that position is rounded to about 100 m, sent to OSRM as the start point, and kept in the tab's session storage so it survives a refresh. It is never sent to the SabaTrail API. If OSRM can't be reached, place cards fall back to straight-line distance and the planner shows "Travel time unavailable".
 - **Photos:** Wikimedia Commons URLs, with credits shown on each place page.

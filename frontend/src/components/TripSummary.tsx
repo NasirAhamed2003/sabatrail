@@ -1,5 +1,6 @@
 import { formatDuration, formatKm } from "../lib/format";
-import { HEMMATHAGAMA, directionsUrl, routeUrl } from "../lib/geo";
+import { directionsUrl, routeUrl } from "../lib/geo";
+import { useStartPoint } from "../lib/startPoint";
 import type { TripEstimate } from "../lib/trip";
 import type { Place } from "../lib/types";
 import Icon from "./ui/Icon";
@@ -15,6 +16,8 @@ export default function TripSummary({
   estimate: TripEstimate;
   showLegs?: boolean;
 }) {
+  const { start } = useStartPoint();
+
   if (stops.length === 0) return null;
 
   const travelText =
@@ -31,7 +34,7 @@ export default function TripSummary({
         ? "Calculating…"
         : "Unavailable";
 
-  const fullRoute = routeUrl(stops, HEMMATHAGAMA);
+  const fullRoute = routeUrl(stops, start);
 
   return (
     <section className="trip-summary" aria-labelledby="trip-heading">
@@ -67,12 +70,12 @@ export default function TripSummary({
       <ol className="trip-legs">
         {stops.map((place, index) => {
           const leg = estimate.legs[index];
-          const from = index === 0 ? HEMMATHAGAMA : stops[index - 1];
+          const from = index === 0 ? start : stops[index - 1];
 
           return (
             <li key={place.place_id}>
               <span className="trip-leg-route">
-                {index === 0 ? "Town centre" : stops[index - 1].place_name} → <strong>{place.place_name}</strong>
+                {index === 0 ? (start.kind === "town" ? "Town centre" : "Your location") : stops[index - 1].place_name} → <strong>{place.place_name}</strong>
               </span>
               <span className="trip-leg-time">
                 {leg
@@ -103,7 +106,7 @@ export default function TripSummary({
         <span>
           <strong>Estimates, not guarantees.</strong> Driving times come from OpenStreetMap road data and assume
           normal conditions; traffic, weather, road works and stops along the way can make the day longer. The
-          route starts at Hemmathagama town centre and doesn&apos;t include the trip home.
+          route starts at {start.label} and doesn&apos;t include the trip home.
         </span>
       </p>
     </section>

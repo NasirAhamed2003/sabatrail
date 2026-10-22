@@ -4,6 +4,7 @@ import api from "../api";
 import FoodStops from "../components/FoodStops";
 import PlaceMap, { type MapMarker } from "../components/PlaceMap";
 import PlanFormDialog from "../components/PlanFormDialog";
+import StartPointControl from "../components/StartPointControl";
 import TripSummary from "../components/TripSummary";
 import { Button, ButtonLink } from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
@@ -11,9 +12,10 @@ import Icon from "../components/ui/Icon";
 import { useToast } from "../components/ui/Toast";
 import { apiErrorMessage, apiStatus } from "../lib/errors";
 import { formatDate, formatDuration, formatKm } from "../lib/format";
-import { HEMMATHAGAMA, directionsUrl, hasCoordinates } from "../lib/geo";
+import { directionsUrl, hasCoordinates } from "../lib/geo";
 import { usePlaces } from "../lib/places";
 import { usePlans } from "../lib/plans";
+import { useStartPoint } from "../lib/startPoint";
 import { useTripEstimate } from "../lib/trip";
 import type { TravelLeg } from "../lib/travel";
 import type { PlanDetails, PlanStop, VisitPlan } from "../lib/types";
@@ -265,7 +267,9 @@ export default function PlanPage() {
   const current = details && details.planId === selectedId ? details : null;
   const stops = current?.stops ?? [];
   const stopPlaces = stops.map((stop) => stop.place);
-  const estimate = useTripEstimate(stopPlaces);
+  const { start } = useStartPoint();
+  const startName = start.kind === "town" ? "Hemmathagama town centre" : "your location";
+  const estimate = useTripEstimate(stopPlaces, start);
 
   const reload = () => {
     setReloadKey((key) => key + 1);
@@ -502,7 +506,7 @@ export default function PlanPage() {
   }
 
   const markers: MapMarker[] = [
-    { id: "start", ...HEMMATHAGAMA, label: "Start: Hemmathagama town centre", kind: "start" },
+    { id: "start", latitude: start.latitude, longitude: start.longitude, label: `Start: ${startName}`, kind: "start" },
     ...stops
       .filter((stop) => hasCoordinates(stop.place))
       .map((stop, index) => ({
@@ -608,8 +612,8 @@ export default function PlanPage() {
                     stop={stop}
                     index={index}
                     total={stops.length}
-                    previousName={index === 0 ? "Hemmathagama town centre" : stops[index - 1].place.place_name}
-                    previous={index === 0 ? HEMMATHAGAMA : stops[index - 1].place}
+                    previousName={index === 0 ? startName : stops[index - 1].place.place_name}
+                    previous={index === 0 ? start : stops[index - 1].place}
                     leg={estimate.legs[index]}
                     legStatus={estimate.travelStatus}
                     onMove={(direction) => void move(index, direction)}
@@ -650,6 +654,7 @@ export default function PlanPage() {
           </section>
 
           <aside className="planner-side">
+            <StartPointControl prefix="Day starts from" />
             <TripSummary stops={stopPlaces} estimate={estimate} showLegs={false} />
 
             {markers.length > 1 && (

@@ -10,10 +10,12 @@ import "./PlaceCard.css";
 // Compact catalogue card: photo, category, name, short summary, key facts,
 // and the "Add to my day" action. Full details live on /places/:id.
 export default function PlaceCard({ place }: { place: Place }) {
-  const { distanceKm, start } = useStartPoint();
+  const { distanceTo, start } = useStartPoint();
   const [imageFailed, setImageFailed] = useState(false);
 
-  const distance = formatKm(distanceKm(place));
+  const away = distanceTo(place);
+  const distance = formatKm(away.km);
+  const drive = away.minutes != null ? formatDuration(away.minutes) : null;
   const duration = formatDuration(place.visit_duration_minutes);
   const hours = formatOpeningHours(place.opening_time, place.closing_time);
   const category = place.category?.category_name;
@@ -39,9 +41,12 @@ export default function PlaceCard({ place }: { place: Place }) {
 
         <ul className="place-tile-facts">
           {distance && (
-            <li title={`Straight-line distance from ${start.label}`}>
+            <li title={away.road ? `Road distance from ${start.label}` : `Straight-line distance from ${start.label}`}>
               <Icon name="pin" size={16} /> {distance}
-              <span className="visually-hidden"> from {start.label}</span>
+              {drive && <> · {drive} drive</>}
+              <span className="visually-hidden">
+                {away.road ? " by road" : " in a straight line"} from {start.label}
+              </span>
             </li>
           )}
           {duration && (
