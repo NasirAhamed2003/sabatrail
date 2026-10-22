@@ -126,7 +126,7 @@
   width: 100%;
   min-width: 0;
   padding: 11px 12px;
-  border: 1px solid #cfdad2;
+  border: 1px solid var(--border-strong);
   border-radius: 7px;
   background: #fff;
   color: #1d2b27;
