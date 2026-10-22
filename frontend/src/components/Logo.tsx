@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import "./Logo.css";
 
@@ -11,28 +12,43 @@ import "./Logo.css";
 //   src/assets/logo-mark.svg  optional square mark, shown on narrow screens
 //   public/favicon.svg (+ favicon.png 32x32) for the browser tab
 const urls = import.meta.glob<string>("../assets/logo*.svg", { eager: true, query: "?url", import: "default" });
-const sources = import.meta.glob<string>("../assets/logo.svg", { eager: true, query: "?raw", import: "default" });
 
 const LOGO = urls["../assets/logo.svg"];
 const MARK = urls["../assets/logo-mark.svg"];
 
-// Width / height of an SVG, from its viewBox or width and height attributes
-function aspectRatio(svg: string | undefined) {
-  if (!svg) return null;
+// A wide logo is a lockup that already includes the wordmark, so the
+// "SabaTrail" text is not repeated beside it; a square-ish logo is a mark
+// only. The shape is measured once in the browser (the file isn't bundled
+// into the JavaScript), and the text shows until the answer is known.
+let logoIsLockup: boolean | null = null;
+const logoMeasured = LOGO
+  ? new Promise<boolean>((resolve) => {
+      const probe = new Image();
+      probe.onload = () => resolve(probe.naturalWidth / probe.naturalHeight >= 1.6);
+      probe.onerror = () => resolve(false);
+      probe.src = LOGO;
+    }).then((lockup) => (logoIsLockup = lockup))
+  : null;
 
-  const viewBox = /viewBox\s*=\s*["']\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(svg);
-  const width = /<svg[^>]*\swidth\s*=\s*["']([\d.]+)/i.exec(svg);
-  const height = /<svg[^>]*\sheight\s*=\s*["']([\d.]+)/i.exec(svg);
+function useLogoIsLockup() {
+  const [lockup, setLockup] = useState(logoIsLockup);
 
-  const [w, h] = viewBox ? [viewBox[1], viewBox[2]] : [width?.[1], height?.[1]];
-  return w && h ? Number(w) / Number(h) : null;
+  useEffect(() => {
+    let active = true;
+    void logoMeasured?.then((value) => {
+      if (active) setLockup(value);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return lockup === true;
 }
 
-// A wide logo is a lockup that already includes the wordmark, so the
-// "SabaTrail" text is not repeated beside it. A square-ish logo is a mark only.
-const LOGO_HAS_WORDMARK = (aspectRatio(sources["../assets/logo.svg"]) ?? 0) >= 1.6;
-
 export default function Logo({ placement = "header" }: { placement?: "header" | "footer" }) {
+  const hasWordmark = useLogoIsLockup();
+
   return (
     <Link className={`brand brand-${placement}`} to="/">
       {LOGO ? (
@@ -42,10 +58,10 @@ export default function Logo({ placement = "header" }: { placement?: "header" | 
             <img
               className={MARK ? "brand-logo has-mark" : "brand-logo"}
               src={LOGO}
-              alt={LOGO_HAS_WORDMARK ? "SabaTrail" : ""}
+              alt={hasWordmark ? "SabaTrail" : ""}
             />
           </picture>
-          {!LOGO_HAS_WORDMARK && <span>SabaTrail</span>}
+          {!hasWordmark && <span>SabaTrail</span>}
         </>
       ) : (
         // PLACEHOLDER until src/assets/logo.svg is added: the "S" mark and wordmark
