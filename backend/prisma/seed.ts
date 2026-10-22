@@ -523,6 +523,91 @@ async function main() {
     console.log(`Admin already exists: ${adminEmail}`);
   }
 
+  // Demo visitor with two sample day plans, so the planner can be tried
+  // straight after seeding. Plans are only added if the account has none.
+  const demoEmail = (process.env.SEED_DEMO_EMAIL || "demo@sabatrail.local").toLowerCase();
+  let demoUser = await prisma.user.findUnique({ where: { email: demoEmail } });
+
+  if (!demoUser) {
+    const demoPassword =
+      process.env.SEED_DEMO_PASSWORD || crypto.randomBytes(9).toString("base64url");
+
+    demoUser = await prisma.user.create({
+      data: {
+        name: "Demo Visitor",
+        email: demoEmail,
+        password: await bcrypt.hash(demoPassword, 10),
+        role: "USER",
+      },
+    });
+
+    console.log(
+      process.env.SEED_DEMO_PASSWORD
+        ? `Demo user created: ${demoEmail} (password from SEED_DEMO_PASSWORD)`
+        : `Demo user created: ${demoEmail} / ${demoPassword}`
+    );
+  } else {
+    console.log(`Demo user already exists: ${demoEmail}`);
+  }
+
+  const demoPlans = [
+    {
+      plan_name: "Temples and Botanic Gardens",
+      daysAhead: 7,
+      stops: [
+        ["Gadaladeniya Vihara", "08:30"],
+        ["Lankatilaka Vihara", "09:45"],
+        ["Embekka Devalaya", "11:00"],
+        ["Hela Bojun, Mawanella", "13:00"],
+        ["Royal Botanic Gardens, Peradeniya", "15:00"],
+      ],
+    },
+    {
+      plan_name: "Railway Museum and Bible Rock",
+      daysAhead: 14,
+      stops: [
+        ["National Railway Museum, Kadugannawa", "09:00"],
+        ["Utuwankanda", "11:00"],
+        ["Seetha's, Mawanella", "13:00"],
+        ["Bible Rock (Bathalegala)", "15:00"],
+      ],
+    },
+  ] as const;
+
+  const existingDemoPlans = await prisma.visitPlan.count({ where: { user_id: demoUser.user_id } });
+
+  if (existingDemoPlans === 0) {
+    for (const demoPlan of demoPlans) {
+      const visitDate = new Date();
+      visitDate.setUTCHours(0, 0, 0, 0);
+      visitDate.setUTCDate(visitDate.getUTCDate() + demoPlan.daysAhead);
+
+      const stopPlaces = await prisma.place.findMany({
+        where: { place_name: { in: demoPlan.stops.map(([name]) => name) } },
+        select: { place_id: true, place_name: true },
+      });
+      const idByName = new Map(stopPlaces.map((place) => [place.place_name, place.place_id]));
+      const stops = demoPlan.stops.filter(([name]) => idByName.has(name));
+
+      await prisma.visitPlan.create({
+        data: {
+          user_id: demoUser.user_id,
+          plan_name: demoPlan.plan_name,
+          visit_date: visitDate,
+          plan_places: {
+            create: stops.map(([name, time], index) => ({
+              place_id: idByName.get(name)!,
+              visit_order: index + 1,
+              planned_time: time,
+            })),
+          },
+        },
+      });
+    }
+
+    console.log(`Demo plans created: ${demoPlans.length}`);
+  }
+
   console.log(
     `Categories: ${categoryIds.size}. Places created: ${created}, updated: ${updated}, placeholders removed: ${removed}.`
   );
