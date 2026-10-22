@@ -75,11 +75,3 @@ export function parseGuidance(value: string | null | undefined) {
       return match ? { label: match[1], text: match[2] } : { label: null, text: line };
     });
 }
-
-// "09:00" + 75 minutes -> "10:15"
-export function addMinutes(time: string, minutes: number) {
-  const [h, m] = time.split(":").map(Number);
-  const total = (h * 60 + m + Math.round(minutes)) % (24 * 60);
-
-  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
-}

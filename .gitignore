@@ -17,3 +17,4 @@ backend/.windsurf/
 backend/.agents/
 backend/.claude/
 backend/.windsurf/
+backend/skills-lock.json

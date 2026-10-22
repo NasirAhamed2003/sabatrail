@@ -22,7 +22,7 @@ function keyFor(points: LatLng[]) {
   return points.map((p) => `${p.longitude.toFixed(5)},${p.latitude.toFixed(5)}`).join(";");
 }
 
-export function fetchTravelLegs(points: LatLng[]): Promise<TravelLeg[] | null> {
+function fetchTravelLegs(points: LatLng[]): Promise<TravelLeg[] | null> {
   if (points.length < 2) return Promise.resolve([]);
 
   const key = keyFor(points);
@@ -91,7 +91,7 @@ export function useTravelLegs(points: LatLng[]) {
 // service can't be reached.
 const tableCache = new Map<string, Promise<(TravelLeg | null)[] | null>>();
 
-export function fetchRoadDistances(from: LatLng, to: LatLng[]): Promise<(TravelLeg | null)[] | null> {
+function fetchRoadDistances(from: LatLng, to: LatLng[]): Promise<(TravelLeg | null)[] | null> {
   if (to.length === 0) return Promise.resolve([]);
 
   const key = keyFor([from, ...to]);

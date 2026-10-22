@@ -10,7 +10,7 @@ import "./Logo.css";
 //   src/assets/logo.svg       primary logo: the full lockup (mark + "SabaTrail"),
 //                             or a mark on its own
 //   src/assets/logo-mark.svg  optional square mark, shown on narrow screens
-//   public/favicon.svg (+ favicon.png 32x32) for the browser tab
+//   public/favicon.svg for the browser tab
 const urls = import.meta.glob<string>("../assets/logo*.svg", { eager: true, query: "?url", import: "default" });
 
 const LOGO = urls["../assets/logo.svg"];
