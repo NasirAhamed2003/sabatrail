@@ -55,7 +55,8 @@
   --space-16: 64px;
   --space-24: 96px;
   --gutter: clamp(16px, 4vw, 32px);
-  --container: 1180px;
+  --container: 1180px;          /* grows on large screens, see below */
+  --header-offset: 88px;        /* sticky header (64px) + 24px: top of sticky side panels */
 
   /* Shape and elevation */
   --radius-sm: 6px;   /* inputs, small buttons */
@@ -66,5 +67,26 @@
   --shadow-md: 0 8px 26px rgba(24, 58, 38, 0.08);
 
   /* Breakpoints (reference only; custom properties can't be used in media queries):
-     640px (phone), 960px (tablet), 1200px (desktop) */
+     640px (phone), 960px (tablet), 1100px (side rail), 1200px (desktop),
+     1280 / 1536 / 1920px (large-screen container steps) */
+}
+
+/* Use wide screens without going full-bleed: the container steps up so line
+   lengths stay readable and the side margins don't swallow the page. */
+@media (min-width: 1280px) {
+  :root {
+    --container: 1240px;
+  }
+}
+
+@media (min-width: 1536px) {
+  :root {
+    --container: 1360px;
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --container: 1560px;
+  }
 }

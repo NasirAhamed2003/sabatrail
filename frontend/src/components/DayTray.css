@@ -1,8 +1,8 @@
 /* ==========================================
    YOUR DAY TRAY
-   A sticky bottom bar on every screen size. On the home page at desktop
-   widths the Explore section shows the same information in a right rail
-   (DayRail), so the bar is hidden there.
+   A sticky bottom bar on every screen size. On the home page from 1100px
+   the Explore section shows the same information in a right rail
+   (DayRail), so the bar is hidden there. Both switch at the same width.
 ========================================== */
 
 .day-tray {
@@ -72,7 +72,7 @@
   padding-bottom: 72px;
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1100px) {
   .app-shell.is-home .day-tray {
     display: none;
   }
@@ -88,13 +88,18 @@
   display: none;
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1100px) {
+  /* Sticky within the Explore section, so it stops above the footer. A long
+     stop list scrolls inside the card; the heading and button stay visible. */
   .day-rail {
     position: sticky;
-    top: 88px;
-    display: grid;
+    top: var(--header-offset);
+    display: flex;
+    max-height: calc(100vh - var(--header-offset) - var(--space-6));
+    flex-direction: column;
     gap: var(--space-4);
     align-self: start;
+    overflow: hidden;
     padding: var(--space-6);
     border: 1px solid var(--sand-400);
     border-radius: var(--radius-lg);
@@ -105,6 +110,7 @@
 
 .day-rail h2 {
   font-size: var(--text-lg);
+  overflow-wrap: anywhere;
 }
 
 .day-rail-meta {
@@ -114,16 +120,21 @@
 
 .day-rail ol {
   display: grid;
+  min-height: 0;
+  flex: 0 1 auto;
   gap: var(--space-2);
-  margin: 0;
-  padding: 0;
+  /* Room for the links' 44px hit areas (index.css) inside the scroll box */
+  margin: -11px 0;
+  padding: 11px 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   list-style: none;
   counter-reset: stop;
 }
 
 .day-rail li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-2);
   font-size: var(--text-sm);
   counter-increment: stop;
@@ -143,9 +154,13 @@
   font-weight: 700;
 }
 
+/* Long names wrap rather than being cut off */
 .day-rail li a {
-  overflow: hidden;
+  min-width: 0;
   color: var(--ink);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+}
+
+.day-rail > *:not(ol) {
+  flex: none;
 }

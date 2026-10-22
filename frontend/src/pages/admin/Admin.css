@@ -12,7 +12,7 @@
 
 .admin-sidebar {
   position: sticky;
-  top: 88px;
+  top: var(--header-offset);
   display: grid;
   gap: var(--space-3);
 }
