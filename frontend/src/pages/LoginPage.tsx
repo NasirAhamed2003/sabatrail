@@ -1,9 +1,14 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import api from "../api";
+import Alert from "../components/ui/Alert";
+import { Button } from "../components/ui/Button";
+import Card from "../components/ui/Card";
+import Field from "../components/ui/Field";
 import { useAuth, type AuthUser } from "../lib/auth";
 import { apiErrorMessage } from "../lib/errors";
 import { safeNext } from "../lib/routing";
+import "./AuthPages.css";
 
 function LoginPage() {
   const { login } = useAuth();
@@ -16,7 +21,7 @@ function LoginPage() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessage("");
     setLoading(true);
@@ -45,47 +50,45 @@ function LoginPage() {
 
   return (
     <div className="auth-page">
-      <section className="auth-card">
-        <h1>Welcome to SabaTrail</h1>
-        <p>Log in to manage your visit plans.</p>
+      <Card as="section" className="auth-card" aria-labelledby="login-heading">
+        <h1 id="login-heading">Welcome back</h1>
+        <p className="auth-intro">Log in to see and edit your visit plans.</p>
 
-        <form onSubmit={handleLogin}>
-          <label htmlFor="login-email">Email address</label>
-          <input
-            id="login-email"
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="Enter your email"
-            autoComplete="email"
-            required
-          />
+        <form className="auth-form" onSubmit={handleLogin}>
+          <Field id="login-email" label="Email address">
+            <input
+              className="input"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              autoComplete="email"
+              required
+            />
+          </Field>
 
-          <label htmlFor="login-password">Password</label>
-          <input
-            id="login-password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder="Enter your password"
-            autoComplete="current-password"
-            required
-          />
+          <Field id="login-password" label="Password">
+            <input
+              className="input"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete="current-password"
+              required
+            />
+          </Field>
 
-          {message && <p className="auth-message" role="alert">{message}</p>}
+          {message && <Alert tone="error">{message}</Alert>}
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Log In"}
-          </button>
+          <Button type="submit" size="lg" block disabled={loading}>
+            {loading ? "Logging in…" : "Log in"}
+          </Button>
         </form>
 
         <p className="auth-switch">
           New here?{" "}
-          <Link to={`/register${next !== "/" ? `?next=${encodeURIComponent(next)}` : ""}`}>
-            Create an account
-          </Link>
+          <Link to={`/register${next !== "/" ? `?next=${encodeURIComponent(next)}` : ""}`}>Create an account</Link>
         </p>
-      </section>
+      </Card>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { useToast } from "../../components/ui/Toast";
 import { apiErrorMessage, apiFieldErrors } from "../../lib/errors";
 import { invalidatePlaces } from "../../lib/places";
 import type { Category } from "../../lib/types";
+import Alert from "../../components/ui/Alert";
 
 // One category row; in edit mode the row is its own form, so Enter saves
 // and Escape cancels.
@@ -265,12 +266,12 @@ export default function AdminCategoriesPage() {
       </form>
 
       {loadError && (
-        <div className="alert alert-error" role="alert">
+        <Alert tone="error">
           Couldn&apos;t load categories.{" "}
           <button type="button" className="link-button" onClick={reload}>
             Try again
           </button>
-        </div>
+        </Alert>
       )}
 
       {categories === null && !loadError && <p role="status">Loading categories…</p>}

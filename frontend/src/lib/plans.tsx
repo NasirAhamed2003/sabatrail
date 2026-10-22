@@ -18,6 +18,7 @@ import { apiErrorMessage, apiStatus } from "./errors";
 import { formatDate, todayIso } from "./format";
 import { loginPath } from "./routing";
 import type { Place, PlanDetails, PlanStop, VisitPlan } from "./types";
+import Alert from "../components/ui/Alert";
 
 // ==========================================
 // PLANS CONTEXT
@@ -400,9 +401,9 @@ function AccountPlansProvider({ children }: { children: ReactNode }) {
           )}
 
           {dialogError && (
-            <p className="alert alert-error" role="alert">
+            <Alert tone="error">
               {dialogError}
-            </p>
+            </Alert>
           )}
 
           <div className="dialog-footer">

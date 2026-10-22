@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router";
 import { DayRail } from "../components/DayTray";
 import PlaceCard from "../components/PlaceCard";
 import StartPointControl from "../components/StartPointControl";
@@ -7,6 +8,13 @@ import { usePlaces } from "../lib/places";
 
 function HomePage() {
   const { places, status, reload } = usePlaces();
+  const { hash } = useLocation();
+
+  // The catalogue changes the page height once it loads, so an anchor
+  // like #how needs scrolling to again
+  useEffect(() => {
+    if (status === "ready" && hash) document.getElementById(hash.slice(1))?.scrollIntoView();
+  }, [status, hash]);
   const [searchText, setSearchText] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
@@ -71,25 +79,17 @@ function HomePage() {
           </p>
 
           <div className="hero-actions">
-            <a className="primary-button" href="#explore">
-              Explore Destinations <span>→</span>
+            <a className="btn btn-primary btn-lg" href="#explore">
+              Explore places <span aria-hidden="true">→</span>
             </a>
 
-            <a className="secondary-button" href="#about">
-              Discover SabaTrail
+            <a className="btn btn-secondary btn-lg" href="#how">
+              How it works
             </a>
-          </div>
-
-          <div className="hero-note">
-            <span className="status-dot" />
-            Your local journey starts here
           </div>
         </div>
 
-        <div
-          className="hero-art"
-          aria-label="Nature-inspired travel illustration"
-        >
+        <div className="hero-art" aria-hidden="true">
           <div className="sun" />
           <div className="mountain mountain-back" />
           <div className="mountain mountain-front" />
@@ -210,15 +210,41 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="about-section" id="about">
-        <div>
-          <span className="eyebrow">TRAVEL WITH PURPOSE</span>
-          <h2>Less searching. More exploring.</h2>
-        </div>
+      <section className="how-section" id="how" aria-labelledby="how-heading">
+        <span className="eyebrow">HOW IT WORKS</span>
+        <h2 id="how-heading">Less searching. More exploring.</h2>
 
-        <p>
-          SabaTrail helps you discover local attractions and organise
-          them into a convenient one-day visit plan.
+        <ol className="how-steps">
+          <li>
+            <span className="how-step-number" aria-hidden="true">1</span>
+            <h3>Browse places</h3>
+            <p>
+              Temples, viewpoints, museums and places to eat within 25 km of
+              Hemmathagama, each with opening hours and what to bring.
+            </p>
+          </li>
+          <li>
+            <span className="how-step-number" aria-hidden="true">2</span>
+            <h3>Add stops to your day</h3>
+            <p>
+              Choose “Add to my day” on anything you like. Reorder the stops and
+              set arrival times in your plan.
+            </p>
+          </li>
+          <li>
+            <span className="how-step-number" aria-hidden="true">3</span>
+            <h3>Follow your route</h3>
+            <p>
+              See estimated driving and visit times for the whole day, and open
+              each leg in Google Maps for directions.
+            </p>
+          </li>
+        </ol>
+
+        <p className="how-note">
+          SabaTrail is a planning guide, not a transport, booking, ticketing or
+          emergency service. In an emergency, call <strong>1990</strong> (Suwa
+          Seriya ambulance) or <strong>119</strong> (police).
         </p>
       </section>
     </div>

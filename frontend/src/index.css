@@ -74,3 +74,50 @@ textarea::placeholder {
   color: var(--ink-muted);
   opacity: 1;
 }
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+/* One clearly visible keyboard focus ring everywhere */
+:focus-visible {
+  outline: 3px solid var(--green-700);
+  outline-offset: 2px;
+}
+
+/* Inputs show focus with the ring too, even when clicked */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline-offset: 1px;
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Text links that are also primary targets get a 44px-tall hit area
+   without changing the layout (padding offset by negative margin) */
+.place-tile h3 a,
+.nearby-item a,
+.stop-body h3 a,
+.admin-place-cell a,
+.day-rail li a {
+  display: inline-block;
+  padding-block: 11px;
+  margin-block: -11px;
+}

@@ -1,5 +1,4 @@
 
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
 
 :root {
   font-family: "DM Sans", sans-serif;
@@ -11,7 +10,6 @@
   -moz-osx-font-smoothing: grayscale;
   font-optical-sizing: auto;
   font-weight: 400;
-  scroll-behavior: smooth;
 }
 
 * {
@@ -302,7 +300,6 @@ a {
   padding: 0 15px;
   border: 1px solid var(--border-strong);
   border-radius: 6px;
-  outline: none;
   background: #fcfcfa;
   font-size: 13px;
 }
@@ -4929,5 +4926,75 @@ line-clamp: 4;
   .explore-layout {
     grid-template-columns: minmax(0, 1fr) 300px;
     align-items: start;
+  }
+}
+
+/* ==========================================
+   HOW IT WORKS
+========================================== */
+
+.how-section {
+  display: grid;
+  width: min(var(--container), 100% - 2 * var(--gutter));
+  gap: var(--space-4);
+  margin: 0 auto;
+  padding-block: var(--space-16);
+}
+
+.how-section h2 {
+  font-size: var(--text-xl);
+  letter-spacing: -1px;
+}
+
+.how-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-6);
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.how-steps li {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+  padding: var(--space-6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.how-steps h3 {
+  font-size: var(--text-lg);
+}
+
+.how-steps p {
+  color: var(--ink-muted);
+}
+
+.how-step-number {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--green-700);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.how-note {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--canvas-alt);
+  color: var(--ink);
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 959px) {
+  .how-steps {
+    grid-template-columns: 1fr;
   }
 }

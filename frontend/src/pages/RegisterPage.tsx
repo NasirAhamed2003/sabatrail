@@ -1,15 +1,20 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import api from "../api";
+import Alert from "../components/ui/Alert";
+import { Button } from "../components/ui/Button";
+import Card from "../components/ui/Card";
+import Field from "../components/ui/Field";
 import { useAuth, type AuthUser } from "../lib/auth";
 import { apiErrorMessage, apiFieldErrors } from "../lib/errors";
 import { safeNext } from "../lib/routing";
+import "./AuthPages.css";
 
-type Field = "name" | "email" | "password" | "confirm";
+type FieldName = "name" | "email" | "password" | "confirm";
 
 // Same rules as the API (backend/Src/validation.ts registerSchema)
-function validate(values: Record<Field, string>) {
-  const errors: Partial<Record<Field, string>> = {};
+function validate(values: Record<FieldName, string>) {
+  const errors: Partial<Record<FieldName, string>> = {};
 
   if (!values.name.trim()) errors.name = "Enter your name.";
 
@@ -36,17 +41,17 @@ export default function RegisterPage() {
   const [searchParams] = useSearchParams();
   const next = safeNext(searchParams.get("next"));
 
-  const [values, setValues] = useState<Record<Field, string>>({
+  const [values, setValues] = useState<Record<FieldName, string>>({
     name: "",
     email: "",
     password: "",
     confirm: "",
   });
-  const [errors, setErrors] = useState<Partial<Record<Field, string>>>({});
+  const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({});
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const update = (field: Field, value: string) => {
+  const update = (field: FieldName, value: string) => {
     setValues((current) => ({ ...current, [field]: value }));
     if (errors[field]) setErrors((current) => ({ ...current, [field]: undefined }));
   };
@@ -82,65 +87,81 @@ export default function RegisterPage() {
       login(response.data.token, response.data.user);
       navigate(next, { replace: true });
     } catch (error) {
-      setErrors(apiFieldErrors(error) as Partial<Record<Field, string>>);
+      setErrors(apiFieldErrors(error) as Partial<Record<FieldName, string>>);
       setMessage(apiErrorMessage(error, "We couldn't create your account. Please try again."));
     } finally {
       setSaving(false);
     }
   };
 
-  const fieldProps = (field: Field) => ({
-    id: `register-${field}`,
-    value: values[field],
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => update(field, event.target.value),
-    "aria-invalid": errors[field] ? true : undefined,
-    "aria-describedby": errors[field] ? `register-${field}-error` : undefined,
-  });
-
-  const fieldError = (field: Field) =>
-    errors[field] ? (
-      <p className="field-error" id={`register-${field}-error`}>
-        {errors[field]}
-      </p>
-    ) : null;
-
   return (
     <div className="auth-page">
-      <section className="auth-card">
-        <h1>Create your account</h1>
-        <p>Save visit plans and pick up where you left off on any device.</p>
+      <Card as="section" className="auth-card" aria-labelledby="register-heading">
+        <h1 id="register-heading">Create your account</h1>
+        <p className="auth-intro">Save visit plans and pick up where you left off on any device.</p>
 
-        <form onSubmit={handleSubmit} noValidate>
-          <label htmlFor="register-name">Name</label>
-          <input {...fieldProps("name")} type="text" autoComplete="name" required />
-          {fieldError("name")}
+        <form className="auth-form" onSubmit={handleSubmit} noValidate>
+          <Field id="register-name" label="Name" error={errors.name}>
+            <input
+              className="input"
+              type="text"
+              value={values.name}
+              onChange={(event) => update("name", event.target.value)}
+              autoComplete="name"
+              required
+            />
+          </Field>
 
-          <label htmlFor="register-email">Email address</label>
-          <input {...fieldProps("email")} type="email" autoComplete="email" required />
-          {fieldError("email")}
+          <Field id="register-email" label="Email address" error={errors.email}>
+            <input
+              className="input"
+              type="email"
+              value={values.email}
+              onChange={(event) => update("email", event.target.value)}
+              autoComplete="email"
+              required
+            />
+          </Field>
 
-          <label htmlFor="register-password">Password</label>
-          <input {...fieldProps("password")} type="password" autoComplete="new-password" required />
-          {fieldError("password") ?? (
-            <p className="field-hint">At least 8 characters, with a letter and a number.</p>
-          )}
+          <Field
+            id="register-password"
+            label="Password"
+            hint="At least 8 characters, with a letter and a number."
+            error={errors.password}
+          >
+            <input
+              className="input"
+              type="password"
+              value={values.password}
+              onChange={(event) => update("password", event.target.value)}
+              autoComplete="new-password"
+              required
+            />
+          </Field>
 
-          <label htmlFor="register-confirm">Confirm password</label>
-          <input {...fieldProps("confirm")} type="password" autoComplete="new-password" required />
-          {fieldError("confirm")}
+          <Field id="register-confirm" label="Confirm password" error={errors.confirm}>
+            <input
+              className="input"
+              type="password"
+              value={values.confirm}
+              onChange={(event) => update("confirm", event.target.value)}
+              autoComplete="new-password"
+              required
+            />
+          </Field>
 
-          {message && <p className="auth-message" role="alert">{message}</p>}
+          {message && <Alert tone="error">{message}</Alert>}
 
-          <button type="submit" disabled={saving}>
-            {saving ? "Creating account..." : "Create account"}
-          </button>
+          <Button type="submit" size="lg" block disabled={saving}>
+            {saving ? "Creating account…" : "Create account"}
+          </Button>
         </form>
 
         <p className="auth-switch">
           Already have an account?{" "}
           <Link to={`/login${next !== "/" ? `?next=${encodeURIComponent(next)}` : ""}`}>Log in</Link>
         </p>
-      </section>
+      </Card>
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { formatDuration, formatKm } from "../../lib/format";
 import { HEMMATHAGAMA, haversineKm } from "../../lib/geo";
 import { invalidatePlaces } from "../../lib/places";
 import type { Category, Place } from "../../lib/types";
+import Alert from "../../components/ui/Alert";
 
 const FIELDS = [
   "place_name",
@@ -429,7 +430,7 @@ export default function PlaceFormPage() {
           {showPreview && (
             <figure className="image-preview form-wide">
               {imageFailed ? (
-                <p className="alert alert-warning">This address didn&apos;t load as an image. Check the URL.</p>
+                <Alert tone="warning">This address didn&apos;t load as an image. Check the URL.</Alert>
               ) : (
                 <img src={values.image.trim()} alt="Preview of the place's photo" onError={() => setImageFailed(true)} />
               )}
@@ -439,9 +440,9 @@ export default function PlaceFormPage() {
         </Section>
 
         {formError && (
-          <p className="alert alert-error" role="alert">
+          <Alert tone="error">
             {formError}
-          </p>
+          </Alert>
         )}
 
         <div className="form-actions">

@@ -9,6 +9,7 @@ import { apiErrorMessage } from "../../lib/errors";
 import { formatDate, formatKm } from "../../lib/format";
 import { usePlaces } from "../../lib/places";
 import type { Category, Place } from "../../lib/types";
+import Alert from "../../components/ui/Alert";
 
 type SortKey = "name" | "distance" | "updated";
 
@@ -177,12 +178,12 @@ export default function AdminPlacesPage() {
       {status === "loading" && <p role="status">Loading places…</p>}
 
       {status === "error" && (
-        <div className="alert alert-error" role="alert">
+        <Alert tone="error">
           Couldn&apos;t load places.{" "}
           <button type="button" className="link-button" onClick={() => void reload()}>
             Try again
           </button>
-        </div>
+        </Alert>
       )}
 
       {status === "ready" && (

@@ -18,9 +18,10 @@
 }
 
 .place-map .leaflet-control-zoom a {
-  width: 36px;
-  height: 36px;
-  line-height: 36px;
+  width: 44px;
+  height: 44px;
+  font-size: 22px;
+  line-height: 44px;
 }
 
 .place-map .leaflet-popup-content {

@@ -98,7 +98,7 @@ export default function Layout() {
                 <Link to="/#explore">Explore places</Link>
               </li>
               <li>
-                <Link to="/#about">About</Link>
+                <Link to="/#how">How it works</Link>
               </li>
               {isLoggedIn && (
                 <li>

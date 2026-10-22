@@ -3,6 +3,7 @@ import { apiErrorMessage } from "../lib/errors";
 import { todayIso } from "../lib/format";
 import { Button } from "./ui/Button";
 import Dialog from "./ui/Dialog";
+import Alert from "./ui/Alert";
 
 // Create a plan, or rename / re-date an existing one
 export default function PlanFormDialog({
@@ -107,9 +108,9 @@ function PlanForm({
       </div>
 
       {error && (
-        <p className="alert alert-error" role="alert">
+        <Alert tone="error">
           {error}
-        </p>
+        </Alert>
       )}
 
       <div className="dialog-footer">

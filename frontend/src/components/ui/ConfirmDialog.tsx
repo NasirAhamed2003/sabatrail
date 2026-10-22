@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Button } from "./Button";
 import Dialog from "./Dialog";
+import Alert from "./Alert";
 
 // Styled confirmation for destructive actions: names the item and the consequence
 export default function ConfirmDialog({
@@ -40,9 +41,9 @@ export default function ConfirmDialog({
     >
       <div className="confirm-message">{children}</div>
       {error && (
-        <p className="alert alert-error" role="alert">
+        <Alert tone="error">
           {error}
-        </p>
+        </Alert>
       )}
     </Dialog>
   );

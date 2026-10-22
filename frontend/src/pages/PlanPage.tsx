@@ -18,6 +18,7 @@ import { useTripEstimate } from "../lib/trip";
 import type { TravelLeg } from "../lib/travel";
 import type { PlanDetails, PlanStop, VisitPlan } from "../lib/types";
 import "./PlanPage.css";
+import Alert from "../components/ui/Alert";
 
 type DetailsState = {
   planId: number;
@@ -451,9 +452,9 @@ export default function PlanPage() {
     return (
       <section className="container status-page">
         <h1>My visit plans</h1>
-        <p className="alert alert-error" role="alert">
+        <Alert tone="error">
           We couldn&apos;t load your plans. Check your connection and try again.
-        </p>
+        </Alert>
         <Button variant="secondary" onClick={() => void refreshPlans()}>
           Try again
         </Button>
@@ -570,19 +571,19 @@ export default function PlanPage() {
       )}
 
       {current?.status === "error" && (
-        <div className="alert alert-error planner-alert" role="alert">
+        <Alert tone="error" className="planner-alert">
           We couldn&apos;t load this plan&apos;s stops. Check your connection and{" "}
           <button type="button" className="link-button" onClick={reload}>
             try again
           </button>
           .
-        </div>
+        </Alert>
       )}
 
       {current?.status === "missing" && (
-        <div className="alert alert-warning planner-alert" role="alert">
+        <Alert tone="warning" className="planner-alert">
           This plan no longer exists. <Link to="/plan">Open your plans</Link>
-        </div>
+        </Alert>
       )}
 
       {current?.status === "ready" && (
