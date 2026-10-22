@@ -55,60 +55,22 @@
   margin-top: var(--space-8);
 }
 
-/* Illustration (decorative). Its pastel landscape colours are local to this
-   drawing and intentionally not part of the UI token set. */
+/* Hero photo: fills the arched frame, cropped rather than stretched */
 .hero-art {
   position: relative;
   min-height: 405px;
   overflow: hidden;
   border-radius: 48% 48% var(--radius-lg) var(--radius-lg);
-  background: linear-gradient(155deg, #e5eee1 0%, #f0ead7 54%, #c8dbc4 100%);
+  background: var(--green-100);
 }
 
-.sun {
+.hero-image {
   position: absolute;
-  top: 48px;
-  right: 64px;
-  width: 82px;
-  height: 82px;
-  border-radius: 50%;
-  background: var(--sand-400);
-  opacity: 0.9;
-}
-
-.mountain {
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-right: 190px solid transparent;
-  border-left: 190px solid transparent;
-}
-
-.mountain-back {
-  right: -80px;
-  bottom: 111px;
-  border-right-width: 220px;
-  border-bottom: 230px solid #aec5a8;
-  border-left-width: 220px;
-}
-
-.mountain-front {
-  bottom: 100px;
-  left: -120px;
-  border-right-width: 230px;
-  border-bottom: 285px solid #6e997c;
-  border-left-width: 230px;
-}
-
-.river {
-  position: absolute;
-  bottom: -70px;
-  left: 34%;
-  width: 110px;
-  height: 255px;
-  border-radius: 50% 30% 0 0;
-  background: #a4c7bd;
-  transform: rotate(25deg);
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .art-label {
@@ -346,11 +308,6 @@
 
   .hero-art {
     min-height: 280px;
-  }
-
-  .mountain {
-    transform: scale(0.8);
-    transform-origin: bottom left;
   }
 
   .search-panel {

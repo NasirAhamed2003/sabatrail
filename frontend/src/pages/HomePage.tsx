@@ -5,6 +5,8 @@ import PlaceCard from "../components/PlaceCard";
 import StartPointControl from "../components/StartPointControl";
 import { Button } from "../components/ui/Button";
 import { usePlaces } from "../lib/places";
+import heroLarge from "../assets/hero-1536.webp";
+import heroSmall from "../assets/hero-768.webp";
 import "./HomePage.css";
 
 function HomePage() {
@@ -90,13 +92,21 @@ function HomePage() {
           </div>
         </div>
 
-        <div className="hero-art" aria-hidden="true">
-          <div className="sun" />
-          <div className="mountain mountain-back" />
-          <div className="mountain mountain-front" />
-          <div className="river" />
+        <div className="hero-art">
+          {/* Compressed WebP copies of assets/hero.png (1536x1024) */}
+          <img
+            className="hero-image"
+            src={heroLarge}
+            srcSet={`${heroSmall} 768w, ${heroLarge} 1536w`}
+            sizes="(max-width: 959px) 100vw, 50vw"
+            width={1536}
+            height={1024}
+            loading="lazy"
+            decoding="async"
+            alt="Scenic hill country around Hemmathagama, Sri Lanka"
+          />
 
-          <div className="art-label">
+          <div className="art-label" aria-hidden="true">
             <span>EXPLORE</span>
             <strong>Hemmathagama</strong>
             <span>SRI LANKA</span>
