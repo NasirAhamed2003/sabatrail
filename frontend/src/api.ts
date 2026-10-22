@@ -24,4 +24,21 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// A rejected token (expired or revoked) ends the session everywhere.
+// AuthProvider listens for this event and logs the visitor out.
+export const SESSION_EXPIRED_EVENT = "sabatrail:session-expired";
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const sentToken = Boolean(error?.config?.headers?.Authorization);
+
+    if (error?.response?.status === 401 && sentToken) {
+      window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 export default api;

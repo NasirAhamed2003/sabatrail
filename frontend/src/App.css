@@ -643,6 +643,36 @@ a {
   background: #dfeade;
 }
 
+.auth-card input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.field-error,
+.field-hint {
+  margin: -4px 0 4px;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.field-error {
+  color: var(--danger);
+}
+
+.field-hint {
+  color: var(--ink-muted);
+}
+
+.auth-switch {
+  margin-top: var(--space-6);
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.auth-switch a {
+  color: var(--green-700);
+  font-weight: 700;
+}
+
 .auth-message {
   margin: 8px 0;
   color: #b42318;

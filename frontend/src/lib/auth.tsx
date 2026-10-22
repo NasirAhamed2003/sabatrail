@@ -1,4 +1,13 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+import api, { SESSION_EXPIRED_EVENT } from "../api";
 
 const TOKEN_KEY = "sabatrail_token";
 const USER_KEY = "sabatrail_user";
@@ -100,6 +109,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearSession();
     setUser(null);
   }, []);
+
+  // End the session when the API rejects the stored token
+  useEffect(() => {
+    window.addEventListener(SESSION_EXPIRED_EVENT, logout);
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, logout);
+  }, [logout]);
+
+  // Sessions saved before profiles were stored only know the user ID
+  const needsProfile = user !== null && !user.name;
+
+  useEffect(() => {
+    if (!needsProfile) return;
+
+    api
+      .get<{ user: AuthUser }>("/auth/me")
+      .then((response) => {
+        const profile = response.data.user;
+
+        try {
+          localStorage.setItem(USER_KEY, JSON.stringify(profile));
+        } catch {
+          // Storage unavailable: keep the profile in memory only
+        }
+
+        setUser(profile);
+      })
+      .catch(() => {
+        // A 401 is handled by the session-expired event; other errors just
+        // leave the name unknown
+      });
+  }, [needsProfile]);
 
   const value = useMemo(
     () => ({

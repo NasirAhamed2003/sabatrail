@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import api from "../api";
 import { useAuth, type AuthUser } from "../lib/auth";
+import { apiErrorMessage } from "../lib/errors";
 import { safeNext } from "../lib/routing";
 
 function LoginPage() {
@@ -36,19 +37,7 @@ function LoginPage() {
       login(token, user);
       navigate(next, { replace: true });
     } catch (error: unknown) {
-      if (
-        typeof error === "object" &&
-        error !== null &&
-        "response" in error
-      ) {
-        const response = (error as {
-          response?: { data?: { message?: string } };
-        }).response;
-
-        setMessage(response?.data?.message || "Login failed. Please try again.");
-      } else {
-        setMessage("Unable to connect to the server. Please try again.");
-      }
+      setMessage(apiErrorMessage(error, "Login failed. Please try again."));
     } finally {
       setLoading(false);
     }
@@ -90,9 +79,12 @@ function LoginPage() {
           </button>
         </form>
 
-        <Link className="auth-back-button" to="/">
-          Back to destinations
-        </Link>
+        <p className="auth-switch">
+          New here?{" "}
+          <Link to={`/register${next !== "/" ? `?next=${encodeURIComponent(next)}` : ""}`}>
+            Create an account
+          </Link>
+        </p>
       </section>
     </div>
   );

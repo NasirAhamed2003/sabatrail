@@ -3,8 +3,31 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { prisma } from "../prisma";
 import { config } from "../config";
-import { parseOrRespond } from "../http";
+import { parseOrRespond, sendError } from "../http";
+import { AuthRequest } from "../middleware/authMiddleware";
 import { loginSchema, registerSchema } from "../validation";
+
+// Current user's profile (used by the frontend account menu)
+export const me = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { user_id: req.user.user_id },
+      select: { user_id: true, name: true, email: true, role: true },
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "Account no longer exists" });
+    }
+
+    res.json({ user });
+  } catch (error) {
+    sendError(res, error, "Failed to load profile");
+  }
+};
 
 // Register
 export const register = async (req: Request, res: Response) => {

@@ -284,3 +284,169 @@
   color: var(--green-700);
   font-weight: 600;
 }
+
+/* ---------- Account (signed out / signed in) ---------- */
+
+.nav-register {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 0 var(--space-3);
+  color: var(--green-700);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nav-register:hover {
+  text-decoration: underline;
+}
+
+.account {
+  position: relative;
+}
+
+.account-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-3) 0 var(--space-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--green-900);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.account-button:hover {
+  border-color: var(--border-strong);
+}
+
+.account-avatar {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--green-100);
+  color: var(--green-900);
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.account-name {
+  max-width: 14ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-caret {
+  width: 8px;
+  height: 8px;
+  margin-top: -3px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.account-panel {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  display: none;
+  min-width: 240px;
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.account.is-open .account-panel {
+  display: block;
+}
+
+.account-identity {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-1);
+}
+
+.account-identity span {
+  overflow: hidden;
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+  text-overflow: ellipsis;
+}
+
+.account-panel ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.account-panel a,
+.account-logout {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.account-panel a:hover,
+.account-logout:hover {
+  background: var(--green-100);
+}
+
+.account-logout {
+  color: var(--danger);
+}
+
+@media (max-width: 767px) {
+  .nav-register {
+    justify-content: center;
+  }
+
+  /* Inside the mobile sheet the account section is always expanded */
+  .account-button {
+    display: none;
+  }
+
+  .account-panel {
+    position: static;
+    display: block;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .account-identity {
+    padding-inline: var(--space-3);
+  }
+
+  .account-panel a,
+  .account-logout {
+    font-size: var(--text-md);
+  }
+}

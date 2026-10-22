@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router";
 import { useAuth } from "../lib/auth";
+import { loginPath } from "../lib/routing";
+import AccountMenu from "./AccountMenu";
 import "./Layout.css";
 
 // Scroll to #hash targets after navigation, or to the top for new pages
@@ -31,7 +33,7 @@ function Brand() {
 }
 
 export default function Layout() {
-  const { isLoggedIn, isAdmin } = useAuth();
+  const { isLoggedIn } = useAuth();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -93,23 +95,25 @@ export default function Layout() {
                   <NavLink to="/plan">My visit plans</NavLink>
                 </li>
               )}
-              {isAdmin && (
-                <li>
-                  <NavLink to="/admin">Admin</NavLink>
-                </li>
-              )}
             </ul>
 
-            {!isLoggedIn && (
-              <div className="site-nav-actions">
-                <Link
-                  className="nav-login"
-                  to={`/login?next=${encodeURIComponent(location.pathname)}`}
-                >
-                  Log in
-                </Link>
-              </div>
-            )}
+            <div className="site-nav-actions">
+              {isLoggedIn ? (
+                <AccountMenu />
+              ) : (
+                <>
+                  <Link className="nav-register" to="/register">
+                    Create account
+                  </Link>
+                  <Link
+                    className="nav-login"
+                    to={location.pathname === "/login" ? "/login" : loginPath(location.pathname)}
+                  >
+                    Log in
+                  </Link>
+                </>
+              )}
+            </div>
           </nav>
         </div>
       </header>

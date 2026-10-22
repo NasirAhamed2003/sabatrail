@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import PlaceDetailsPage from "./pages/PlaceDetailsPage";
 import PlanPage from "./pages/PlanPage";
+import RegisterPage from "./pages/RegisterPage";
 import "./App.css";
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
         <Route index element={<HomePage />} />
         <Route path="places/:id" element={<PlaceDetailsPage />} />
         <Route path="login" element={<LoginPage />} />
+        <Route path="register" element={<RegisterPage />} />
 
         <Route
           path="plan"
