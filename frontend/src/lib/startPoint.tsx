@@ -8,6 +8,7 @@ import { HEMMATHAGAMA, haversineKm, type LatLng } from "./geo";
 export interface StartPoint extends LatLng {
   kind: "town" | "device";
   label: string;
+  accuracyM?: number; // device only: browser-reported accuracy radius in metres
 }
 
 const TOWN: StartPoint = { ...HEMMATHAGAMA, kind: "town", label: "Hemmathagama town centre" };
@@ -43,13 +44,16 @@ export function StartPointProvider({ children }: { children: ReactNode }) {
           longitude: position.coords.longitude,
           kind: "device",
           label: "your location",
+          accuracyM: position.coords.accuracy,
         });
         setStatus("idle");
       },
       (error) => {
         setStatus(error.code === error.PERMISSION_DENIED ? "denied" : "unavailable");
       },
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+      // Ask for GPS where the device has it and never reuse an old fix; a cached
+      // or network-only position can be several kilometres out.
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
   }, []);
 
