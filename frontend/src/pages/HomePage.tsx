@@ -1,67 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router";
-import api from "../api";
-
-interface Category {
-  category_id: number;
-  category_name: string;
-  description?: string | null;
-}
-
-interface Place {
-  place_id: number;
-  place_name: string;
-  description?: string | null;
-  address?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
-  distance?: number | null;
-  best_time_to_visit?: string | null;
-  visit_duration?: string | null;
-  suitability?: string | null;
-  opening_time?: string | null;
-  closing_time?: string | null;
-  travel_tips?: string | null;
-  facilities?: string | null;
-  image?: string | null;
-  category?: Category | null;
-}
+import { useMemo, useState } from "react";
+import { DayRail } from "../components/DayTray";
+import PlaceCard from "../components/PlaceCard";
+import StartPointControl from "../components/StartPointControl";
+import { Button } from "../components/ui/Button";
+import { usePlaces } from "../lib/places";
 
 function HomePage() {
-  const [places, setPlaces] = useState<Place[]>([]);
+  const { places, status, reload } = usePlaces();
   const [searchText, setSearchText] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    const fetchPlaces = async () => {
-      try {
-        setLoading(true);
-        setErrorMessage("");
-
-        const response = await api.get<Place[]>("/places");
-        const data = response.data;
-
-        const placeList = Array.isArray(data)
-          ? data
-          : (data as unknown as { places?: Place[] }).places;
-
-        setPlaces(Array.isArray(placeList) ? placeList : []);
-      } catch (error) {
-        console.error("Failed to load places:", error);
-        setErrorMessage(
-          "We couldn't load destinations. Please check your connection and try again."
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void fetchPlaces();
-  }, []);
-
-  // Build category options from the categories in the database.
+  // Category options from the categories that have places
   const categories = useMemo(() => {
     const categoryNames = places
       .map((place) => place.category?.category_name?.trim())
@@ -94,6 +43,13 @@ function HomePage() {
       return matchesCategory && matchesSearch;
     });
   }, [places, searchText, selectedCategory]);
+
+  const filtersActive = selectedCategory !== "All" || searchText !== "";
+
+  const clearFilters = () => {
+    setSearchText("");
+    setSelectedCategory("All");
+  };
 
   return (
     <div className="app">
@@ -152,10 +108,8 @@ function HomePage() {
           <div>
             <span className="eyebrow">FIND YOUR NEXT STOP</span>
             <h2>Explore local destinations</h2>
-            <p>Find places to visit and start planning your day.</p>
+            <p>Find places to visit and add them to your day.</p>
           </div>
-
-          <span className="section-mark">S / 01</span>
         </div>
 
         <div className="search-panel">
@@ -167,233 +121,92 @@ function HomePage() {
             <input
               id="place-search"
               type="search"
-              placeholder="Search by destination, description or category..."
+              placeholder="Search by destination, description or category"
               value={searchText}
               onChange={(event) => setSearchText(event.target.value)}
             />
+          </div>
 
-            <button
-              type="button"
-              onClick={() =>
-                document.getElementById("place-search")?.focus()
-              }
-            >
-              Search <span>→</span>
-            </button>
+          <div className="category-chips" role="group" aria-label="Filter by category">
+            {categories.map((category) => (
+              <button
+                key={category}
+                type="button"
+                className="category-chip"
+                aria-pressed={selectedCategory === category}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category === "All" ? "All categories" : category}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="category-filter">
-          <label htmlFor="category-filter-select">
-            Filter by category
-          </label>
-
-          <select
-            id="category-filter-select"
-            value={selectedCategory}
-            onChange={(event) =>
-              setSelectedCategory(event.target.value)
-            }
-          >
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category === "All" ? "All Categories" : category}
-              </option>
-            ))}
-          </select>
-
-          {(selectedCategory !== "All" || searchText !== "") && (
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedCategory("All");
-                setSearchText("");
-              }}
-            >
-              Clear Filters
-            </button>
-          )}
-        </div>
-
+        <div className="explore-layout">
         <div className="places-section">
-          {loading && (
-            <div className="empty-state">
-              <h3>Loading destinations...</h3>
+          {status === "loading" && (
+            <div className="empty-state" role="status">
+              <h3>Loading destinations…</h3>
               <p>Please wait while we retrieve local places.</p>
             </div>
           )}
 
-          {!loading && errorMessage && (
-            <div className="empty-state">
+          {status === "error" && (
+            <div className="empty-state" role="alert">
               <h3>Unable to load destinations</h3>
-              <p>{errorMessage}</p>
+              <p>We couldn&apos;t reach SabaTrail. Check your connection and try again.</p>
 
-              <button
-                className="retry-button"
-                type="button"
-                onClick={() => window.location.reload()}
-              >
+              <Button variant="secondary" onClick={() => void reload()}>
                 Try again
-              </button>
+              </Button>
             </div>
           )}
 
-          {!loading &&
-            !errorMessage &&
-            filteredPlaces.length === 0 && (
-              <div className="empty-state">
-                <span className="empty-icon">⌖</span>
-
-                <h3>
-                  {places.length === 0
-                    ? "No destinations available yet"
-                    : "No matching destinations found"}
-                </h3>
-
-                <p>
-                  {places.length === 0
-                    ? "Destinations will appear here when places are added to the database."
-                    : "Try another category or search term, or clear the filters."}
+          {status === "ready" && (
+            <>
+              <div className="places-summary">
+                <p aria-live="polite">
+                  <strong>{filteredPlaces.length}</strong>{" "}
+                  {filteredPlaces.length === 1 ? "destination" : "destinations"}
+                  {filtersActive ? " match" : " around Hemmathagama"}
                 </p>
-
-                {(searchText !== "" || selectedCategory !== "All") && (
-                  <button
-                    className="retry-button"
-                    type="button"
-                    onClick={() => {
-                      setSearchText("");
-                      setSelectedCategory("All");
-                    }}
-                  >
-                    Clear Filters
-                  </button>
-                )}
+                <StartPointControl />
               </div>
-            )}
 
-          {!loading &&
-            !errorMessage &&
-            filteredPlaces.length > 0 && (
-              <>
-                <div className="places-summary">
-                  <span>
-                    {filteredPlaces.length}{" "}
-                    {filteredPlaces.length === 1
-                      ? "destination"
-                      : "destinations"}
-                  </span>
+              {filteredPlaces.length === 0 ? (
+                <div className="empty-state">
+                  <h3>
+                    {places.length === 0
+                      ? "No destinations available yet"
+                      : "No matching destinations found"}
+                  </h3>
 
-                  <span>Hemmathagama and surrounding areas</span>
+                  <p>
+                    {places.length === 0
+                      ? "Destinations will appear here when places are added."
+                      : "Try another category or search term, or clear the filters."}
+                  </p>
+
+                  {filtersActive && (
+                    <Button variant="secondary" onClick={clearFilters}>
+                      Clear filters
+                    </Button>
+                  )}
                 </div>
-
-                <div className="places-grid">
+              ) : (
+                <ul className="place-grid">
                   {filteredPlaces.map((place) => (
-                    <article
-                      className="place-card"
-                      key={place.place_id}
-                    >
-                      <div className="place-card-art">
-                        {place.image ? (
-                          <img
-                            src={place.image}
-                            alt={place.place_name}
-                            className="place-card-image"
-                            loading="lazy"
-                            onError={(event) => {
-                              event.currentTarget.style.display = "none";
-                            }}
-                          />
-                        ) : (
-                          <div className="place-image-placeholder">
-                            <span className="placeholder-icon">⌖</span>
-                            <span>Image coming soon</span>
-                          </div>
-                        )}
-
-                        <span className="place-category">
-                          {place.category?.category_name ??
-                            "Local destination"}
-                        </span>
-
-                        <span className="place-number">
-                          {String(place.place_id).padStart(2, "0")}
-                        </span>
-                      </div>
-
-                      <div className="place-card-content">
-                        <h3>
-                          <Link to={`/places/${place.place_id}`}>
-                            {place.place_name}
-                          </Link>
-                        </h3>
-
-                        <p className="place-description">
-                          {place.description ||
-                            "Discover this local destination."}
-                        </p>
-
-                        {place.address && (
-                          <p className="place-detail">
-                            <strong>Location:</strong> {place.address}
-                          </p>
-                        )}
-
-                        {place.distance != null && (
-                          <p className="place-detail">
-                            <strong>Distance:</strong> {place.distance} km
-                          </p>
-                        )}
-
-                        {place.best_time_to_visit && (
-                          <p className="place-detail">
-                            <strong>Best time:</strong>{" "}
-                            {place.best_time_to_visit}
-                          </p>
-                        )}
-
-                        {place.visit_duration && (
-                          <p className="place-detail">
-                            <strong>Visit duration:</strong>{" "}
-                            {place.visit_duration}
-                          </p>
-                        )}
-
-                        {place.opening_time && (
-                          <p className="place-detail">
-                            <strong>Opens:</strong> {place.opening_time}
-                          </p>
-                        )}
-
-                        {place.closing_time && (
-                          <p className="place-detail">
-                            <strong>Closes:</strong> {place.closing_time}
-                          </p>
-                        )}
-
-                        {place.suitability && (
-                          <p className="place-detail">
-                            <strong>Suitable for:</strong>{" "}
-                            {place.suitability}
-                          </p>
-                        )}
-
-                        {place.facilities && (
-                          <p className="place-detail">
-                            <strong>Facilities:</strong> {place.facilities}
-                          </p>
-                        )}
-
-                        {place.travel_tips && (
-                          <p className="place-detail">
-                            <strong>Travel tips:</strong> {place.travel_tips}
-                          </p>
-                        )}
-                      </div>
-                    </article>
+                    <li key={place.place_id}>
+                      <PlaceCard place={place} />
+                    </li>
                   ))}
-                </div>
-              </>
-            )}
+                </ul>
+              )}
+            </>
+          )}
+        </div>
+
+        <DayRail />
         </div>
       </section>
 

@@ -2,6 +2,11 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 import api from "../api";
+import FoodStops from "../components/FoodStops";
+import TripSummary from "../components/TripSummary";
+import { usePlans } from "../lib/plans";
+import { useTripEstimate } from "../lib/trip";
+import type { Place as CatalogPlace } from "../lib/types";
 import L from "leaflet";
 import {
   MapContainer,
@@ -116,6 +121,7 @@ export default function PlanPage() {
   const [selectedPlaceId, setSelectedPlaceId] = useState("");
   const [plannedTime, setPlannedTime] = useState("");
 
+  const { setActivePlanId, activeStops, refreshActiveStops } = usePlans();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -198,6 +204,16 @@ export default function PlanPage() {
     void loadPlanDetails(selectedPlanId);
   }, [selectedPlanId, loadPlanDetails]);
 
+  useEffect(() => {
+    if (selectedPlanId !== null) setActivePlanId(selectedPlanId);
+  }, [selectedPlanId, setActivePlanId]);
+
+  const activeStopKey = activeStops.map((stop) => stop.plan_place_id).join(",");
+
+  useEffect(() => {
+    if (selectedPlanId !== null && activeStopKey) void loadPlanDetails(selectedPlanId);
+  }, [activeStopKey, selectedPlanId, loadPlanDetails]);
+
   const handleCreatePlan = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
@@ -272,6 +288,7 @@ export default function PlanPage() {
       setPlannedTime("");
 
       await loadPlanDetails(selectedPlanId);
+      void refreshActiveStops();
       setMessage("Destination added successfully.");
     } catch (err) {
       console.error("Failed to add destination:", err);
@@ -328,10 +345,12 @@ export default function PlanPage() {
       }
 
       await loadPlanDetails(selectedPlanId);
+      void refreshActiveStops();
       setMessage("Destination removed and visit order updated.");
     } catch (err) {
       console.error("Failed to remove or reorder destination:", err);
       await loadPlanDetails(selectedPlanId);
+      void refreshActiveStops();
 
       setError(
         "The destination may have been removed, but the visit order could not be fully updated. Please refresh and check your itinerary."
@@ -359,6 +378,7 @@ export default function PlanPage() {
       );
 
       await loadPlanDetails(selectedPlanId);
+      void refreshActiveStops();
       setMessage("Planned time updated.");
     } catch (err) {
       console.error("Failed to update planned time:", err);
@@ -367,6 +387,8 @@ export default function PlanPage() {
   };
 
   const itineraryPlaces = selectedPlan?.places ?? [];
+  const stopPlaces = itineraryPlaces.map((item) => item.place as unknown as CatalogPlace);
+  const estimate = useTripEstimate(stopPlaces);
 
   const availablePlaces = allPlaces.filter(
     (place) =>
@@ -569,6 +591,10 @@ export default function PlanPage() {
               It is not the driving distance between destinations.
             </p>
           </section>
+
+          <TripSummary stops={stopPlaces} estimate={estimate} />
+
+          <FoodStops stops={stopPlaces} places={allPlaces as unknown as CatalogPlace[]} />
 
           <section className="itinerary-map-section">
             <h3>Destination Map</h3>

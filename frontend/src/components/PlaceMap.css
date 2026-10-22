@@ -1,0 +1,68 @@
+/* ==========================================
+   MAP (Leaflet / OpenStreetMap)
+========================================== */
+
+.place-map {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--canvas-alt);
+}
+
+.place-map-canvas {
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.place-map .leaflet-control-zoom a {
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+}
+
+.place-map .leaflet-popup-content {
+  margin: 10px 14px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: 1.45;
+}
+
+.map-marker-wrapper {
+  border: 0;
+  background: transparent;
+}
+
+.map-marker {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: var(--green-700);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.35);
+}
+
+.map-marker-start {
+  width: 18px;
+  height: 18px;
+  border-width: 3px;
+  background: var(--sand-400);
+}
+
+.map-marker-nearby {
+  background: #6d8c78;
+}
+
+.map-marker-food {
+  background: var(--warning);
+}

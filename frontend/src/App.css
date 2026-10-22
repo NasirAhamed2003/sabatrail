@@ -4856,3 +4856,78 @@ line-clamp: 4;
   }
 }
 
+
+/* ==========================================
+   EXPLORE: category chips and results summary
+========================================== */
+
+.category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.category-chip {
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--green-900);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.category-chip:hover {
+  background: var(--green-100);
+}
+
+.category-chip[aria-pressed="true"] {
+  border-color: var(--green-700);
+  background: var(--green-700);
+  color: #ffffff;
+}
+
+.explore-section .places-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-6);
+  margin: var(--space-6) 0 var(--space-4);
+  color: var(--ink);
+}
+
+.explore-section .places-section {
+  max-width: none;
+}
+
+@media (max-width: 639px) {
+  .category-chips {
+    flex-wrap: nowrap;
+    margin-inline: calc(-1 * var(--space-4));
+    padding-inline: var(--space-4);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .category-chip {
+    flex: none;
+  }
+}
+
+/* Catalogue beside the "Your day" rail on desktop */
+.explore-layout {
+  display: grid;
+  gap: var(--space-8);
+  margin-top: var(--space-2);
+}
+
+@media (min-width: 1200px) {
+  .explore-layout {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
+  }
+}

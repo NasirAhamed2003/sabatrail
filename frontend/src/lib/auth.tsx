@@ -66,13 +66,13 @@ function loadSession(): AuthUser | null {
     return null;
   }
 
-  let profile: Partial<AuthUser> = {};
-
-  try {
-    profile = JSON.parse(safeGet(USER_KEY) ?? "{}");
-  } catch {
-    profile = {};
-  }
+  const profile: Partial<AuthUser> = (() => {
+    try {
+      return JSON.parse(safeGet(USER_KEY) ?? "{}");
+    } catch {
+      return {};
+    }
+  })();
 
   return {
     user_id: payload.user_id,

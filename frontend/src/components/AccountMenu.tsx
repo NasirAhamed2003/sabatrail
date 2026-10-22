@@ -8,13 +8,15 @@ export default function AccountMenu() {
   const { user, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Close on route change
-  useEffect(() => {
-    setOpen(false);
-  }, [location.pathname]);
+  // The menu is open only for the page it was opened on, so navigating closes it
+  const [openOn, setOpenOn] = useState<string | null>(null);
+  const open = openOn === location.pathname;
+  const setOpen = (value: boolean | ((current: boolean) => boolean)) => {
+    const next = typeof value === "function" ? value(open) : value;
+    setOpenOn(next ? location.pathname : null);
+  };
 
   // Close on outside click or Escape
   useEffect(() => {
@@ -38,6 +40,8 @@ export default function AccountMenu() {
       document.removeEventListener("pointerdown", onPointer);
       document.removeEventListener("keydown", onKey);
     };
+    // setOpen only changes with the current page, which also changes "open"
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   if (!user) return null;

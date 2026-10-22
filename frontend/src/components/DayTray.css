@@ -1,0 +1,151 @@
+/* ==========================================
+   YOUR DAY TRAY
+   A sticky bottom bar on every screen size. On the home page at desktop
+   widths the Explore section shows the same information in a right rail
+   (DayRail), so the bar is hidden there.
+========================================== */
+
+.day-tray {
+  position: fixed;
+  z-index: 900;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid var(--sand-400);
+  background: var(--surface);
+  box-shadow: 0 -6px 20px rgba(24, 58, 38, 0.08);
+}
+
+.day-tray-link {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  gap: var(--space-3);
+  padding-block: var(--space-2) calc(var(--space-2) + env(safe-area-inset-bottom));
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.day-tray-link:hover .day-tray-cta {
+  text-decoration: underline;
+}
+
+.day-tray-icon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--sand-100);
+  color: var(--warning);
+}
+
+.day-tray-text {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  font-size: var(--text-sm);
+  line-height: 1.35;
+}
+
+.day-tray-text strong {
+  overflow: hidden;
+  color: var(--green-900);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.day-tray-text span {
+  color: var(--ink-muted);
+}
+
+.day-tray-cta {
+  flex: none;
+  color: var(--green-700);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+/* Leave room so the bar never hides the end of the page */
+.app-shell.has-tray {
+  padding-bottom: 72px;
+}
+
+@media (min-width: 1200px) {
+  .app-shell.is-home .day-tray {
+    display: none;
+  }
+
+  .app-shell.is-home.has-tray {
+    padding-bottom: 0;
+  }
+}
+
+/* ---------- Day rail (home page, desktop) ---------- */
+
+.day-rail {
+  display: none;
+}
+
+@media (min-width: 1200px) {
+  .day-rail {
+    position: sticky;
+    top: 88px;
+    display: grid;
+    gap: var(--space-4);
+    align-self: start;
+    padding: var(--space-6);
+    border: 1px solid var(--sand-400);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.day-rail h2 {
+  font-size: var(--text-lg);
+}
+
+.day-rail-meta {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+.day-rail ol {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: stop;
+}
+
+.day-rail li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  counter-increment: stop;
+}
+
+.day-rail li::before {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--green-700);
+  color: #ffffff;
+  content: counter(stop);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+
+.day-rail li a {
+  overflow: hidden;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

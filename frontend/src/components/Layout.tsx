@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router";
 import { useAuth } from "../lib/auth";
 import { loginPath } from "../lib/routing";
+import { usePlans } from "../lib/plans";
 import AccountMenu from "./AccountMenu";
+import DayTray from "./DayTray";
 import "./Layout.css";
 
 // Scroll to #hash targets after navigation, or to the top for new pages
@@ -11,10 +13,8 @@ function ScrollManager() {
 
   useEffect(() => {
     if (hash) {
-      // Wait a frame so the target section has rendered
-      requestAnimationFrame(() => {
-        document.getElementById(hash.slice(1))?.scrollIntoView();
-      });
+      // Effects run after the DOM is committed, so the target exists now
+      document.getElementById(hash.slice(1))?.scrollIntoView();
     } else {
       window.scrollTo(0, 0);
     }
@@ -34,13 +34,22 @@ function Brand() {
 
 export default function Layout() {
   const { isLoggedIn } = useAuth();
+  const { activePlan } = usePlans();
   const location = useLocation();
-  const [menuOpen, setMenuOpen] = useState(false);
 
-  // Close the mobile menu whenever the route changes
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [location.pathname, location.hash]);
+  const showTray =
+    isLoggedIn &&
+    activePlan !== null &&
+    !location.pathname.startsWith("/plan") &&
+    !location.pathname.startsWith("/admin");
+  // The mobile menu is open only for the page it was opened on
+  const here = location.pathname + location.hash;
+  const [menuOpenOn, setMenuOpenOn] = useState<string | null>(null);
+  const menuOpen = menuOpenOn === here;
+  const setMenuOpen = (value: boolean | ((current: boolean) => boolean)) => {
+    const next = typeof value === "function" ? value(menuOpen) : value;
+    setMenuOpenOn(next ? here : null);
+  };
 
   // Escape closes the mobile menu
   useEffect(() => {
@@ -52,10 +61,11 @@ export default function Layout() {
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuOpen]);
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell${showTray ? " has-tray" : ""}${location.pathname === "/" ? " is-home" : ""}`}>
       <ScrollManager />
 
       <header className="site-header">
@@ -121,6 +131,8 @@ export default function Layout() {
       <main id="main" className="site-main">
         <Outlet />
       </main>
+
+      <DayTray />
 
       <footer className="site-footer">
         <div className="site-footer-inner container">

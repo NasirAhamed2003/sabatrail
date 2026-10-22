@@ -135,13 +135,17 @@
   color: #ffffff;
 }
 
-/* ---------- Mobile menu (below 768px) ---------- */
+/* ---------- Compact menu (below 960px) ---------- */
 
 .menu-button {
   display: none;
 }
 
-@media (max-width: 767px) {
+.site-nav-links a {
+  white-space: nowrap;
+}
+
+@media (max-width: 959px) {
   .menu-button {
     display: inline-grid;
     width: 44px;
@@ -419,7 +423,7 @@
   color: var(--danger);
 }
 
-@media (max-width: 767px) {
+@media (max-width: 959px) {
   .nav-register {
     justify-content: center;
   }
