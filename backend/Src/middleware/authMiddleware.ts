@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET!;
+import { config } from "../config";
 
 export interface AuthRequest extends Request {
   user?: {
@@ -34,7 +33,7 @@ export const authenticateToken = (
 
     const token = parts[1];
 
-    const decoded = jwt.verify(token, JWT_SECRET) as {
+    const decoded = jwt.verify(token, config.jwtSecret) as {
       user_id: number;
       role: string;
     };

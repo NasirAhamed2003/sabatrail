@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 
+import { config } from "./config";
 import { prisma } from "./prisma";
 
 import categoryRoutes from "./routes/categoryRoutes";
@@ -17,18 +17,23 @@ import {
 
 import { requireAdmin } from "./middleware/adminMiddleware";
 
-dotenv.config();
-
 const app = express();
-
-const PORT = process.env.PORT || 5000;
 
 // ===============================
 // MIDDLEWARE
 // ===============================
 
-app.use(cors());
-app.use(express.json());
+// Only the configured frontend origins may call the API from a browser.
+// Requests without an Origin header (curl, Postman, server-to-server) are allowed.
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      callback(null, !origin || config.corsOrigins.includes(origin));
+    },
+  })
+);
+
+app.use(express.json({ limit: "100kb" }));
 
 // ===============================
 // API ROUTES
@@ -45,7 +50,7 @@ app.use("/api/visit-plans", visitPlanRoutes);
 app.use("/api/visit-plans", visitPlanPlaceRoutes);
 
 // ===============================
-// BASIC TEST ROUTE
+// BASIC STATUS ROUTE
 // ===============================
 
 app.get("/", (req, res) => {
@@ -55,54 +60,75 @@ app.get("/", (req, res) => {
 });
 
 // ===============================
-// DATABASE TEST ROUTE
+// DIAGNOSTIC ROUTES (development only, ENABLE_TEST_ROUTES=true)
 // ===============================
 
-app.get("/api/test-db", async (req, res) => {
-  try {
-    await prisma.$queryRaw`SELECT 1`;
+if (config.enableTestRoutes) {
+  app.get("/api/test-db", async (req, res) => {
+    try {
+      await prisma.$queryRaw`SELECT 1`;
 
-    res.json({
-      message: "Database connection successful!",
-    });
-  } catch (error) {
-    console.error("Database connection error:", error);
+      res.json({
+        message: "Database connection successful!",
+      });
+    } catch (error) {
+      console.error("Database connection error:", error);
 
-    res.status(500).json({
-      message: "Database connection failed!",
-      error: error instanceof Error ? error.message : String(error),
-    });
-  }
+      res.status(500).json({
+        message: "Database connection failed!",
+      });
+    }
+  });
+
+  app.get(
+    "/api/test-auth",
+    authenticateToken,
+    (req: AuthRequest, res) => {
+      res.json({
+        message: "Authentication successful!",
+        user: req.user,
+      });
+    }
+  );
+
+  app.get(
+    "/api/test-admin",
+    authenticateToken,
+    requireAdmin,
+    (req: AuthRequest, res) => {
+      res.json({
+        message: "Admin access successful!",
+        user: req.user,
+      });
+    }
+  );
+}
+
+// ===============================
+// FALLBACK HANDLERS
+// ===============================
+
+app.use("/api", (req, res) => {
+  res.status(404).json({
+    message: "Endpoint not found",
+  });
 });
 
-// ===============================
-// AUTHENTICATION TEST ROUTE
-// ===============================
+// Malformed JSON bodies and any unexpected errors
+app.use(
+  (
+    error: Error & { type?: string },
+    req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction
+  ) => {
+    if (error.type === "entity.parse.failed") {
+      return res.status(400).json({ message: "Request body must be valid JSON" });
+    }
 
-app.get(
-  "/api/test-auth",
-  authenticateToken,
-  (req: AuthRequest, res) => {
-    res.json({
-      message: "Authentication successful!",
-      user: req.user,
-    });
-  }
-);
+    console.error("Unhandled error:", error);
 
-// ===============================
-// ADMIN TEST ROUTE
-// ===============================
-
-app.get(
-  "/api/test-admin",
-  authenticateToken,
-  requireAdmin,
-  (req: AuthRequest, res) => {
-    res.json({
-      message: "Admin access successful!",
-      user: req.user,
-    });
+    res.status(500).json({ message: "Something went wrong" });
   }
 );
 
@@ -110,6 +136,6 @@ app.get(
 // START SERVER
 // ===============================
 
-app.listen(PORT, () => {
-  console.log(`SabaTrail backend server running on port ${PORT}`);
+app.listen(config.port, () => {
+  console.log(`SabaTrail backend server running on port ${config.port}`);
 });

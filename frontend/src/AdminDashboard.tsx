@@ -22,7 +22,7 @@ interface Place {
   opening_time?: string | null;
   closing_time?: string | null;
   best_time_to_visit?: string | null;
-  visit_duration?: string | null;
+  visit_duration_minutes?: number | null;
   suitability?: string | null;
   travel_tips?: string | null;
   facilities?: string | null;
@@ -41,11 +41,10 @@ const emptyPlace = {
   address: "",
   latitude: "",
   longitude: "",
-  distance: "",
   opening_time: "",
   closing_time: "",
   best_time_to_visit: "",
-  visit_duration: "",
+  visit_duration_minutes: "",
   suitability: "",
   travel_tips: "",
   facilities: "",
@@ -117,10 +116,6 @@ function AdminDashboard({ onBack }: AdminDashboardProps) {
         category_id: Number(placeForm.category_id),
         latitude: Number(placeForm.latitude),
         longitude: Number(placeForm.longitude),
-        distance:
-          placeForm.distance.trim() === ""
-            ? null
-            : Number(placeForm.distance),
       };
 
       if (editingPlaceId === null) {
@@ -157,11 +152,11 @@ function AdminDashboard({ onBack }: AdminDashboardProps) {
       address: place.address ?? "",
       latitude: String(place.latitude ?? ""),
       longitude: String(place.longitude ?? ""),
-      distance: place.distance == null ? "" : String(place.distance),
       opening_time: place.opening_time ?? "",
       closing_time: place.closing_time ?? "",
       best_time_to_visit: place.best_time_to_visit ?? "",
-      visit_duration: place.visit_duration ?? "",
+      visit_duration_minutes:
+        place.visit_duration_minutes == null ? "" : String(place.visit_duration_minutes),
       suitability: place.suitability ?? "",
       travel_tips: place.travel_tips ?? "",
       facilities: place.facilities ?? "",
@@ -407,23 +402,15 @@ function AdminDashboard({ onBack }: AdminDashboardProps) {
                 />
               </label>
 
-              <label>
-                Distance from Hemmathagama (km)
-                <input
-                  type="number"
-                  step="any"
-                  min="0"
-                  value={placeForm.distance}
-                  onChange={(e) =>
-                    setPlaceForm({ ...placeForm, distance: e.target.value })
-                  }
-                />
-              </label>
+              <p className="admin-full-width">
+                Distance from Hemmathagama is calculated automatically from the
+                latitude and longitude.
+              </p>
 
               <label>
                 Opening time
                 <input
-                  placeholder="e.g. 08:00 AM"
+                  type="time"
                   value={placeForm.opening_time}
                   onChange={(e) =>
                     setPlaceForm({ ...placeForm, opening_time: e.target.value })
@@ -434,7 +421,7 @@ function AdminDashboard({ onBack }: AdminDashboardProps) {
               <label>
                 Closing time
                 <input
-                  placeholder="e.g. 05:00 PM"
+                  type="time"
                   value={placeForm.closing_time}
                   onChange={(e) =>
                     setPlaceForm({ ...placeForm, closing_time: e.target.value })
@@ -453,12 +440,16 @@ function AdminDashboard({ onBack }: AdminDashboardProps) {
               </label>
 
               <label>
-                Estimated visit duration
+                Estimated visit duration (minutes)
                 <input
-                  placeholder="e.g. 1–2 hours"
-                  value={placeForm.visit_duration}
+                  type="number"
+                  min="5"
+                  max="720"
+                  step="5"
+                  placeholder="e.g. 90"
+                  value={placeForm.visit_duration_minutes}
                   onChange={(e) =>
-                    setPlaceForm({ ...placeForm, visit_duration: e.target.value })
+                    setPlaceForm({ ...placeForm, visit_duration_minutes: e.target.value })
                   }
                 />
               </label>

@@ -1,27 +1,21 @@
-import "dotenv/config";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { prisma } from "../prisma";
-
-const JWT_SECRET = process.env.JWT_SECRET || "sabaTrail-dev-secret";
+import { config } from "../config";
+import { parseOrRespond } from "../http";
+import { loginSchema, registerSchema } from "../validation";
 
 // Register
 export const register = async (req: Request, res: Response) => {
   try {
-    const { name, email, password } = req.body;
-
-    // Validate required fields
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        message: "Name, email and password are required",
-      });
-    }
+    const data = parseOrRespond(registerSchema, req.body, res);
+    if (!data) return;
 
     // Check if email already exists
     const existingUser = await prisma.user.findUnique({
       where: {
-        email: email.toLowerCase().trim(),
+        email: data.email,
       },
     });
 
@@ -32,13 +26,13 @@ export const register = async (req: Request, res: Response) => {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    // Create user
+    // Create user (self-registration always creates a regular user)
     const user = await prisma.user.create({
       data: {
-        name: name.trim(),
-        email: email.toLowerCase().trim(),
+        name: data.name,
+        email: data.email,
         password: hashedPassword,
         role: "USER",
       },
@@ -65,19 +59,13 @@ export const register = async (req: Request, res: Response) => {
 // Login
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
-
-    // Validate required fields
-    if (!email || !password) {
-      return res.status(400).json({
-        message: "Email and password are required",
-      });
-    }
+    const data = parseOrRespond(loginSchema, req.body, res);
+    if (!data) return;
 
     // Find user
     const user = await prisma.user.findUnique({
       where: {
-        email: email.toLowerCase().trim(),
+        email: data.email,
       },
     });
 
@@ -88,7 +76,7 @@ export const login = async (req: Request, res: Response) => {
     }
 
     // Compare password
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(data.password, user.password);
 
     if (!passwordMatch) {
       return res.status(401).json({
@@ -102,9 +90,9 @@ export const login = async (req: Request, res: Response) => {
         user_id: user.user_id,
         role: user.role,
       },
-      JWT_SECRET,
+      config.jwtSecret,
       {
-        expiresIn: "1d",
+        expiresIn: config.jwtExpiresIn,
       }
     );
 

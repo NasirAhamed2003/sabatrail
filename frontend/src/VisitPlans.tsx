@@ -57,6 +57,14 @@ interface VisitPlansProps {
   onBack: () => void;
 }
 
+// Today's date as YYYY-MM-DD in the visitor's time zone
+function todayIso() {
+  const now = new Date();
+  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+
+  return local.toISOString().slice(0, 10);
+}
+
 function createNumberedIcon(number: number) {
   return L.divIcon({
     className: "sabatrail-numbered-marker-wrapper",
@@ -93,7 +101,7 @@ export default function VisitPlans({ onBack }: VisitPlansProps) {
     useState<VisitPlanDetails | null>(null);
 
   const [newPlanName, setNewPlanName] = useState("");
-  const [newPlanDate, setNewPlanDate] = useState("");
+  const [newPlanDate, setNewPlanDate] = useState(todayIso);
   const [selectedPlaceId, setSelectedPlaceId] = useState("");
   const [plannedTime, setPlannedTime] = useState("");
 
@@ -187,16 +195,21 @@ export default function VisitPlans({ onBack }: VisitPlansProps) {
       return;
     }
 
+    if (!newPlanDate) {
+      setError("Please choose the date of your visit.");
+      return;
+    }
+
     setSaving(true);
 
     try {
       const response = await api.post<VisitPlan>("/visit-plans", {
         plan_name: newPlanName.trim(),
-        ...(newPlanDate ? { visit_date: newPlanDate } : {}),
+        visit_date: newPlanDate,
       });
 
       setNewPlanName("");
-      setNewPlanDate("");
+      setNewPlanDate(todayIso());
 
       await loadPlans();
       setSelectedPlanId(response.data.plan_id);
@@ -424,7 +437,9 @@ export default function VisitPlans({ onBack }: VisitPlansProps) {
             <input
               type="date"
               value={newPlanDate}
+              min={todayIso()}
               onChange={(event) => setNewPlanDate(event.target.value)}
+              required
             />
           </label>
 

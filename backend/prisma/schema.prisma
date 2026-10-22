@@ -7,12 +7,17 @@ datasource db {
   provider = "mysql"
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   user_id    Int         @id @default(autoincrement())
   name       String
   email      String      @unique
   password   String
-  role       String
+  role       Role        @default(USER)
   created_at DateTime    @default(now())
 
   visit_plans VisitPlan[]
@@ -22,7 +27,7 @@ model User {
 
 model Category {
   category_id   Int     @id @default(autoincrement())
-  category_name String
+  category_name String  @unique
   description   String?
 
   places Place[]
@@ -31,24 +36,28 @@ model Category {
 }
 
 model Place {
-  place_id          Int       @id @default(autoincrement())
-  category_id       Int
-  place_name        String
-  description       String?
-  address           String?
-  latitude          Float
-  longitude         Float
-  distance          Float?
-  opening_time      String?
-  closing_time      String?
-  best_time_to_visit String?
-  visit_duration    String?
-  suitability       String?
-  travel_tips       String?
-  facilities        String?
-  image             String?
-  created_at        DateTime  @default(now())
-  updated_at        DateTime  @updatedAt
+  place_id               Int       @id @default(autoincrement())
+  category_id            Int
+  place_name             String
+  description            String?   @db.Text
+  address                String?
+  latitude               Float
+  longitude              Float
+  distance               Float?
+  opening_time           String?
+  closing_time           String?
+  best_time_to_visit     String?
+  // Legacy free-text duration, kept in sync with visit_duration_minutes for display
+  visit_duration         String?
+  visit_duration_minutes Int?
+  suitability            String?
+  travel_tips            String?   @db.Text
+  facilities             String?   @db.Text
+  before_you_go          String?   @db.Text
+  image                  String?   @db.Text
+  image_credit           String?
+  created_at             DateTime  @default(now())
+  updated_at             DateTime  @updatedAt
 
   category Category @relation(fields: [category_id], references: [category_id])
   plan_places VisitPlanPlace[]
@@ -79,5 +88,6 @@ model VisitPlanPlace {
   plan  VisitPlan @relation(fields: [plan_id], references: [plan_id])
   place Place     @relation(fields: [place_id], references: [place_id])
 
+  @@unique([plan_id, place_id])
   @@map("Visit_Plan_Places")
 }

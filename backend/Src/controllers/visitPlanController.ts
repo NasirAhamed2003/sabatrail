@@ -1,6 +1,8 @@
 import { Response } from "express";
 import { prisma } from "../prisma";
 import { AuthRequest } from "../middleware/authMiddleware";
+import { idParam, parseOrRespond, sendError } from "../http";
+import { createPlanSchema } from "../validation";
 
 // ==========================================
 // CREATE VISIT PLAN
@@ -17,29 +19,20 @@ export const createVisitPlan = async (
       });
     }
 
-    const { plan_name, visit_date } = req.body;
-
-    if (!plan_name || !visit_date) {
-      return res.status(400).json({
-        message: "Plan name and visit date are required",
-      });
-    }
+    const data = parseOrRespond(createPlanSchema, req.body, res);
+    if (!data) return;
 
     const visitPlan = await prisma.visitPlan.create({
       data: {
         user_id: req.user.user_id,
-        plan_name: plan_name.trim(),
-        visit_date: new Date(visit_date),
+        plan_name: data.plan_name,
+        visit_date: new Date(data.visit_date),
       },
     });
 
     res.status(201).json(visitPlan);
   } catch (error) {
-    console.error("Error creating visit plan:", error);
-
-    res.status(500).json({
-      message: "Failed to create visit plan",
-    });
+    sendError(res, error, "Failed to create visit plan");
   }
 };
 
@@ -69,11 +62,7 @@ export const getVisitPlans = async (
 
     res.json(visitPlans);
   } catch (error) {
-    console.error("Error getting visit plans:", error);
-
-    res.status(500).json({
-      message: "Failed to get visit plans",
-    });
+    sendError(res, error, "Failed to get visit plans");
   }
 };
 
@@ -92,13 +81,8 @@ export const getVisitPlanById = async (
       });
     }
 
-    const planId = Number(req.params.id);
-
-    if (isNaN(planId)) {
-      return res.status(400).json({
-        message: "Invalid plan ID",
-      });
-    }
+    const planId = parseOrRespond(idParam, req.params.id, res);
+    if (planId === null) return;
 
     const visitPlan = await prisma.visitPlan.findFirst({
       where: {
@@ -129,10 +113,6 @@ export const getVisitPlanById = async (
 
     res.json(visitPlan);
   } catch (error) {
-    console.error("Error getting visit plan:", error);
-
-    res.status(500).json({
-      message: "Failed to get visit plan",
-    });
+    sendError(res, error, "Failed to get visit plan");
   }
 };

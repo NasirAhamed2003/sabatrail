@@ -1,7 +1,18 @@
-
 import { Response } from "express";
 import { prisma } from "../prisma";
 import { AuthRequest } from "../middleware/authMiddleware";
+import { idParam, parseOrRespond, sendError } from "../http";
+import { addPlanPlaceSchema, updatePlanPlaceSchema } from "../validation";
+
+// Find a plan only if it belongs to the logged-in user
+async function findOwnedPlan(planId: number, userId: number) {
+  return prisma.visitPlan.findFirst({
+    where: {
+      plan_id: planId,
+      user_id: userId,
+    },
+  });
+}
 
 // ==========================================
 // ADD PLACE TO VISIT PLAN
@@ -19,32 +30,14 @@ export const addPlaceToVisitPlan = async (
       });
     }
 
-    const planId = Number(req.params.planId);
-    const { place_id, visit_order, planned_time } = req.body;
+    const planId = parseOrRespond(idParam, req.params.planId, res);
+    if (planId === null) return;
 
-    // Validate plan ID
-    if (!Number.isInteger(planId) || planId <= 0) {
-      return res.status(400).json({
-        message: "Invalid plan ID",
-      });
-    }
-
-    // Validate place ID
-    const placeId = Number(place_id);
-
-    if (!Number.isInteger(placeId) || placeId <= 0) {
-      return res.status(400).json({
-        message: "A valid place ID is required",
-      });
-    }
+    const data = parseOrRespond(addPlanPlaceSchema, req.body, res);
+    if (!data) return;
 
     // Check that the visit plan belongs to the logged-in user
-    const visitPlan = await prisma.visitPlan.findFirst({
-      where: {
-        plan_id: planId,
-        user_id: req.user.user_id,
-      },
-    });
+    const visitPlan = await findOwnedPlan(planId, req.user.user_id);
 
     if (!visitPlan) {
       return res.status(404).json({
@@ -55,7 +48,7 @@ export const addPlaceToVisitPlan = async (
     // Check that the place exists
     const place = await prisma.place.findUnique({
       where: {
-        place_id: placeId,
+        place_id: data.place_id,
       },
     });
 
@@ -69,7 +62,7 @@ export const addPlaceToVisitPlan = async (
     const existingPlanPlace = await prisma.visitPlanPlace.findFirst({
       where: {
         plan_id: planId,
-        place_id: placeId,
+        place_id: data.place_id,
       },
     });
 
@@ -79,24 +72,25 @@ export const addPlaceToVisitPlan = async (
       });
     }
 
-    // Determine the visit order
-    const order = visit_order === undefined
-      ? 1
-      : Number(visit_order);
+    // Without an explicit order, the place is added at the end of the day
+    let order = data.visit_order;
 
-    if (!Number.isInteger(order) || order <= 0) {
-      return res.status(400).json({
-        message: "Visit order must be a positive integer",
+    if (order === undefined) {
+      const last = await prisma.visitPlanPlace.aggregate({
+        where: { plan_id: planId },
+        _max: { visit_order: true },
       });
+
+      order = (last._max.visit_order ?? 0) + 1;
     }
 
     // Create the plan-place relationship
     const planPlace = await prisma.visitPlanPlace.create({
       data: {
         plan_id: planId,
-        place_id: placeId,
+        place_id: data.place_id,
         visit_order: order,
-        planned_time: planned_time || null,
+        planned_time: data.planned_time,
       },
       include: {
         place: {
@@ -109,11 +103,7 @@ export const addPlaceToVisitPlan = async (
 
     return res.status(201).json(planPlace);
   } catch (error) {
-    console.error("Error adding place to visit plan:", error);
-
-    return res.status(500).json({
-      message: "Failed to add place to visit plan",
-    });
+    return sendError(res, error, "Failed to add place to visit plan");
   }
 };
 
@@ -133,22 +123,11 @@ export const getPlacesInVisitPlan = async (
       });
     }
 
-    const planId = Number(req.params.planId);
-
-    // Validate plan ID
-    if (!Number.isInteger(planId) || planId <= 0) {
-      return res.status(400).json({
-        message: "Invalid plan ID",
-      });
-    }
+    const planId = parseOrRespond(idParam, req.params.planId, res);
+    if (planId === null) return;
 
     // Check that the visit plan belongs to the logged-in user
-    const visitPlan = await prisma.visitPlan.findFirst({
-      where: {
-        plan_id: planId,
-        user_id: req.user.user_id,
-      },
-    });
+    const visitPlan = await findOwnedPlan(planId, req.user.user_id);
 
     if (!visitPlan) {
       return res.status(404).json({
@@ -176,21 +155,16 @@ export const getPlacesInVisitPlan = async (
     return res.json({
       plan_id: planId,
       plan_name: visitPlan.plan_name,
+      visit_date: visitPlan.visit_date,
       total_places: planPlaces.length,
       places: planPlaces,
     });
   } catch (error) {
-    console.error("Error getting places in visit plan:", error);
-
-    return res.status(500).json({
-      message: "Failed to get places in visit plan",
-    });
+    return sendError(res, error, "Failed to get places in visit plan");
   }
 };
 
-
-
- // ==========================================
+// ==========================================
 // REMOVE PLACE FROM VISIT PLAN
 // ==========================================
 
@@ -206,30 +180,14 @@ export const removePlaceFromVisitPlan = async (
       });
     }
 
-    const planId = Number(req.params.planId);
-    const placeId = Number(req.params.placeId);
+    const planId = parseOrRespond(idParam, req.params.planId, res);
+    if (planId === null) return;
 
-    // Validate the visit plan ID
-    if (!Number.isInteger(planId) || planId <= 0) {
-      return res.status(400).json({
-        message: "Invalid plan ID",
-      });
-    }
-
-    // Validate the place ID
-    if (!Number.isInteger(placeId) || placeId <= 0) {
-      return res.status(400).json({
-        message: "Invalid place ID",
-      });
-    }
+    const placeId = parseOrRespond(idParam, req.params.placeId, res);
+    if (placeId === null) return;
 
     // Check that the visit plan belongs to the logged-in user
-    const visitPlan = await prisma.visitPlan.findFirst({
-      where: {
-        plan_id: planId,
-        user_id: req.user.user_id,
-      },
-    });
+    const visitPlan = await findOwnedPlan(planId, req.user.user_id);
 
     if (!visitPlan) {
       return res.status(404).json({
@@ -264,17 +222,11 @@ export const removePlaceFromVisitPlan = async (
       place_id: placeId,
     });
   } catch (error) {
-    console.error("Error removing place from visit plan:", error);
-
-    return res.status(500).json({
-      message: "Failed to remove place from visit plan",
-    });
+    return sendError(res, error, "Failed to remove place from visit plan");
   }
 };
 
-
-
- // ==========================================
+// ==========================================
 // UPDATE PLACE ORDER AND PLANNED TIME
 // ==========================================
 
@@ -290,38 +242,17 @@ export const updateVisitPlanPlace = async (
       });
     }
 
-    const planId = Number(req.params.planId);
-    const placeId = Number(req.params.placeId);
+    const planId = parseOrRespond(idParam, req.params.planId, res);
+    if (planId === null) return;
 
-    // Validate IDs
-    if (!Number.isInteger(planId) || planId <= 0) {
-      return res.status(400).json({
-        message: "Invalid plan ID",
-      });
-    }
+    const placeId = parseOrRespond(idParam, req.params.placeId, res);
+    if (placeId === null) return;
 
-    if (!Number.isInteger(placeId) || placeId <= 0) {
-      return res.status(400).json({
-        message: "Invalid place ID",
-      });
-    }
-
-    const { visit_order, planned_time } = req.body;
-
-    // Require at least one field to update
-    if (visit_order === undefined && planned_time === undefined) {
-      return res.status(400).json({
-        message: "Provide visit_order or planned_time to update",
-      });
-    }
+    const data = parseOrRespond(updatePlanPlaceSchema, req.body, res);
+    if (!data) return;
 
     // Check that the plan belongs to the logged-in user
-    const visitPlan = await prisma.visitPlan.findFirst({
-      where: {
-        plan_id: planId,
-        user_id: req.user.user_id,
-      },
-    });
+    const visitPlan = await findOwnedPlan(planId, req.user.user_id);
 
     if (!visitPlan) {
       return res.status(404).json({
@@ -343,43 +274,15 @@ export const updateVisitPlanPlace = async (
       });
     }
 
-    // Prepare the fields to update
-    const updateData: {
-      visit_order?: number;
-      planned_time?: string | null;
-    } = {};
-
-    if (visit_order !== undefined) {
-      const order = Number(visit_order);
-
-      if (!Number.isInteger(order) || order <= 0) {
-        return res.status(400).json({
-          message: "Visit order must be a positive integer",
-        });
-      }
-
-      updateData.visit_order = order;
-    }
-
-    if (planned_time !== undefined) {
-      if (
-        planned_time !== null &&
-        typeof planned_time !== "string"
-      ) {
-        return res.status(400).json({
-          message: "Planned time must be a string or null",
-        });
-      }
-
-      updateData.planned_time = planned_time;
-    }
-
     // Update the selected place in the visit plan
     const updatedPlanPlace = await prisma.visitPlanPlace.update({
       where: {
         plan_place_id: existingPlanPlace.plan_place_id,
       },
-      data: updateData,
+      data: {
+        visit_order: data.visit_order,
+        planned_time: data.planned_time,
+      },
       include: {
         place: {
           include: {
@@ -394,10 +297,6 @@ export const updateVisitPlanPlace = async (
       plan_place: updatedPlanPlace,
     });
   } catch (error) {
-    console.error("Error updating visit plan place:", error);
-
-    return res.status(500).json({
-      message: "Failed to update visit plan place",
-    });
+    return sendError(res, error, "Failed to update visit plan place");
   }
 };

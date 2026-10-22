@@ -1,5 +1,19 @@
 import { Request, Response } from "express";
+import { z } from "zod";
 import { prisma } from "../prisma";
+import { distanceFromTownKm, formatDuration } from "../geo";
+import { idParam, parseOrRespond, sendError } from "../http";
+import { placeSchema } from "../validation";
+
+// Turn validated input into database fields. Distance is always computed
+// from the coordinates (Haversine), never typed in by hand.
+function toPlaceData(data: z.infer<typeof placeSchema>) {
+  return {
+    ...data,
+    distance: distanceFromTownKm(data),
+    visit_duration: formatDuration(data.visit_duration_minutes),
+  };
+}
 
 // Get all places
 export const getPlaces = async (req: Request, res: Response) => {
@@ -15,24 +29,15 @@ export const getPlaces = async (req: Request, res: Response) => {
 
     res.json(places);
   } catch (error) {
-    console.error("Error getting places:", error);
-
-    res.status(500).json({
-      message: "Failed to get places",
-    });
+    sendError(res, error, "Failed to get places");
   }
 };
 
 // Get one place
 export const getPlaceById = async (req: Request, res: Response) => {
   try {
-    const placeId = Number(req.params.id);
-
-    if (isNaN(placeId)) {
-      return res.status(400).json({
-        message: "Invalid place ID",
-      });
-    }
+    const placeId = parseOrRespond(idParam, req.params.id, res);
+    if (placeId === null) return;
 
     const place = await prisma.place.findUnique({
       where: {
@@ -51,71 +56,31 @@ export const getPlaceById = async (req: Request, res: Response) => {
 
     res.json(place);
   } catch (error) {
-    console.error("Error getting place:", error);
-
-    res.status(500).json({
-      message: "Failed to get place",
-    });
+    sendError(res, error, "Failed to get place");
   }
 };
 
 // Create a place
 export const createPlace = async (req: Request, res: Response) => {
   try {
-    const {
-      category_id,
-      place_name,
-      description,
-      address,
-      latitude,
-      longitude,
-      distance,
-      opening_time,
-      closing_time,
-      best_time_to_visit,
-      visit_duration,
-      suitability,
-      travel_tips,
-      facilities,
-      image,
-    } = req.body;
-
-    if (!category_id || !place_name || latitude === undefined || longitude === undefined) {
-      return res.status(400).json({
-        message: "category_id, place_name, latitude and longitude are required",
-      });
-    }
+    const data = parseOrRespond(placeSchema, req.body, res);
+    if (!data) return;
 
     const category = await prisma.category.findUnique({
       where: {
-        category_id: Number(category_id),
+        category_id: data.category_id,
       },
     });
 
     if (!category) {
       return res.status(400).json({
         message: "Category not found",
+        errors: { category_id: "Category not found" },
       });
     }
 
     const place = await prisma.place.create({
-      data: {
-        category_id: Number(category_id),
-        place_name: place_name.trim(),
-        description: description || null,
-        address: address || null,
-        latitude: Number(latitude),
-        longitude: Number(longitude),
-        distance: distance !== undefined ? Number(distance) : null,
-        opening_time: opening_time || null,
-        closing_time: closing_time || null,
-        best_time_to_visit: best_time_to_visit || null,
-        visit_duration: visit_duration || null,
-        suitability: suitability || null,
-        travel_tips: travel_tips || null,
-        facilities: facilities || null,
-        image: image || null,
-      },
+      data: toPlaceData(data),
       include: {
         category: true,
       },
@@ -123,58 +88,29 @@ export const createPlace = async (req: Request, res: Response) => {
 
     res.status(201).json(place);
   } catch (error) {
-    console.error("Error creating place:", error);
-
-    res.status(500).json({
-      message: "Failed to create place",
-    });
+    sendError(res, error, "Failed to create place");
   }
 };
 
 // Update a place
 export const updatePlace = async (req: Request, res: Response) => {
   try {
-    const placeId = Number(req.params.id);
+    const placeId = parseOrRespond(idParam, req.params.id, res);
+    if (placeId === null) return;
 
-    if (isNaN(placeId)) {
-      return res.status(400).json({
-        message: "Invalid place ID",
-      });
-    }
-
-    const {
-      category_id,
-      place_name,
-      description,
-      address,
-      latitude,
-      longitude,
-      distance,
-      opening_time,
-      closing_time,
-      best_time_to_visit,
-      visit_duration,
-      suitability,
-      travel_tips,
-      facilities,
-      image,
-    } = req.body;
-
-    if (!category_id || !place_name || latitude === undefined || longitude === undefined) {
-      return res.status(400).json({
-        message: "category_id, place_name, latitude and longitude are required",
-      });
-    }
+    const data = parseOrRespond(placeSchema, req.body, res);
+    if (!data) return;
 
     const category = await prisma.category.findUnique({
       where: {
-        category_id: Number(category_id),
+        category_id: data.category_id,
       },
     });
 
     if (!category) {
       return res.status(400).json({
         message: "Category not found",
+        errors: { category_id: "Category not found" },
       });
     }
 
@@ -182,23 +118,7 @@ export const updatePlace = async (req: Request, res: Response) => {
       where: {
         place_id: placeId,
       },
-      data: {
-        category_id: Number(category_id),
-        place_name: place_name.trim(),
-        description: description || null,
-        address: address || null,
-        latitude: Number(latitude),
-        longitude: Number(longitude),
-        distance: distance !== undefined ? Number(distance) : null,
-        opening_time: opening_time || null,
-        closing_time: closing_time || null,
-        best_time_to_visit: best_time_to_visit || null,
-        visit_duration: visit_duration || null,
-        suitability: suitability || null,
-        travel_tips: travel_tips || null,
-        facilities: facilities || null,
-        image: image || null,
-      },
+      data: toPlaceData(data),
       include: {
         category: true,
       },
@@ -206,24 +126,15 @@ export const updatePlace = async (req: Request, res: Response) => {
 
     res.json(place);
   } catch (error) {
-    console.error("Error updating place:", error);
-
-    res.status(500).json({
-      message: "Failed to update place",
-    });
+    sendError(res, error, "Failed to update place", "Place not found");
   }
 };
 
 // Delete a place
 export const deletePlace = async (req: Request, res: Response) => {
   try {
-    const placeId = Number(req.params.id);
-
-    if (isNaN(placeId)) {
-      return res.status(400).json({
-        message: "Invalid place ID",
-      });
-    }
+    const placeId = parseOrRespond(idParam, req.params.id, res);
+    if (placeId === null) return;
 
     await prisma.place.delete({
       where: {
@@ -235,10 +146,6 @@ export const deletePlace = async (req: Request, res: Response) => {
       message: "Place deleted successfully",
     });
   } catch (error) {
-    console.error("Error deleting place:", error);
-
-    res.status(500).json({
-      message: "Failed to delete place",
-    });
+    sendError(res, error, "Failed to delete place", "Place not found");
   }
 };
