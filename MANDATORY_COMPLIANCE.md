@@ -24,7 +24,7 @@ The two test accounts and the test place created during the check were removed a
 | 1 | At least 10 tourist attractions within 25 km of Hemmathagama | ✅ | Seed `backend/prisma/seed.ts:50` (21 places). Home point `backend/Src/geo.ts:5-6`. Stored distance calculated server-side with Haversine, `geo.ts:9-31` and `controllers/placeController.ts:10-16`. Test `backend/tests/api.test.ts:101-106`. `GET /api/places` | **21 places, all within 25 km. The farthest is 20.55 km** (National Museum of Kandy). All have coordinates. Stored and independently recalculated distances agree to 0.1 km. 15 are attractions (religious, nature, heritage, recreational); the other 6 are restaurants, hospitals and a bus stand. Table in §2. |
 | 2 | Display a list of attractions | ✅ | `frontend/src/pages/HomePage.tsx` (Explore grid); `components/PlaceCard.tsx:26-68`; data from `GET /api/places` via `lib/places.ts` | **21 of 21 API places rendered** in the grid, with none missing. Screenshot `2-list.png`. |
 | 3 | Filter by category | ✅ | Chips `HomePage.tsx:141-147`; logic `HomePage.tsx:37-56`; categories from `GET /api/categories`; seed `seed.ts:15-22` | All six categories exist. Each chip showed exactly the matching places, and only those. Screenshot `3-filter-restaurants.png`. |
-| 4 | Descriptions, opening hours, travel tips and distances for each attraction | 🟡 | Details: `pages/PlaceDetailsPage.tsx:183-186` (distance, hours), `:201` (About), `:239-242` (travel tips). Card: `PlaceCard.tsx:41` (summary), facts list (distance; hours when both times are set). Admin form `pages/admin/PlaceFormPage.tsx` | **The code shows all four fields; the data is incomplete.** Per field in the next table. |
+| 4 | Descriptions, opening hours, travel tips and distances for each attraction | ✅ | Details: `pages/PlaceDetailsPage.tsx:183-186` (distance, hours), `:201` (About), `:239-242` (travel tips). Card: `PlaceCard.tsx:41` (summary), facts list (distance, hours). Data: `backend/prisma/seed.ts` | **All four fields are shown for all 21 places**, on the place page and (except tips) on the card. Re-verified after the data update below. Most opening hours are sample values to confirm on site (see note). |
 | 5 | Show attraction locations on a map | ✅ | `components/PlaceMap.tsx:70-92` (React Leaflet + OSM); markers built from stored latitude and longitude, `PlaceDetailsPage.tsx:140`; planner route map `pages/PlanPage.tsx:663` | On all 21 place pages, the "this place" marker sits within **0.7 px** of the point calculated from the stored coordinates. That's measured against the actual OSM map tiles at zoom 11. Screenshot `5-map-details.png`. |
 | 6 | Create a one-day trip plan by selecting places | ✅ | "Add to my day" `components/AddToDayButton.tsx:34` → `lib/plans.tsx:179` (`POST /api/visit-plans/:id/places`); plan created at `lib/plans.tsx:286` (`POST /api/visit-plans`); login redirect `lib/plans.tsx:220`; planner `/plan` (`App.tsx:24-39`, `RequireAuth`); summary `components/TripSummary.tsx` | **Walked end to end.** As a logged-out visitor, "Add to my day" went to `/login?next=…`. After registering, three places were added from the Explore grid. `/plan` showed them in order (1 Gadaladeniya Vihara, 2 Lankatilaka Vihara, 3 Embekka Devalaya), with a summary of 3 stops, about 2 h 30 min at stops, about 50 min driving, about 3 h 20 min in total. **Login is required to save a plan; browsing isn't.** Screenshot `6-plan.png`. |
 | 7 | Admin can add, edit and delete attractions (admin only) | ✅ | Endpoints `POST /api/places`, `PUT /api/places/:id`, `DELETE /api/places/:id` (`?force=true` if the place is in plans), all `authenticateToken` + `requireAdmin`, `backend/Src/routes/placeRoutes.ts:21-23`. UI: `pages/admin/AdminPlacesPage.tsx` (list, Edit, Delete with confirmation), `pages/admin/PlaceFormPage.tsx` (add and edit). Guards `components/RouteGuards.tsx:19-30` | Through the admin UI: **added** a place (saved, 5.2 km), **edited** its name (saved), **deleted** it from the list (then `GET` returns 404). **Non-admins are blocked:** no token → 401, logged-in visitor → 403 for create, update and delete. A visitor opening `/admin/places` sees "Administrators only". Screenshot `7-admin-list.png`. |
@@ -33,8 +33,25 @@ The two test accounts and the test place created during the check were removed a
 
 ### Requirement 4 in detail (all 21 places, checked on each details page and card)
 
-| Field | Stored | Shown on details page | Shown on card | Verdict |
-|---|---|---|---|---|
+| Field | Stored | Shown on details page | Shown on card |
+|---|---|---|---|
+| Description | 21 / 21 | 21 / 21 (About) | 21 / 21 (summary) |
+| Distance | 21 / 21 | 21 / 21 ("km by road from…", Haversine fallback) | 21 / 21 |
+| Opening hours | 21 / 21 | 21 / 21 (hospitals show "Open 24 hours") | 21 / 21 |
+| Travel tips | 21 / 21 | 21 / 21 | Details page only, by design |
+
+**Update, 22 October 2026: the data gap is closed.**
+- **Hours:** the first check found hours for only 3 places and travel tips missing for 5. Opening hours were added for the other 18 places in `backend/prisma/seed.ts` and applied with `npx prisma db seed`.
+- **Tips:** travel tips were added for the 2 hospitals and the 3 restaurants.
+- **Re-check:** in the running app, all 21 cards and all 21 place pages now show all four fields.
+
+**Note on hours: most are sample values, not verified.**
+- Only the Temple of the Tooth, Pinnawala and Peradeniya hours come from published sources.
+- The others are typical visiting hours: daylight hours for open-air sites, and 24 hours for the hospitals.
+- They should be confirmed on site and corrected through Admin → Places → Edit (SRS BR-02).
+- The app already labels hours as "a guide, not a guarantee".
+
+---|---|---|---|---|
 | Description | 21 / 21 | 21 / 21 (About) | 21 / 21 (summary) | ✅ |
 | Distance | 21 / 21 | 21 / 21 ("km by road from…", Haversine fallback) | 21 / 21 | ✅ |
 | Opening hours | **3 / 21** | 3 real; **18 show "Check locally"** | 3 / 21 | 🟡 |
@@ -69,27 +86,27 @@ Distances are from Hemmathagama town centre (7.1738895, 80.4998611; OpenStreetMa
 
 | # | Place | Category | Latitude, longitude | Stored (km) | Recalculated (km) | Hours | Tips | Marker offset |
 |---|---|---|---|---|---|---|---|---|
-| 1 | Hemmathagama Bus Stand | Public/Useful | 7.17551, 80.50058 | 0.2 | 0.20 | — | yes | 0.7 px |
-| 2 | Hemmathagama Hospital | Public/Useful | 7.17330, 80.50158 | 0.2 | 0.20 | — | — | 0.3 px |
-| 3 | Ambuluwawa | Nature/Scenic | 7.16107, 80.54734 | 5.4 | 5.43 | — | yes | 0.5 px |
-| 4 | Jamboo Hotel & Restaurant | Restaurants/Dining | 7.16411, 80.55338 | 6.0 | 6.00 | — | — | 0.4 px |
-| 5 | Bible Rock (Bathalegala) | Nature/Scenic | 7.18833, 80.43444 | 7.4 | 7.39 | — | yes | 0.4 px |
-| 6 | Embekka Devalaya | Heritage/Cultural | 7.21792, 80.56772 | 8.9 | 8.94 | — | yes | 0.3 px |
-| 7 | Dawson Tower | Heritage/Cultural | 7.25668, 80.51796 | 9.4 | 9.42 | — | yes | 0.4 px |
-| 8 | Hela Bojun, Mawanella | Restaurants/Dining | 7.24907, 80.45979 | 9.5 | 9.46 | — | — | 0.5 px |
-| 9 | National Railway Museum, Kadugannawa | Recreational | 7.25761, 80.52090 | 9.6 | 9.59 | — | yes | 0.1 px |
-| 10 | Lankatilaka Vihara | Religious | 7.23388, 80.56470 | 9.8 | 9.78 | — | yes | 0.3 px |
-| 11 | Seetha's, Mawanella | Restaurants/Dining | 7.25205, 80.44764 | 10.4 | 10.43 | — | — | 0.4 px |
-| 12 | Base Hospital Mawanella | Public/Useful | 7.25356, 80.44583 | 10.7 | 10.68 | — | — | 0.3 px |
-| 13 | Gadaladeniya Vihara | Religious | 7.25730, 80.55608 | 11.2 | 11.16 | — | yes | 0.5 px |
-| 14 | Utuwankanda | Heritage/Cultural | 7.26199, 80.41916 | 13.2 | 13.24 | — | yes | 0.5 px |
-| 15 | Alagalla Mountain Range | Nature/Scenic | 7.29798, 80.47157 | 14.1 | 14.15 | — | yes | 0.4 px |
+| 1 | Hemmathagama Bus Stand | Public/Useful | 7.17551, 80.50058 | 0.2 | 0.20 | yes | yes | 0.7 px |
+| 2 | Hemmathagama Hospital | Public/Useful | 7.17330, 80.50158 | 0.2 | 0.20 | yes | yes | 0.3 px |
+| 3 | Ambuluwawa | Nature/Scenic | 7.16107, 80.54734 | 5.4 | 5.43 | yes | yes | 0.5 px |
+| 4 | Jamboo Hotel & Restaurant | Restaurants/Dining | 7.16411, 80.55338 | 6.0 | 6.00 | yes | yes | 0.4 px |
+| 5 | Bible Rock (Bathalegala) | Nature/Scenic | 7.18833, 80.43444 | 7.4 | 7.39 | yes | yes | 0.4 px |
+| 6 | Embekka Devalaya | Heritage/Cultural | 7.21792, 80.56772 | 8.9 | 8.94 | yes | yes | 0.3 px |
+| 7 | Dawson Tower | Heritage/Cultural | 7.25668, 80.51796 | 9.4 | 9.42 | yes | yes | 0.4 px |
+| 8 | Hela Bojun, Mawanella | Restaurants/Dining | 7.24907, 80.45979 | 9.5 | 9.46 | yes | yes | 0.5 px |
+| 9 | National Railway Museum, Kadugannawa | Recreational | 7.25761, 80.52090 | 9.6 | 9.59 | yes | yes | 0.1 px |
+| 10 | Lankatilaka Vihara | Religious | 7.23388, 80.56470 | 9.8 | 9.78 | yes | yes | 0.3 px |
+| 11 | Seetha's, Mawanella | Restaurants/Dining | 7.25205, 80.44764 | 10.4 | 10.43 | yes | yes | 0.4 px |
+| 12 | Base Hospital Mawanella | Public/Useful | 7.25356, 80.44583 | 10.7 | 10.68 | yes | yes | 0.3 px |
+| 13 | Gadaladeniya Vihara | Religious | 7.25730, 80.55608 | 11.2 | 11.16 | yes | yes | 0.5 px |
+| 14 | Utuwankanda | Heritage/Cultural | 7.26199, 80.41916 | 13.2 | 13.24 | yes | yes | 0.5 px |
+| 15 | Alagalla Mountain Range | Nature/Scenic | 7.29798, 80.47157 | 14.1 | 14.15 | yes | yes | 0.4 px |
 | 16 | Royal Botanic Gardens, Peradeniya | Recreational | 7.27111, 80.59556 | 15.1 | 15.11 | yes | yes | 0.3 px |
-| 17 | Ceylon Tea Museum | Recreational | 7.26861, 80.63266 | 18.0 | 18.04 | — | yes | 0.3 px |
+| 17 | Ceylon Tea Museum | Recreational | 7.26861, 80.63266 | 18.0 | 18.04 | yes | yes | 0.3 px |
 | 18 | Pinnawala Elephant Orphanage | Recreational | 7.30056, 80.38833 | 18.7 | 18.70 | yes | yes | 0.1 px |
-| 19 | St. Paul's Church, Kandy | Religious | 7.29453, 80.63969 | 20.4 | 20.44 | — | yes | 0.3 px |
+| 19 | St. Paul's Church, Kandy | Religious | 7.29453, 80.63969 | 20.4 | 20.44 | yes | yes | 0.3 px |
 | 20 | Temple of the Sacred Tooth Relic | Religious | 7.29360, 80.64140 | 20.5 | 20.52 | yes | yes | 0.5 px |
-| 21 | National Museum of Kandy | Heritage/Cultural | 7.29472, 80.64083 | 20.6 | 20.55 | — | yes | 0.6 px |
+| 21 | National Museum of Kandy | Heritage/Cultural | 7.29472, 80.64083 | 20.6 | 20.55 | yes | yes | 0.6 px |
 
 **Category counts:** Religious 4, Nature/Scenic 3, Heritage/Cultural 4, Recreational 4, Restaurants/Dining 3, Public/Useful 3.
 
@@ -167,13 +184,13 @@ In `ITE2953_ProjectProposal_E2410404.pdf`, in the project's parent folder:
 
 ## 4. Summary
 
-**Six of the seven mandatory features are fully met. The seventh, feature 4, is met in code but not yet in data.**
+**All seven mandatory features are met** (re-verified after the 22 October data update).
 - **Feature 1:** 21 places, all within 25 km, the farthest at 20.55 km.
 - **Features 2 and 3:** the catalogue lists all 21 places, and the filter is correct for all six categories.
 - **Feature 5:** map markers sit within 0.7 px of the stored coordinates on every place page.
 - **Feature 6:** browse, add and view a one-day plan works end to end. Login is needed to save a plan.
 - **Feature 7:** admin add, edit and delete work through the UI, with non-admins blocked by both the API (401/403) and the UI.
-- **Feature 4:** descriptions and distances are shown for every place. **Opening hours are stored for only 3 of the 21 places** (the rest show "Check locally"), and **travel tips are missing for 5**, though those 5 aren't attractions.
+- **Feature 4:** description, opening hours, travel tips and distance are now shown for all 21 places. Most opening hours are sample values to confirm on site.
 
 **Booking and payment are correctly absent.** There's no such code or dependency, and the home page states the scope.
 
@@ -184,10 +201,9 @@ In `ITE2953_ProjectProposal_E2410404.pdf`, in the project's parent folder:
 - Nothing records the stakeholders validating the required features.
 
 **Still outstanding:**
-1. Enter verified opening hours for the remaining 18 places, at least the 12 attractions without hours, through the admin form.
-2. Add travel tips for the 5 places that lack them.
-3. In the proposal or SRS appendix:
+1. Confirm the 18 sample opening hours on site and correct any that are wrong (Admin → Places → Edit).
+2. In the proposal or SRS appendix:
    - add evidence of Danthanarayana HG's and Zamra MZF's participation, such as screenshots or notes;
    - replace the placeholder sentences;
    - record a short stakeholder validation of the seven mandatory features (who confirmed what, and when).
-4. Optionally, keep a copy of the stakeholder evidence in the repo (for example `docs/stakeholders.md`) so it travels with the code.
+3. Optionally, keep a copy of the stakeholder evidence in the repo (for example `docs/stakeholders.md`) so it travels with the code.

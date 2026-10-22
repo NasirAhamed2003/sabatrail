@@ -8,7 +8,9 @@ import { distanceFromTownKm, formatDuration, haversineKm } from "../Src/geo";
 // Real places within 25 km of Hemmathagama town centre.
 // Coordinates: OpenStreetMap / Wikidata. Descriptions: summarised from Wikipedia.
 // Photos: Wikimedia Commons (author and licence stored in image_credit).
-// Opening hours are only set where widely published; verify before relying on them.
+// Opening hours: typical visiting hours. Only the Temple of the Tooth, Pinnawala and
+// Peradeniya hours are from published sources; the rest are sample values to verify
+// on site (SRS BR-02). Open-air sites use daylight hours; 00:00-23:59 means open 24 hours.
 // Run with: npx prisma db seed --config prisma7.config.ts
 // ===============================
 
@@ -73,6 +75,8 @@ const places: SeedPlace[] = [
   {
     category: "Religious",
     place_name: "Lankatilaka Vihara",
+    opening_time: "08:00",
+    closing_time: "17:00",
     description:
       "Fourteenth-century Gampola-era Buddhist temple with integrated Hindu shrines, built on the Panhalgala rock in Udunuwara.",
     address: "Hiyarapitiya, Udunuwara",
@@ -92,6 +96,8 @@ const places: SeedPlace[] = [
   {
     category: "Religious",
     place_name: "Gadaladeniya Vihara",
+    opening_time: "08:00",
+    closing_time: "17:00",
     description:
       "Stone Buddhist temple built in 1344 during the Gampola period, known for its South Indian architectural influence.",
     address: "Gadaladeniya, Pilimathalawa",
@@ -108,6 +114,8 @@ const places: SeedPlace[] = [
   {
     category: "Religious",
     place_name: "St. Paul's Church, Kandy",
+    opening_time: "07:00",
+    closing_time: "17:00",
     description:
       "Anglican church in the historic centre of Kandy, just west of the Temple of the Tooth, built during the British colonial period.",
     address: "Temple Street, Kandy",
@@ -126,6 +134,8 @@ const places: SeedPlace[] = [
   {
     category: "Heritage/Cultural",
     place_name: "Embekka Devalaya",
+    opening_time: "08:00",
+    closing_time: "17:00",
     description:
       "Shrine dedicated to God Kataragama, built by King Vikramabahu III of the Gampola era (1357-1374) and famous for its intricately carved wooden pillars.",
     address: "Embekka, Udunuwara",
@@ -142,6 +152,8 @@ const places: SeedPlace[] = [
   {
     category: "Heritage/Cultural",
     place_name: "Dawson Tower",
+    opening_time: "06:00",
+    closing_time: "18:00",
     description:
       "Memorial tower at the Kadugannawa Pass honouring Captain William Dawson, who directed construction of the Colombo-Kandy road, the island's first modern highway.",
     address: "Kadugannawa Pass, Colombo-Kandy Road (A1)",
@@ -158,6 +170,8 @@ const places: SeedPlace[] = [
   {
     category: "Heritage/Cultural",
     place_name: "National Museum of Kandy",
+    opening_time: "09:00",
+    closing_time: "17:00",
     description:
       "Museum beside the Temple of the Tooth, housed in the Palle Vahala building of the former Royal Palace, with artefacts from the Kandyan kingdom.",
     address: "Royal Palace Complex, Kandy",
@@ -173,6 +187,8 @@ const places: SeedPlace[] = [
   {
     category: "Heritage/Cultural",
     place_name: "Utuwankanda",
+    opening_time: "06:00",
+    closing_time: "18:00",
     description:
       "Rocky hill near Mawanella associated with the 19th-century folk figure Saradiel, with views over the Kegalle hills.",
     address: "Utuwankanda, Mawanella",
@@ -190,6 +206,8 @@ const places: SeedPlace[] = [
   {
     category: "Nature/Scenic",
     place_name: "Ambuluwawa",
+    opening_time: "08:00",
+    closing_time: "18:00",
     description:
       "Mountain near Gampola topped by a tall tower with an external spiral stairway and a multi-religious complex, giving wide views over the central hills.",
     address: "Ambuluwawa, Gampola",
@@ -209,6 +227,8 @@ const places: SeedPlace[] = [
   {
     category: "Nature/Scenic",
     place_name: "Bible Rock (Bathalegala)",
+    opening_time: "06:00",
+    closing_time: "18:00",
     description:
       "Distinctive flat-topped mountain near Aranayake, named for its resemblance to a book resting on a lectern. Visible from the Colombo-Kandy road.",
     address: "Bathalegala, Aranayake",
@@ -227,6 +247,8 @@ const places: SeedPlace[] = [
   {
     category: "Nature/Scenic",
     place_name: "Alagalla Mountain Range",
+    opening_time: "06:00",
+    closing_time: "17:00",
     description:
       "Mountain range on the border of the Central and Sabaragamuwa provinces, known for forested ridges and views over the Kadugannawa pass and the railway below.",
     address: "Alagalla, Kadugannawa",
@@ -284,6 +306,8 @@ const places: SeedPlace[] = [
   {
     category: "Recreational",
     place_name: "National Railway Museum, Kadugannawa",
+    opening_time: "09:00",
+    closing_time: "17:00",
     description:
       "Sri Lanka Railways' museum at Kadugannawa, displaying historic locomotives, carriages and railway equipment.",
     address: "Kadugannawa",
@@ -299,6 +323,8 @@ const places: SeedPlace[] = [
   {
     category: "Recreational",
     place_name: "Ceylon Tea Museum",
+    opening_time: "08:30",
+    closing_time: "16:30",
     description:
       "Tea museum in the former Hanthana Tea Factory, built in 1925, about 3 km south of Kandy, with historic tea-processing machinery.",
     address: "Hanthana, Kandy",
@@ -316,6 +342,9 @@ const places: SeedPlace[] = [
   {
     category: "Restaurants/Dining",
     place_name: "Hela Bojun, Mawanella",
+    opening_time: "07:00",
+    closing_time: "19:00",
+    travel_tips: "Freshly made Sri Lankan snacks and meals; busiest around lunchtime, so arrive before 12:00 for the widest choice.",
     description: "Restaurant on the Colombo-Kandy road at Mawanella (listed on OpenStreetMap). Confirm opening hours before you travel.",
     address: "Mawanella",
     latitude: 7.24907,
@@ -326,6 +355,9 @@ const places: SeedPlace[] = [
   {
     category: "Restaurants/Dining",
     place_name: "Seetha's, Mawanella",
+    opening_time: "07:00",
+    closing_time: "22:00",
+    travel_tips: "Good for a rice-and-curry lunch on the Colombo-Kandy road; parking is limited at peak times.",
     description: "Restaurant in Mawanella town (listed on OpenStreetMap). Confirm opening hours before you travel.",
     address: "Mawanella",
     latitude: 7.25205,
@@ -336,6 +368,9 @@ const places: SeedPlace[] = [
   {
     category: "Restaurants/Dining",
     place_name: "Jamboo Hotel & Restaurant",
+    opening_time: "07:00",
+    closing_time: "22:00",
+    travel_tips: "Close to Hemmathagama town; a convenient breakfast or dinner stop at the start or end of the day.",
     description: "Restaurant on the Gampola side of Hemmathagama (listed on OpenStreetMap). Confirm opening hours before you travel.",
     address: "Gampola",
     latitude: 7.16411,
@@ -348,6 +383,9 @@ const places: SeedPlace[] = [
   {
     category: "Public/Useful",
     place_name: "Hemmathagama Hospital",
+    opening_time: "00:00",
+    closing_time: "23:59",
+    travel_tips: "For emergencies call 1990 (Suwa Seriya ambulance). Bring ID and any medication you take.",
     description: "Hospital in Hemmathagama town centre. For emergencies, call 1990 (Suwa Seriya ambulance).",
     address: "Hemmathagama",
     latitude: 7.1733,
@@ -357,6 +395,9 @@ const places: SeedPlace[] = [
   {
     category: "Public/Useful",
     place_name: "Base Hospital Mawanella",
+    opening_time: "00:00",
+    closing_time: "23:59",
+    travel_tips: "The nearest larger hospital with emergency care. For an ambulance call 1990.",
     description: "Main hospital serving the Mawanella area. For emergencies, call 1990 (Suwa Seriya ambulance).",
     address: "Mawanella",
     latitude: 7.25356,
@@ -366,6 +407,8 @@ const places: SeedPlace[] = [
   {
     category: "Public/Useful",
     place_name: "Hemmathagama Bus Stand",
+    opening_time: "05:00",
+    closing_time: "21:00",
     description: "Town bus stand in Hemmathagama with services to the surrounding towns.",
     address: "Hemmathagama",
     latitude: 7.17551,
@@ -434,19 +477,21 @@ async function main() {
       travel_tips: place.travel_tips ?? null,
       facilities: place.facilities ?? null,
       before_you_go: place.before_you_go ?? null,
-      image: place.image ?? null,
-      image_credit: place.image_credit ?? null,
       category_id: categoryIds.get(category)!,
       distance: distanceFromTownKm(place),
     };
 
     const existing = await prisma.place.findFirst({ where: { place_name: place.place_name } });
 
+    // Photos: the seed sets its own photo where it has one, but never clears
+    // a photo an admin has uploaded or pasted for a place the seed has none for.
+    const photo = place.image ? { image: place.image, image_credit: place.image_credit ?? null } : {};
+
     if (existing) {
-      await prisma.place.update({ where: { place_id: existing.place_id }, data });
+      await prisma.place.update({ where: { place_id: existing.place_id }, data: { ...data, ...photo } });
       updated++;
     } else {
-      await prisma.place.create({ data: { place_name: place.place_name, ...data } });
+      await prisma.place.create({ data: { place_name: place.place_name, ...data, ...photo } });
       created++;
     }
   }

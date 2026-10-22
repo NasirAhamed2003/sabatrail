@@ -45,6 +45,7 @@ export function todayIso() {
 
 // "05:30", "20:00" -> "05:30–20:00"
 export function formatOpeningHours(opening?: string | null, closing?: string | null) {
+  if (opening === "00:00" && closing === "23:59") return "Open 24 hours";
   if (opening && closing) return `${opening}–${closing}`;
   if (opening) return `Opens ${opening}`;
   if (closing) return `Closes ${closing}`;

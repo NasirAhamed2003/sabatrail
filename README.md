@@ -53,7 +53,8 @@ Place sources:
 - **Coordinates:** OpenStreetMap and Wikidata.
 - **Descriptions:** summarised from Wikipedia.
 - **Photos:** Wikimedia Commons, with the author and licence stored in `image_credit`.
-- **Opening hours:** only set where widely published. Verify them before relying on them.
+- **Opening hours:** set for every place. Only the Temple of the Tooth, Pinnawala and Peradeniya hours come from published sources; the rest are typical visiting hours to confirm on site. `00:00`–`23:59` is shown as "Open 24 hours".
+- **Re-running the seed** never removes a photo an admin has uploaded for a place the seed has no photo for.
 
 Registration always creates regular users, so the seed is how the first administrator is created:
 
