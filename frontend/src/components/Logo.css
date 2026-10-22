@@ -1,0 +1,66 @@
+/* ==========================================
+   LOGO (header and footer)
+   The link keeps a 44px-tall tap area; the image keeps its aspect ratio.
+========================================== */
+
+.brand {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--green-900);
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  text-decoration: none;
+}
+
+.brand picture {
+  display: contents;
+}
+
+.brand-logo {
+  display: block;
+  width: auto;
+  height: 36px;
+  max-width: 220px;
+  object-fit: contain;
+}
+
+.brand-footer {
+  font-size: 1.125rem;
+}
+
+.brand-footer .brand-logo {
+  height: 30px;
+}
+
+@media (max-width: 639px) {
+  .brand-header .brand-logo {
+    height: 32px;
+  }
+
+  /* The square mark replaces the lockup on narrow screens */
+  .brand-logo.has-mark {
+    max-width: 40px;
+  }
+}
+
+/* Placeholder mark, shown until src/assets/logo.svg is added */
+.brand-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--green-700);
+  color: var(--on-accent);
+  font-size: 1.25rem;
+}
+
+.brand-footer .brand-icon {
+  width: 30px;
+  height: 30px;
+  font-size: 1rem;
+}

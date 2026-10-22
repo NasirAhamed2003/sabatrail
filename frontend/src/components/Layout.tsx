@@ -5,6 +5,7 @@ import { loginPath } from "../lib/routing";
 import { usePlans } from "../lib/plans";
 import AccountMenu from "./AccountMenu";
 import DayTray from "./DayTray";
+import Logo from "./Logo";
 import "./Layout.css";
 
 // Scroll to #hash targets after navigation, or to the top for new pages
@@ -21,15 +22,6 @@ function ScrollManager() {
   }, [pathname, hash]);
 
   return null;
-}
-
-function Brand() {
-  return (
-    <Link className="brand" to="/">
-      <span className="brand-icon" aria-hidden="true">S</span>
-      <span>SabaTrail</span>
-    </Link>
-  );
 }
 
 export default function Layout() {
@@ -70,7 +62,7 @@ export default function Layout() {
 
       <header className="site-header">
         <div className="site-header-inner container">
-          <Brand />
+          <Logo placement="header" />
 
           <button
             type="button"
@@ -136,7 +128,7 @@ export default function Layout() {
 
       <footer className="site-footer">
         <div className="site-footer-inner container">
-          <Brand />
+          <Logo placement="footer" />
           <p>Plan a day around Hemmathagama.</p>
           <p className="site-footer-note">Hemmathagama, Sri Lanka</p>
         </div>

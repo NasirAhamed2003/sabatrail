@@ -28,30 +28,6 @@
 
 /* ---------- Brand ---------- */
 
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-3);
-  min-height: 44px;
-  color: var(--green-900);
-  font-family: var(--font-display);
-  font-size: 1.375rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  text-decoration: none;
-}
-
-.brand-icon {
-  display: grid;
-  width: 36px;
-  height: 36px;
-  place-items: center;
-  border-radius: var(--radius-md);
-  background: var(--green-700);
-  color: var(--on-accent);
-  font-size: 1.25rem;
-}
-
 /* ---------- Header ---------- */
 
 .site-header {
@@ -254,16 +230,6 @@
   padding-block: var(--space-6);
   color: var(--ink-muted);
   font-size: var(--text-sm);
-}
-
-.site-footer .brand {
-  font-size: 1.125rem;
-}
-
-.site-footer .brand-icon {
-  width: 30px;
-  height: 30px;
-  font-size: 1rem;
 }
 
 /* ---------- Simple status pages (not found, loading, no access) ---------- */
