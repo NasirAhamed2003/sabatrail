@@ -1,12 +1,8 @@
-import { formatKm } from "../lib/format";
 import { useStartPoint } from "../lib/startPoint";
 
-// Beyond this accuracy radius the fix is network/IP based, not GPS
-const APPROXIMATE_M = 1000;
-
-// "Distances from: Hemmathagama town centre · Use my location"
+// "Distances from: Hemmathagama town centre · Use my location (fixed)"
 export default function StartPointControl({ prefix = "Distances from" }: { prefix?: string }) {
-  const { start, status, chooseDeviceLocation, chooseTownCentre } = useStartPoint();
+  const { start, chooseDeviceLocation, chooseTownCentre } = useStartPoint();
 
   return (
     <div className="start-point" aria-live="polite">
@@ -19,27 +15,13 @@ export default function StartPointControl({ prefix = "Distances from" }: { prefi
           type="button"
           className="link-button"
           onClick={chooseDeviceLocation}
-          disabled={status === "locating"}
         >
-          {status === "locating" ? "Finding your location…" : "Use my location"}
+          Use my location
         </button>
       ) : (
         <button type="button" className="link-button" onClick={chooseTownCentre}>
           Use town centre
         </button>
-      )}
-
-      {start.kind === "device" && start.accuracyM != null && start.accuracyM > APPROXIMATE_M && (
-        <span className="start-point-note">
-          Your browser could only estimate your location (to within about {formatKm(start.accuracyM / 1000)}),
-          usually from your internet connection, so these distances may be off. A phone with GPS gives a better fix.
-        </span>
-      )}
-      {status === "denied" && (
-        <span className="start-point-note">Location permission was declined, so the town centre is used.</span>
-      )}
-      {status === "unavailable" && (
-        <span className="start-point-note">Your location isn't available, so the town centre is used.</span>
       )}
     </div>
   );

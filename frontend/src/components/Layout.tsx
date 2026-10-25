@@ -29,6 +29,9 @@ export default function Layout() {
   const { activePlan } = usePlans();
   const location = useLocation();
 
+  const isAuthPage =
+    location.pathname === "/login" || location.pathname === "/register";
+
   const showTray =
     isLoggedIn &&
     activePlan !== null &&
@@ -80,42 +83,46 @@ export default function Layout() {
             className={`site-nav${menuOpen ? " is-open" : ""}`}
             aria-label="Main"
           >
-            <ul className="site-nav-links">
-              <li>
-                <NavLink to="/" end>
-                  Home
-                </NavLink>
-              </li>
-              <li>
-                <Link to="/#explore">Explore places</Link>
-              </li>
-              <li>
-                <Link to="/#how">How it works</Link>
-              </li>
-              {isLoggedIn && (
+            {!isAuthPage && (
+              <ul className="site-nav-links">
                 <li>
-                  <NavLink to="/plan">My visit plans</NavLink>
+                  <NavLink to="/" end>
+                    Home
+                  </NavLink>
                 </li>
-              )}
-            </ul>
+                <li>
+                  <Link to="/#explore">Explore places</Link>
+                </li>
+                <li>
+                  <Link to="/#how">How it works</Link>
+                </li>
+                {isLoggedIn && (
+                  <li>
+                    <NavLink to="/plan">My visit plans</NavLink>
+                  </li>
+                )}
+              </ul>
+            )}
 
-            <div className="site-nav-actions">
-              {isLoggedIn ? (
-                <AccountMenu />
-              ) : (
-                <>
-                  <Link className="nav-register" to="/register">
-                    Create account
-                  </Link>
-                  <Link
-                    className="nav-login"
-                    to={location.pathname === "/login" ? "/login" : loginPath(location.pathname)}
-                  >
-                    Log in
-                  </Link>
-                </>
-              )}
-            </div>
+            {!isAuthPage && (
+              <div className="site-nav-actions">
+                {isLoggedIn ? (
+                  <AccountMenu />
+                ) : (
+                  <>
+                    <Link className="nav-register" to="/register">
+                      Create account
+                    </Link>
+                    <Link
+                      className="nav-login"
+                      to={location.pathname === "/login" ? "/login" : loginPath(location.pathname)}
+                    >
+                      Log in
+                    </Link>
+                  </>
+                )}
+              </div>
+            )}
           </nav>
         </div>
       </header>

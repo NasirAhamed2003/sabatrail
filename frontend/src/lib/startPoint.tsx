@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
-import { HEMMATHAGAMA, hasCoordinates, haversineKm, type LatLng } from "./geo";
+import { FIXED_LOCATION, HEMMATHAGAMA, hasCoordinates, haversineKm, type LatLng } from "./geo";
 import { usePlaces } from "./places";
 import { useRoadDistances, type TravelStatus } from "./travel";
 import type { Place } from "./types";
@@ -25,7 +25,7 @@ export interface PlaceDistance {
 const TOWN: StartPoint = { ...HEMMATHAGAMA, kind: "town", label: "Hemmathagama town centre" };
 const STORAGE_KEY = "sabatrail.startPoint";
 
-type LocateStatus = "idle" | "locating" | "denied" | "unavailable";
+type LocateStatus = "idle" | "denied" | "unavailable";
 
 interface StartPointContextValue {
   start: StartPoint;
@@ -56,40 +56,21 @@ function store(start: StartPoint | null) {
   }
 }
 
-const round3 = (value: number) => Math.round(value * 1000) / 1000;
-
 export function StartPointProvider({ children }: { children: ReactNode }) {
   const [start, setStart] = useState<StartPoint>(() => readStored() ?? TOWN);
   const [status, setStatus] = useState<LocateStatus>("idle");
 
   const chooseDeviceLocation = useCallback(() => {
-    if (!("geolocation" in navigator)) {
-      setStatus("unavailable");
-      return;
-    }
-
-    setStatus("locating");
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const device: StartPoint = {
-          latitude: round3(position.coords.latitude),
-          longitude: round3(position.coords.longitude),
-          kind: "device",
-          label: "your location",
-          accuracyM: position.coords.accuracy,
-        };
-        setStart(device);
-        store(device);
-        setStatus("idle");
-      },
-      (error) => {
-        setStatus(error.code === error.PERMISSION_DENIED ? "denied" : "unavailable");
-      },
-      // Ask for GPS where the device has it and never reuse an old fix; a cached
-      // or network-only position can be several kilometres out.
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-    );
+    // Use fixed coordinates instead of live GPS
+    const device: StartPoint = {
+      latitude: FIXED_LOCATION.latitude,
+      longitude: FIXED_LOCATION.longitude,
+      kind: "device",
+      label: "your location",
+    };
+    setStart(device);
+    store(device);
+    setStatus("idle");
   }, []);
 
   const chooseTownCentre = useCallback(() => {

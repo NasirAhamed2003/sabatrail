@@ -8,6 +8,9 @@ export interface LatLng {
 // Hemmathagama town centre (OpenStreetMap node 1831898259)
 export const HEMMATHAGAMA: LatLng = { latitude: 7.1738895, longitude: 80.4998611 };
 
+// Fixed starting location used throughout the app (no live GPS)
+export const FIXED_LOCATION: LatLng = { latitude: 7.174416729272072, longitude: 80.50056487584725 };
+
 // Great-circle distance in kilometres (Haversine formula)
 export function haversineKm(from: LatLng, to: LatLng) {
   const toRad = (deg: number) => (deg * Math.PI) / 180;
@@ -25,11 +28,12 @@ export function haversineKm(from: LatLng, to: LatLng) {
 
 const point = (p: LatLng) => `${p.latitude},${p.longitude}`;
 
-// Google Maps directions to a place. Without an origin, Google Maps uses the
-// device's own location, so the visitor's position never passes through SabaTrail.
+// Google Maps directions to a place. Always uses FIXED_LOCATION as the origin
+// unless an explicit origin is provided.
 export function directionsUrl(to: LatLng, from?: LatLng | null) {
+  const origin = from ?? FIXED_LOCATION;
   const params = new URLSearchParams({ api: "1", destination: point(to), travelmode: "driving" });
-  if (from) params.set("origin", point(from));
+  params.set("origin", point(origin));
 
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
@@ -41,8 +45,9 @@ export function routeUrl(stops: LatLng[], from?: LatLng | null) {
   const destination = stops[stops.length - 1];
   const waypoints = stops.slice(0, -1).slice(0, 9);
 
+  const origin = from ?? FIXED_LOCATION;
   const params = new URLSearchParams({ api: "1", destination: point(destination), travelmode: "driving" });
-  if (from) params.set("origin", point(from));
+  params.set("origin", point(origin));
   if (waypoints.length > 0) params.set("waypoints", waypoints.map(point).join("|"));
 
   return `https://www.google.com/maps/dir/?${params.toString()}`;
